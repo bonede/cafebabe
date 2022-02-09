@@ -46,11 +46,13 @@ test {
 }
 task releaseDockerImage(dependsOn: bootJar) {
     group 'release'
-    for(dockerFile in dockerFiles){
-        exec {
-            workingDir "${project(':java-explorer-compiler').projectDir}"
-            commandLine 'docker', 'build', "-t", "bonede/java-explorer-compiler:$dockerFile", "-f", "docker/${dockerFile}/Dockerfile", "."
+    doLast{
+        for(dockerFile in dockerFiles){
+            exec {
+                workingDir "$project.projectDir"
+                commandLine 'docker', 'build', "-t", "bonede/$project.name:$dockerFile", "-f", "docker/${dockerFile}/Dockerfile", "."
+            }
+            println "  Docker image building finished: $dockerFile"
         }
-        println "Docker image building finished: $dockerFile"
     }
 }

@@ -38,8 +38,8 @@ public class JavaCompilerRunner extends CompilerRunner {
     private static final String SRC_DIR = "src";
     private static final String DST_DIR = "build";
     private static final String[] SUPPORT_COMPILER_NICKNAMES = {
-            "java8",
-            "java11"
+            "openjdk8",
+            "openjdk11"
     };
 
     @PostConstruct
