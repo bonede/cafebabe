@@ -1,0 +1,4 @@
+FROM openjdk:8-jdk-slim
+COPY "../../build/libs/java-explore-compiler.jar" "/opt/jars"
+EXPOSE 8080
+CMD ["java", "-jar", "/opt/jars/java-explore-compiler.jar"]
