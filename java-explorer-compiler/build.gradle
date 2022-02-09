@@ -8,6 +8,10 @@ group = 'org.javaexplorer'
 version = '1.0.0'
 sourceCompatibility = '8'
 
+ext{
+    dockerFiles = ["openjdk8", "openjdk11"]
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
@@ -39,4 +43,14 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+task releaseDockerImage(dependsOn: bootJar) {
+    group 'release'
+    for(dockerFile in dockerFiles){
+        exec {
+            workingDir "${project(':java-explorer-compiler').projectDir}"
+            commandLine 'docker', 'build', "-t", "bonede/java-explorer-compiler:$dockerFile", "-f", "docker/${dockerFile}/Dockerfile", "."
+        }
+        println "Docker image building finished: $dockerFile"
+    }
 }
