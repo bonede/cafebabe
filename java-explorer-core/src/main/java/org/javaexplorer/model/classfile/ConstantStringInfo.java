@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ConstantClassInfo implements ConstantInfo{
-    private int nameIndex;
-    private String name;
+public class ConstantStringInfo implements ConstantInfo{
+    private int stringIndex;
+    private String value;
     @Override
     public ConstantTag getTag() {
-        return ConstantTag.CONSTANT_Class;
+        return ConstantTag.CONSTANT_String;
     }
 }

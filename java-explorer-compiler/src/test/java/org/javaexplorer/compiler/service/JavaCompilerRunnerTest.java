@@ -38,7 +38,7 @@ class JavaCompilerRunnerTest {
     void compileWithRawCompilerOptions() throws IOException {
         JavaFile javaFile = new JavaFile();
         javaFile.setPath("foo/" + JAVA_FILE);
-        javaFile.setContent(ResourcesUtils.readResource(
+        javaFile.setContent(ResourcesUtils.readResourceToString(
                 CompilerServiceTest.class,
                 "source/" + JAVA_FILE)
         );

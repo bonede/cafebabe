@@ -1,5 +1,5 @@
 package org.javaexplorer.model.classfile;
 
-interface ConstantInfo {
+public interface ConstantInfo {
     ConstantTag getTag();
 }
