@@ -1,8 +1,14 @@
 package org.javaexplorer.disassembler.disassembler;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Deprecated;
 import org.apache.bcel.classfile.*;
-import org.javaexplorer.model.classfile.*;
+import org.javaexplorer.model.classfile.DisassembledClassFile;
+import org.javaexplorer.model.classfile.annotation.*;
+import org.javaexplorer.model.classfile.attribute.*;
+import org.javaexplorer.model.classfile.constant.*;
+import org.javaexplorer.model.classfile.flag.AccFlag;
+import org.javaexplorer.model.classfile.method.MethodInfo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,6 +52,19 @@ public class Disassembler {
             );
     }
 
+    private MethodInfo getMethodInfo(JavaClass javaClass, Method method){
+        List<AttributeInfo> attributes = Arrays.stream(method.getAttributes())
+                .map(a -> getAttributeInfo(javaClass, a))
+                .collect(Collectors.toList());
+        return new MethodInfo(
+                unmaskFlag(method.getAccessFlags()),
+                method.getNameIndex(),
+                method.getName(),
+                method.getSignatureIndex(),
+                method.getSignature(),
+                attributes
+        );
+    }
     private ConstantMethodrefInfo getConstantMethodRefInfo(ConstantPool constantPool, Constant constant){
         ConstantMethodref constantMethodref = (ConstantMethodref) constant;
         ConstantNameAndTypeInfo nameAndType = getConstantNameAndTypeInfo(constantPool, constantPool.getConstant(constantMethodref.getNameAndTypeIndex()));
@@ -137,11 +156,27 @@ public class Disassembler {
         );
     }
 
+    private ConstantModuleInfo getConstantModuleInfo(ConstantPool constantPool, Constant constant){
+        ConstantModule constantModule = (ConstantModule) constant;
+        return new ConstantModuleInfo(
+                constantModule.getNameIndex(),
+                constantModule.getBytes(constantPool)
+        );
+    }
+
+    private ConstantPackageInfo getConstantPackageInfo(ConstantPool constantPool, Constant constant){
+        ConstantPackage constantPackage = (ConstantPackage) constant;
+        return new ConstantPackageInfo(
+                constantPackage.getNameIndex(),
+                constantPackage.getBytes(constantPool)
+        );
+    }
+
     private ConstantInfo constantInfo(ConstantPool constantPool, Constant constant){
         if(constant == null){
             return null;
         }
-        int tagValue = tagValue(constant.getTag());
+        int tagValue = byteValue(constant.getTag());
         ConstantTag tag = ConstantTag.valueOf(tagValue);
         switch (tag){
             case CONSTANT_Class:
@@ -170,11 +205,15 @@ public class Disassembler {
                 return getConstantMethodTypeInfo(constantPool, constant);
             case CONSTANT_InvokeDynamic:
                 return getConstantInvokeDynamicInfo(constantPool, constant);
+            case CONSTANT_Module:
+                return getConstantModuleInfo(constantPool, constant);
+            case CONSTANT_Package:
+                return getConstantPackageInfo(constantPool, constant);
         }
         throw new RuntimeException("Invalid constant " + tagValue);
     }
 
-    private int tagValue(byte b){
+    private int byteValue(byte b){
         return b & 0xFF;
     }
 
@@ -185,14 +224,267 @@ public class Disassembler {
         disassembledClassFile.setConstantPool(constantPool);
 
     }
-    private void getMethods(JavaClass javaClass, DisassembledClassFile disassembledClassFile){
 
+    private void getMethods(JavaClass javaClass, DisassembledClassFile disassembledClassFile){
+        List<MethodInfo> methodInfos = Arrays.stream(javaClass.getMethods())
+                .map(m -> getMethodInfo(javaClass, m))
+                .collect(Collectors.toList());
+        disassembledClassFile.setMethods(methodInfos);
     }
+
     private void getFields(JavaClass javaClass, DisassembledClassFile disassembledClassFile){
 
     }
-    private void getAttributes(JavaClass javaClass, DisassembledClassFile disassembledClassFile){
 
+    private AttributeInfo getConstantValueAttribute(JavaClass javaClass, Attribute attribute){
+        int constantIndex = ((ConstantValue) attribute).getConstantValueIndex();
+        ConstantInfo constantInfo = constantInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(constantIndex));
+        return new AttributeConstantValue(
+                attribute.getNameIndex(),
+                attribute.getName(),
+                attribute.getLength(),
+                constantIndex,
+                constantInfo
+        );
+    }
+
+    private ExceptionHandler getExceptionHandler(JavaClass javaClass, CodeException codeException){
+        return new ExceptionHandler(
+                codeException.getStartPC(),
+                codeException.getEndPC(),
+                codeException.getHandlerPC(),
+                codeException.getCatchType(),
+                getConstantClassInfo(
+                        javaClass.getConstantPool(),
+                        javaClass.getConstantPool().getConstant(codeException.getCatchType())
+                )
+        );
+    }
+
+    private AttributeInfo getCodeAttribute(JavaClass javaClass, Attribute attribute){
+        Code codeAttribute = (Code) attribute;
+        codeAttribute.getAttributes();
+        List<AttributeInfo> attributes = Arrays.stream(codeAttribute.getAttributes())
+                .map(a -> getAttributeInfo(javaClass, a))
+                .collect(Collectors.toList());
+        List<ExceptionHandler> exceptionHandlers = Arrays.stream(codeAttribute.getExceptionTable())
+                .map(e -> getExceptionHandler(javaClass, e))
+                .collect(Collectors.toList());
+        int[] code = new int[codeAttribute.getCode().length];
+        for(int i = 0; i < code.length; i++){
+            code[i] = byteValue(codeAttribute.getCode()[i]);
+        }
+        return new AttributeCode(
+                attribute.getNameIndex(),
+                attribute.getName(),
+                attribute.getLength(),
+                codeAttribute.getMaxStack(),
+                codeAttribute.getMaxLocals(),
+                code,
+                attributes,
+                exceptionHandlers
+        );
+    }
+
+    private AttributeInfo getLineNumberTableAttribute(JavaClass javaClass, Attribute attribute){
+        LineNumberTable lineNumberTableAttribute = (LineNumberTable) attribute;
+        List<LineNumberInfo> lineNumberTable = Arrays.stream(lineNumberTableAttribute.getLineNumberTable())
+                .map(l -> new LineNumberInfo(l.getStartPC(), l.getLineNumber()))
+                .collect(Collectors.toList());
+        return new AttributeLineNumberTable(
+                attribute.getNameIndex(),
+                attribute.getName(),
+                attribute.getLength(),
+                lineNumberTable
+        );
+    }
+
+    private AttributeInfo getUnknownAttribute(JavaClass javaClass, Attribute attribute){
+        Unknown unknownAttribute = (Unknown) attribute;
+        int[] bytes = new int[unknownAttribute.getBytes().length];
+        for(int i = 0; i < bytes.length; i++){
+            bytes[i] = byteValue(unknownAttribute.getBytes()[i]);
+        }
+        return new AttributeUnknown(
+                unknownAttribute.getNameIndex(),
+                unknownAttribute.getName(),
+                unknownAttribute.getLength(),
+                bytes
+        );
+    }
+
+    private AttributeInfo getSourceFileAttribute(JavaClass javaClass, Attribute attribute){
+        SourceFile sourceFile = (SourceFile) attribute;
+        return new AttributeSourceFile(
+                sourceFile.getNameIndex(),
+                sourceFile.getName(),
+                sourceFile.getLength(),
+                sourceFile.getSourceFileIndex(),
+                sourceFile.getSourceFileName()
+        );
+    }
+
+    public AttributeDeprecated getDeprecatedAttribute(JavaClass javaClass, Attribute attribute){
+        Deprecated deprecated = (Deprecated) attribute;
+        return new AttributeDeprecated(
+                deprecated.getNameIndex(),
+                deprecated.getName(),
+                deprecated.getLength()
+        );
+    }
+    private ElementValueInfo getElementValue(JavaClass javaClass, ElementValue elementValue){
+        if(elementValue instanceof ClassElementValue){
+            ClassElementValue classElement = (ClassElementValue) elementValue;
+            return new ElementValueClass(
+                    classElement.getIndex(),
+                    classElement.getClassString()
+            );
+        }
+        if(elementValue instanceof ArrayElementValue){
+            ArrayElementValue arrayElement = (ArrayElementValue) elementValue;
+            return new ElementValueArray(
+                    Arrays.stream(arrayElement.getElementValuesArray())
+                            .map(e -> getElementValue(javaClass, e))
+                            .collect(Collectors.toList())
+            );
+        }
+        if(elementValue instanceof AnnotationElementValue){
+            AnnotationElementValue annotationElement = (AnnotationElementValue) elementValue;
+            return new ElementValueAnnotation(
+                    getAnnotationInfo(javaClass, annotationElement.getAnnotationEntry())
+            );
+        }
+        if(elementValue instanceof EnumElementValue){
+            EnumElementValue enumElement = (EnumElementValue) elementValue;
+            return new ElementValueEnum(
+                enumElement.getTypeIndex(),
+                enumElement.getEnumTypeString(),
+                enumElement.getValueIndex(),
+                enumElement.getEnumValueString()
+            );
+        }
+        if(elementValue instanceof SimpleElementValue){
+            SimpleElementValue simpleElementValue = (SimpleElementValue) elementValue;
+            switch (simpleElementValue.getElementValueType()){
+                case ElementValue.PRIMITIVE_BYTE: return new ElementValueByte(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueByte()
+                );
+                case ElementValue.PRIMITIVE_CHAR: return new ElementValueChar(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueChar()
+                );
+                case ElementValue.PRIMITIVE_DOUBLE: return new ElementValueDouble(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueDouble()
+                );
+                case ElementValue.PRIMITIVE_FLOAT: return new ElementValueFloat(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueFloat()
+                );
+                case ElementValue.PRIMITIVE_INT: return new ElementValueInt(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueInt()
+                );
+                case ElementValue.PRIMITIVE_LONG: return new ElementValueLong(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueLong()
+                );
+                case ElementValue.PRIMITIVE_SHORT: return new ElementValueShort(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueShort()
+                );
+                case ElementValue.PRIMITIVE_BOOLEAN: return new ElementValueBool(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueBoolean()
+                );
+                case ElementValue.STRING: return new ElementValueString(
+                        simpleElementValue.getIndex(),
+                        simpleElementValue.getValueString()
+                );
+            }
+            throw new RuntimeException("element value type: " + simpleElementValue.getElementValueType());
+        }
+        throw new RuntimeException("Invalid element value type: " + elementValue.getElementValueType());
+    }
+    public ElementValuePairInfo getElementValuePair(JavaClass javaClass, ElementValuePair elementValuePair){
+        return new ElementValuePairInfo(
+                elementValuePair.getNameIndex(),
+                elementValuePair.getNameString(),
+                getElementValue(javaClass, elementValuePair.getValue())
+        );
+    }
+
+    AnnotationInfo getAnnotationInfo(JavaClass javaClass, AnnotationEntry annotationEntry){
+        List<ElementValuePairInfo> elementValuePairs = Arrays.stream(annotationEntry.getElementValuePairs())
+                .map(a -> getElementValuePair(javaClass, a))
+                .collect(Collectors.toList());
+        return new AnnotationInfo(
+                annotationEntry.getTypeIndex(),
+                annotationEntry.getAnnotationType(),
+                elementValuePairs
+        );
+    }
+
+    public AttributeRuntimeVisibleAnnotations getRuntimeVisibleAnnotationsAttribute(JavaClass javaClass, Attribute attribute){
+        RuntimeVisibleAnnotations runtimeVisibleAnnotations = (RuntimeVisibleAnnotations) attribute;
+        List<AnnotationInfo> annotations = Arrays.stream(runtimeVisibleAnnotations.getAnnotationEntries())
+                .map(a -> getAnnotationInfo(javaClass, a))
+                .collect(Collectors.toList());
+        return new AttributeRuntimeVisibleAnnotations(
+                runtimeVisibleAnnotations.getNameIndex(),
+                runtimeVisibleAnnotations.getName(),
+                runtimeVisibleAnnotations.getLength(),
+                annotations
+        );
+    }
+
+    public AttributeRuntimeInvisibleAnnotations getRuntimeInvisibleAnnotationsAttribute(JavaClass javaClass, Attribute attribute){
+        RuntimeInvisibleAnnotations runtimeInvisibleAnnotations = (RuntimeInvisibleAnnotations) attribute;
+        List<AnnotationInfo> annotations = Arrays.stream(runtimeInvisibleAnnotations.getAnnotationEntries())
+                .map(a -> getAnnotationInfo(javaClass, a))
+                .collect(Collectors.toList());
+        return new AttributeRuntimeInvisibleAnnotations(
+                runtimeInvisibleAnnotations.getNameIndex(),
+                runtimeInvisibleAnnotations.getName(),
+                runtimeInvisibleAnnotations.getLength(),
+                annotations
+        );
+    }
+
+    public AttributeInfo getAttributeInfo(JavaClass javaClass, Attribute attribute){
+        if(attribute instanceof ConstantValue){
+            return getConstantValueAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof Code){
+            return getCodeAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof Unknown){
+            return getUnknownAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof SourceFile){
+            return getSourceFileAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof LineNumberTable){
+            return getLineNumberTableAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof Deprecated){
+            return getDeprecatedAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof RuntimeVisibleAnnotations){
+            return getRuntimeVisibleAnnotationsAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof RuntimeInvisibleAnnotations){
+            return getRuntimeInvisibleAnnotationsAttribute(javaClass, attribute);
+        }
+        throw new RuntimeException("Invalid attribute " + attribute.getName());
+    }
+
+    private void getAttributes(JavaClass javaClass, DisassembledClassFile disassembledClassFile){
+        List<AttributeInfo> attributes = Arrays.stream(javaClass.getAttributes())
+                .map(a -> getAttributeInfo(javaClass, a))
+                .collect(Collectors.toList());
+        disassembledClassFile.setAttributes(attributes);
     }
 
     private void getMetaData(JavaClass javaClass, DisassembledClassFile disassembledClassFile){

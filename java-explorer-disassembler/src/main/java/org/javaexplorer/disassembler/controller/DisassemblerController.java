@@ -1,8 +1,8 @@
 package org.javaexplorer.disassembler.controller;
 
 import org.javaexplorer.disassembler.service.DisassemblerService;
-import org.javaexplorer.model.ApiResp;
 import org.javaexplorer.model.DisassembleResult;
+import org.javaexplorer.model.vo.ApiResp;
 import org.javaexplorer.model.vo.DisassembleReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

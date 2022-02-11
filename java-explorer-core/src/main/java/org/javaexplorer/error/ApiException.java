@@ -1,6 +1,6 @@
 package org.javaexplorer.error;
 
-import org.javaexplorer.model.ApiResp;
+import org.javaexplorer.model.vo.ApiResp;
 
 public class ApiException extends RuntimeException{
     private ApiResp apiResp;

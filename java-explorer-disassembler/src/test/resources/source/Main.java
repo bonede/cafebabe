@@ -1,5 +1,6 @@
 import java.io.Serializable;
-
+@Deprecated
+@Anno
 public final class Main extends Object implements Serializable{
     private static int intx = 42;
     public String hello = "hello";

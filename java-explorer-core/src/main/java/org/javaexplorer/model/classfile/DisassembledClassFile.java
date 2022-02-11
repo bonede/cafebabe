@@ -1,6 +1,11 @@
 package org.javaexplorer.model.classfile;
 
 import lombok.Data;
+import org.javaexplorer.model.classfile.attribute.AttributeInfo;
+import org.javaexplorer.model.classfile.constant.ConstantClassInfo;
+import org.javaexplorer.model.classfile.constant.ConstantInfo;
+import org.javaexplorer.model.classfile.flag.AccFlag;
+import org.javaexplorer.model.classfile.method.MethodInfo;
 
 import java.util.List;
 
@@ -15,4 +20,6 @@ public class DisassembledClassFile {
     private List<ConstantClassInfo> interfaces;
     private List<AccFlag> accessFlags;
     private List<ConstantInfo> constantPool;
+    private List<AttributeInfo> attributes;
+    private List<MethodInfo> methods;
 }

@@ -1,9 +1,9 @@
 package org.javaexplorer.compiler.contller;
 
 import org.javaexplorer.compiler.service.CompilerService;
-import org.javaexplorer.model.ApiResp;
 import org.javaexplorer.model.CompileResult;
 import org.javaexplorer.model.CompilerInfo;
+import org.javaexplorer.model.vo.ApiResp;
 import org.javaexplorer.model.vo.CompileReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
