@@ -439,11 +439,15 @@ public class Disassembler {
         );
     }
 
+    private List<AnnotationInfo> getAnnotations(JavaClass javaClass, AnnotationEntry[] annotationEntries){
+        return Arrays.stream(annotationEntries)
+                .map(e -> getAnnotationInfo(javaClass, e))
+                .collect(Collectors.toList());
+    }
+
     public AttributeRuntimeInvisibleAnnotations getRuntimeInvisibleAnnotationsAttribute(JavaClass javaClass, Attribute attribute){
         RuntimeInvisibleAnnotations runtimeInvisibleAnnotations = (RuntimeInvisibleAnnotations) attribute;
-        List<AnnotationInfo> annotations = Arrays.stream(runtimeInvisibleAnnotations.getAnnotationEntries())
-                .map(a -> getAnnotationInfo(javaClass, a))
-                .collect(Collectors.toList());
+        List<AnnotationInfo> annotations = getAnnotations(javaClass, runtimeInvisibleAnnotations.getAnnotationEntries());
         return new AttributeRuntimeInvisibleAnnotations(
                 runtimeInvisibleAnnotations.getNameIndex(),
                 runtimeInvisibleAnnotations.getName(),
@@ -451,7 +455,76 @@ public class Disassembler {
                 annotations
         );
     }
+    public AttributeRuntimeInvisibleParameterAnnotations getRuntimeInvisibleParameterAnnotationsAttribute(JavaClass javaClass, Attribute attribute){
+        RuntimeInvisibleParameterAnnotations runtimeInvisibleParameterAnnotations = (RuntimeInvisibleParameterAnnotations) attribute;
+        List<ParameterAnnotationInfo> annotations = Arrays.stream(runtimeInvisibleParameterAnnotations.getParameterAnnotationTable())
+                .map(p -> new ParameterAnnotationInfo(getAnnotations(javaClass, p.getAnnotationEntries())))
+                .collect(Collectors.toList());
+        return new AttributeRuntimeInvisibleParameterAnnotations(
+                runtimeInvisibleParameterAnnotations.getNameIndex(),
+                runtimeInvisibleParameterAnnotations.getName(),
+                runtimeInvisibleParameterAnnotations.getLength(),
+                annotations
+        );
+    }
 
+    public AttributeRuntimeVisibleParameterAnnotations getRuntimeVisibleParameterAnnotationsAttribute(JavaClass javaClass, Attribute attribute){
+        RuntimeVisibleParameterAnnotations runtimeInvisibleParameterAnnotations = (RuntimeVisibleParameterAnnotations) attribute;
+        List<ParameterAnnotationInfo> annotations = Arrays.stream(runtimeInvisibleParameterAnnotations.getParameterAnnotationTable())
+                .map(p -> new ParameterAnnotationInfo(getAnnotations(javaClass, p.getAnnotationEntries())))
+                .collect(Collectors.toList());
+        return new AttributeRuntimeVisibleParameterAnnotations(
+                runtimeInvisibleParameterAnnotations.getNameIndex(),
+                runtimeInvisibleParameterAnnotations.getName(),
+                runtimeInvisibleParameterAnnotations.getLength(),
+                annotations
+        );
+    }
+
+    private AttributeInfo getSignatureAttribute(JavaClass javaClass, Attribute attribute){
+        Signature signature = (Signature) attribute;
+        return new AttributeSignature(
+                signature.getNameIndex(),
+                signature.getName(),
+                signature.getLength(),
+                signature.getSignatureIndex(),
+                signature.getSignature()
+        );
+    }
+
+    public AttributeAnnotationDefaultInfo getAnnotationDefaultAttribute(JavaClass javaClass, Attribute attribute){
+        AnnotationDefault annotationDefault = (AnnotationDefault) attribute;
+        return new AttributeAnnotationDefaultInfo(
+                annotationDefault.getNameIndex(),
+                annotationDefault.getName(),
+                annotationDefault.getLength(),
+                getElementValue(javaClass, annotationDefault.getDefaultValue())
+        );
+    }
+    public AttributeStackMapTable getStackMapTableAttribute(JavaClass javaClass, Attribute attribute){
+        StackMap stackMap = (StackMap) attribute;
+        List<StackMapFrame> stackFrames = Arrays.stream(stackMap.getStackMap()).map(
+                e -> {
+                    List<StackMapTypeInfo> typeOfLocals = Arrays.stream(e.getTypesOfLocals())
+                            .map(t -> new StackMapTypeInfo(t.getType(), t.getIndex()))
+                            .collect(Collectors.toList());
+                    List<StackMapTypeInfo> typeOfStackItems = Arrays.stream(e.getTypesOfStackItems())
+                            .map(t -> new StackMapTypeInfo(t.getType(), t.getIndex()))
+                            .collect(Collectors.toList());
+                    return new StackMapFrame(
+                            e.getFrameType(),
+                            e.getByteCodeOffset(),
+                            typeOfLocals,
+                            typeOfStackItems
+                    );
+                }).collect(Collectors.toList());
+        return new AttributeStackMapTable(
+                attribute.getNameIndex(),
+                attribute.getName(),
+                attribute.getLength(),
+                stackFrames
+        );
+    }
     public AttributeInfo getAttributeInfo(JavaClass javaClass, Attribute attribute){
         if(attribute instanceof ConstantValue){
             return getConstantValueAttribute(javaClass, attribute);
@@ -460,6 +533,8 @@ public class Disassembler {
             return getCodeAttribute(javaClass, attribute);
         }
         if(attribute instanceof Unknown){
+            // TODO handle RuntimeVisibleTypeAnnotations and RuntimeInvisibleTypeAnnotations
+            // SPEC: https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.20
             return getUnknownAttribute(javaClass, attribute);
         }
         if(attribute instanceof SourceFile){
@@ -476,6 +551,21 @@ public class Disassembler {
         }
         if(attribute instanceof RuntimeInvisibleAnnotations){
             return getRuntimeInvisibleAnnotationsAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof RuntimeInvisibleParameterAnnotations){
+            return getRuntimeInvisibleParameterAnnotationsAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof RuntimeVisibleParameterAnnotations){
+            return getRuntimeVisibleParameterAnnotationsAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof Signature){
+            return getSignatureAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof AnnotationDefault){
+            return getAnnotationDefaultAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof StackMap){
+            return getStackMapTableAttribute(javaClass, attribute);
         }
         throw new RuntimeException("Invalid attribute " + attribute.getName());
     }

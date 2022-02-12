@@ -12,9 +12,17 @@ import java.io.IOException;
 class DisassemblerTest {
 
     @Test
-    void disassemble() throws IOException {
+    void disassembleClass() throws IOException {
         Disassembler disassembler = new Disassembler();
         byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main.class");
+        DisassembledClassFile result = disassembler.disassemble(classBinary);
+        log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
+    }
+
+    @Test
+    void disassembleAnnotation() throws IOException {
+        Disassembler disassembler = new Disassembler();
+        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Foo.class");
         DisassembledClassFile result = disassembler.disassemble(classBinary);
         log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
     }

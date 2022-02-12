@@ -24,6 +24,8 @@ bootJar {
 
 dependencies {
 
+    implementation 'org.javassist:javassist:3.28.0-GA'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     annotationProcessor 'org.projectlombok:lombok'
