@@ -7,6 +7,7 @@ import org.javaexplorer.model.classfile.DisassembledClassFile;
 import org.javaexplorer.model.classfile.annotation.*;
 import org.javaexplorer.model.classfile.attribute.*;
 import org.javaexplorer.model.classfile.constant.*;
+import org.javaexplorer.model.classfile.field.FieldInfo;
 import org.javaexplorer.model.classfile.flag.AccFlag;
 import org.javaexplorer.model.classfile.method.MethodInfo;
 
@@ -37,7 +38,7 @@ public class Disassembler {
         ConstantClass constantClass = (ConstantClass) constant;
         return new ConstantClassInfo(
                 constantClass.getNameIndex(),
-                getConstantUtf8Info(constantPool.getConstant(constantClass.getNameIndex())).toString()
+                getConstantUtf8Info(constantPool.getConstant(constantClass.getNameIndex())).getValue()
         );
     }
 
@@ -82,7 +83,7 @@ public class Disassembler {
                 constantInterfaceMethodref.getClassIndex(),
                 constantInterfaceMethodref.getNameAndTypeIndex(),
                 constantPool.getConstantString(constantInterfaceMethodref.getClassIndex(), Const.CONSTANT_Class),
-                constantPool.getConstantString(constantInterfaceMethodref.getNameAndTypeIndex(), Const.CONSTANT_NameAndType)
+                getConstantNameAndTypeInfo(constantPool, constantPool.getConstant(constantInterfaceMethodref.getNameAndTypeIndex())).toString()
         );
     }
 
@@ -141,7 +142,7 @@ public class Disassembler {
         ConstantMethodType constantMethodType = (ConstantMethodType) constant;
         return new ConstantMethodTypeInfo(
                 constantMethodType.getDescriptorIndex(),
-                constantPool.getConstantString(constantMethodType.getDescriptorIndex(), Const.CONSTANT_Utf8)
+                getConstantUtf8Info(constantPool.getConstant(constantMethodType.getDescriptorIndex())).getValue()
         );
     }
 
@@ -231,9 +232,24 @@ public class Disassembler {
                 .collect(Collectors.toList());
         disassembledClassFile.setMethods(methodInfos);
     }
-
+    private FieldInfo getField(JavaClass javaClass, Field field){
+        List<AttributeInfo> attributes = Arrays.stream(field.getAttributes())
+                .map(a -> getAttributeInfo(javaClass, a))
+                .collect(Collectors.toList());
+        return new FieldInfo(
+                unmaskFlag(field.getAccessFlags()),
+                field.getNameIndex(),
+                field.getName(),
+                field.getSignatureIndex(),
+                field.getSignature(),
+                attributes
+        );
+    }
     private void getFields(JavaClass javaClass, DisassembledClassFile disassembledClassFile){
-
+        List<FieldInfo> fields = Arrays.stream(javaClass.getFields())
+                .map(f -> getField(javaClass, f))
+                .collect(Collectors.toList());
+        disassembledClassFile.setFields(fields);
     }
 
     private AttributeInfo getConstantValueAttribute(JavaClass javaClass, Attribute attribute){
@@ -525,6 +541,146 @@ public class Disassembler {
                 stackFrames
         );
     }
+    public AttributeExceptions getStackExceptionTableAttribute(JavaClass javaClass, Attribute attribute){
+        ExceptionTable exceptionTable = (ExceptionTable) attribute;
+        List<ConstantClassInfo> classInfos = Arrays.stream(exceptionTable.getExceptionIndexTable())
+                .mapToObj(i -> getConstantClassInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(i)))
+                .collect(Collectors.toList());
+        return new AttributeExceptions(
+                exceptionTable.getNameIndex(),
+                exceptionTable.getName(),
+                exceptionTable.getLength(),
+                classInfos
+        );
+    }
+
+    private InnerClassInfo getInnerClassInfo(JavaClass javaClass, InnerClass innerClass){
+        String innerClassName = getConstantClassInfo(
+                javaClass.getConstantPool(),
+                javaClass.getConstantPool().getConstant(innerClass.getInnerClassIndex())
+        ).getName();
+        String outerClassName = innerClass.getOuterClassIndex() == 0 ? null :
+                getConstantClassInfo(
+                        javaClass.getConstantPool(),
+                        javaClass.getConstantPool().getConstant(innerClass.getOuterClassIndex())
+                ).getName();
+        String innerName = innerClass.getOuterClassIndex() == 0 ? null :
+                getConstantClassInfo(
+                        javaClass.getConstantPool(),
+                        javaClass.getConstantPool().getConstant(innerClass.getOuterClassIndex())
+                ).getName();
+        return new InnerClassInfo(
+                innerClass.getInnerClassIndex(),
+                innerClassName,
+                innerClass.getOuterClassIndex(),
+                outerClassName,
+                innerClass.getInnerNameIndex(),
+                innerName,
+                unmaskFlag(innerClass.getInnerAccessFlags())
+        );
+    }
+
+    public AttributeInnerClasses getInnerClassesAttribute(JavaClass javaClass, Attribute attribute){
+        InnerClasses innerClasses = (InnerClasses) attribute;
+        List<InnerClassInfo> innerClassInfos = Arrays.stream(innerClasses.getInnerClasses())
+                .map(i -> getInnerClassInfo(javaClass, i))
+                .collect(Collectors.toList());
+        return new AttributeInnerClasses(
+                innerClasses.getNameIndex(),
+                innerClasses.getName(),
+                innerClasses.getLength(),
+                innerClassInfos
+        );
+    }
+
+    public AttributeEnclosingMethod getEnclosingMethodAttribute(JavaClass javaClass, Attribute attribute){
+        EnclosingMethod enclosingMethod = (EnclosingMethod) attribute;
+        return new AttributeEnclosingMethod(
+               enclosingMethod.getNameIndex(),
+                enclosingMethod.getName(),
+                enclosingMethod.getLength(),
+                enclosingMethod.getEnclosingClassIndex(),
+                getConstantClassInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(((EnclosingMethod) attribute).getEnclosingClassIndex())).getName(),
+                enclosingMethod.getEnclosingMethodIndex(),
+                getConstantNameAndTypeInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(enclosingMethod.getEnclosingMethodIndex())).toString()
+        );
+    }
+
+    public AttributeSynthetic getSyntheticAttribute(JavaClass javaClass, Attribute attribute){
+        Synthetic synthetic = (Synthetic) attribute;
+        return new AttributeSynthetic(
+                synthetic.getNameIndex(),
+                synthetic.getName(),
+                synthetic.getLength()
+        );
+    }
+    public LocalVariableInfo getLocalVariable(JavaClass javaClass, LocalVariable localVariable){
+        return new LocalVariableInfo(
+                localVariable.getStartPC(),
+                localVariable.getLength(),
+                localVariable.getNameIndex(),
+                localVariable.getName(),
+                localVariable.getSignatureIndex(),
+                localVariable.getSignature(),
+                localVariable.getIndex()
+        );
+    }
+
+    public AttributeLocalVariableTable getLocalVariableTableAttribute(JavaClass javaClass, Attribute attribute){
+        LocalVariableTable localVariableTable = (LocalVariableTable) attribute;
+        List<LocalVariableInfo> localVariableInfos = Arrays.stream(localVariableTable.getLocalVariableTable())
+                .map(l -> getLocalVariable(javaClass, l))
+                .collect(Collectors.toList());
+        return new AttributeLocalVariableTable(
+                localVariableTable.getNameIndex(),
+                localVariableTable.getName(),
+                localVariableTable.getLength(),
+                localVariableInfos
+        );
+    }
+
+    public LocalVariableTypeInfo getLocalVariableType(JavaClass javaClass, LocalVariable localVariable){
+        return new LocalVariableTypeInfo(
+                localVariable.getStartPC(),
+                localVariable.getLength(),
+                localVariable.getNameIndex(),
+                localVariable.getName(),
+                localVariable.getSignatureIndex(),
+                localVariable.getSignature(),
+                localVariable.getIndex()
+        );
+    }
+    public AttributeLocalVariableTypeTable getLocalVariableTypeTableAttribute(JavaClass javaClass, Attribute attribute){
+        LocalVariableTypeTable localVariableTypeTable = (LocalVariableTypeTable) attribute;
+        List<LocalVariableTypeInfo> localVariableInfos = Arrays.stream(localVariableTypeTable.getLocalVariableTypeTable())
+                .map(l -> getLocalVariableType(javaClass, l))
+                .collect(Collectors.toList());
+        return new AttributeLocalVariableTypeTable(
+                localVariableTypeTable.getNameIndex(),
+                localVariableTypeTable.getName(),
+                localVariableTypeTable.getLength(),
+                localVariableInfos
+        );
+    }
+    private BootstrapMethodInfo getBootStrapMethod(JavaClass javaClass, BootstrapMethod bootstrapMethod){
+        return new BootstrapMethodInfo(
+                bootstrapMethod.getBootstrapMethodRef(),
+                bootstrapMethod.getBootstrapArguments()
+        );
+    }
+    public AttributeBootstrapMethods getBootstrapMethodsAttribute(JavaClass javaClass, Attribute attribute){
+        BootstrapMethods bootstrapMethods = (BootstrapMethods) attribute;
+        List<BootstrapMethodInfo> bootstrapMethodInfos = Arrays.stream(bootstrapMethods.getBootstrapMethods())
+                .map(m -> getBootStrapMethod(javaClass, m))
+                .collect(Collectors.toList());
+        return new AttributeBootstrapMethods(
+                bootstrapMethods.getNameIndex(),
+                bootstrapMethods.getName(),
+                bootstrapMethods.getLength(),
+                bootstrapMethodInfos
+        );
+    }
+
     public AttributeInfo getAttributeInfo(JavaClass javaClass, Attribute attribute){
         if(attribute instanceof ConstantValue){
             return getConstantValueAttribute(javaClass, attribute);
@@ -535,6 +691,9 @@ public class Disassembler {
         if(attribute instanceof Unknown){
             // TODO handle RuntimeVisibleTypeAnnotations and RuntimeInvisibleTypeAnnotations
             // SPEC: https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.20
+
+            // TODO handle SourceDebugExtension
+            // SPEC: https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.11
             return getUnknownAttribute(javaClass, attribute);
         }
         if(attribute instanceof SourceFile){
@@ -567,6 +726,30 @@ public class Disassembler {
         if(attribute instanceof StackMap){
             return getStackMapTableAttribute(javaClass, attribute);
         }
+        if(attribute instanceof ExceptionTable){
+            return getStackExceptionTableAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof InnerClasses){
+            return getInnerClassesAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof EnclosingMethod){
+            return getEnclosingMethodAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof Synthetic){
+            return getSyntheticAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof LocalVariableTable){
+            return getLocalVariableTableAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof LocalVariableTypeTable){
+            return getLocalVariableTypeTableAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof BootstrapMethods){
+            return getBootstrapMethodsAttribute(javaClass, attribute);
+        }
+//        if(attribute instanceof MethodParameters){
+//            return getMethodParametersAttribute(javaClass, attribute);
+//        }
         throw new RuntimeException("Invalid attribute " + attribute.getName());
     }
 

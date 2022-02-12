@@ -4,6 +4,7 @@ import lombok.Data;
 import org.javaexplorer.model.classfile.attribute.AttributeInfo;
 import org.javaexplorer.model.classfile.constant.ConstantClassInfo;
 import org.javaexplorer.model.classfile.constant.ConstantInfo;
+import org.javaexplorer.model.classfile.field.FieldInfo;
 import org.javaexplorer.model.classfile.flag.AccFlag;
 import org.javaexplorer.model.classfile.method.MethodInfo;
 
@@ -22,4 +23,5 @@ public class DisassembledClassFile {
     private List<ConstantInfo> constantPool;
     private List<AttributeInfo> attributes;
     private List<MethodInfo> methods;
+    private List<FieldInfo> fields;
 }

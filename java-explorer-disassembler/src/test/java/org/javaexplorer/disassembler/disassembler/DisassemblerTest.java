@@ -26,4 +26,28 @@ class DisassemblerTest {
         DisassembledClassFile result = disassembler.disassemble(classBinary);
         log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
     }
+
+    @Test
+    void disassembleSubClass() throws IOException {
+        Disassembler disassembler = new Disassembler();
+        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main$Sub.class");
+        DisassembledClassFile result = disassembler.disassemble(classBinary);
+        log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
+    }
+
+    @Test
+    void disassembleAnonymousClass() throws IOException {
+        Disassembler disassembler = new Disassembler();
+        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main$1.class");
+        DisassembledClassFile result = disassembler.disassemble(classBinary);
+        log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
+    }
+
+    @Test
+    void disassembleInnerClass() throws IOException {
+        Disassembler disassembler = new Disassembler();
+        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main$Inner.class");
+        DisassembledClassFile result = disassembler.disassemble(classBinary);
+        log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
+    }
 }

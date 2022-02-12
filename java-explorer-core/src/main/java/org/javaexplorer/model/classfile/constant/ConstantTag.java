@@ -16,7 +16,7 @@ public enum ConstantTag {
     CONSTANT_MethodType(16),
     CONSTANT_InvokeDynamic(18),
     CONSTANT_Module(19),
-    CONSTANT_Package(18);
+    CONSTANT_Package(20);
     private int value;
     ConstantTag(int i) {
         this.value = i;
@@ -34,6 +34,11 @@ public enum ConstantTag {
             case 6: return CONSTANT_Double;
             case 12: return CONSTANT_NameAndType;
             case 1: return CONSTANT_Utf8;
+            case 15: return CONSTANT_MethodHandle;
+            case 16: return CONSTANT_MethodType;
+            case 18: return CONSTANT_InvokeDynamic;
+            case 19: return CONSTANT_Module;
+            case 20: return CONSTANT_Package;
         }
         throw new RuntimeException("Invalid constant tag " + value);
     }
