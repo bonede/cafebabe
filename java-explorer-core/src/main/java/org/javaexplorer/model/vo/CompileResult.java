@@ -1,6 +1,7 @@
-package org.javaexplorer.model;
+package org.javaexplorer.model.vo;
 
 import lombok.Data;
+import org.javaexplorer.model.ClassFile;
 
 import java.util.List;
 

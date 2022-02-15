@@ -1,8 +1,8 @@
 package org.javaexplorer.compiler.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.javaexplorer.model.CompileResult;
 import org.javaexplorer.model.JavaFile;
+import org.javaexplorer.model.vo.CompileResult;
 import org.javaexplorer.utils.ResourcesUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

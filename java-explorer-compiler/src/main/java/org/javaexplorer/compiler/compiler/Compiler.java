@@ -1,8 +1,8 @@
 package org.javaexplorer.compiler.compiler;
 
 import lombok.Data;
-import org.javaexplorer.model.CompileResult;
 import org.javaexplorer.model.JavaFile;
+import org.javaexplorer.model.vo.CompileResult;
 
 import java.util.List;
 

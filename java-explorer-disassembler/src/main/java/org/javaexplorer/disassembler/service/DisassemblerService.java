@@ -1,8 +1,8 @@
 package org.javaexplorer.disassembler.service;
 
 import org.javaexplorer.model.ClassFile;
-import org.javaexplorer.model.DisassembleResult;
 import org.javaexplorer.model.classfile.DisassembledClassFile;
+import org.javaexplorer.model.vo.DisassembleResult;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

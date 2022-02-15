@@ -1,2 +1,4 @@
+server:
+  port: 8081
 compiler:
   nickname: openjdk8

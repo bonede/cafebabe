@@ -1,0 +1,4 @@
+app:
+  url: https://www.javaexplorer.org
+disassembler:
+  url: http://disassembler:8080

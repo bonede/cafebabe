@@ -1,9 +1,9 @@
-package org.javaexplorer.disassembler.controller;
+package org.javaexplorer.web.controller;
 
-import org.javaexplorer.disassembler.service.DisassemblerService;
 import org.javaexplorer.model.vo.ApiResp;
-import org.javaexplorer.model.vo.DisassembleReq;
-import org.javaexplorer.model.vo.DisassembleResult;
+import org.javaexplorer.model.vo.ExplorerReq;
+import org.javaexplorer.model.vo.ExplorerResult;
+import org.javaexplorer.web.service.ExplorerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/disassemble")
+@RequestMapping("/explorer")
 @Validated
-public class DisassemblerController {
+public class ExplorerController {
     @Autowired
-    private DisassemblerService disassemblerService;
+    private ExplorerService explorerService;
 
     @PostMapping
-    public ApiResp<DisassembleResult> disassemble(
-            @RequestBody @Valid DisassembleReq disassembleReq) {
+    public ApiResp<ExplorerResult> explorer(
+            @RequestBody @Valid ExplorerReq explorerReq) {
         return ApiResp.ok(
-                disassemblerService.disassemble(disassembleReq.getClassFiles())
+                explorerService.explore(explorerReq)
         );
     }
 }

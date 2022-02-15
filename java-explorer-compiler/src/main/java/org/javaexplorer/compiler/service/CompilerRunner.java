@@ -1,7 +1,7 @@
 package org.javaexplorer.compiler.service;
 
-import org.javaexplorer.model.CompileResult;
 import org.javaexplorer.model.JavaFile;
+import org.javaexplorer.model.vo.CompileResult;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -3,9 +3,9 @@ package org.javaexplorer.compiler.service;
 import lombok.extern.slf4j.Slf4j;
 import org.javaexplorer.compiler.model.CompilerConfig;
 import org.javaexplorer.error.ApiException;
-import org.javaexplorer.model.CompileResult;
 import org.javaexplorer.model.CompilerInfo;
 import org.javaexplorer.model.JavaFile;
+import org.javaexplorer.model.vo.CompileResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

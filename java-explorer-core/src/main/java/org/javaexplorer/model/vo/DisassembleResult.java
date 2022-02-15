@@ -1,4 +1,4 @@
-package org.javaexplorer.model;
+package org.javaexplorer.model.vo;
 
 import lombok.Data;
 import org.javaexplorer.model.classfile.DisassembledClassFile;

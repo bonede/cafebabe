@@ -14,7 +14,9 @@ public class ApiResp<T> {
         apiResp.setCode("err");
         return apiResp;
     }
-
+    public boolean isSuccess(){
+        return "ok".equals(code);
+    }
     public static ApiResp error(String msg, String... args){
         ApiResp apiResp = new ApiResp();
         apiResp.setMsg(String.format(msg, args));
@@ -22,7 +24,7 @@ public class ApiResp<T> {
         return apiResp;
     }
 
-    public  static <T> ApiResp ok(T data){
+    public static <T> ApiResp ok(T data){
         ApiResp apiResp = new ApiResp();
         apiResp.setData(data);
         apiResp.setCode("ok");

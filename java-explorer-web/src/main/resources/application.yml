@@ -1,0 +1,6 @@
+app:
+  url: http://locahost:8080
+compiler:
+  url: http://localhost:8081
+disassembler:
+  url: http://localhost:8082
