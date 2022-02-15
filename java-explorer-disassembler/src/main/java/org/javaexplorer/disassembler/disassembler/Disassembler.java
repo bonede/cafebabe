@@ -3,12 +3,15 @@ package org.javaexplorer.disassembler.disassembler;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Deprecated;
 import org.apache.bcel.classfile.*;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.javaexplorer.error.ApiException;
 import org.javaexplorer.model.classfile.DisassembledClassFile;
 import org.javaexplorer.model.classfile.annotation.*;
+import org.javaexplorer.model.classfile.attribute.MethodParameter;
 import org.javaexplorer.model.classfile.attribute.*;
 import org.javaexplorer.model.classfile.constant.*;
 import org.javaexplorer.model.classfile.field.FieldInfo;
-import org.javaexplorer.model.classfile.flag.AccFlag;
+import org.javaexplorer.model.classfile.flag.*;
 import org.javaexplorer.model.classfile.method.MethodInfo;
 
 import java.io.ByteArrayInputStream;
@@ -58,7 +61,7 @@ public class Disassembler {
                 .map(a -> getAttributeInfo(javaClass, a))
                 .collect(Collectors.toList());
         return new MethodInfo(
-                unmaskFlag(method.getAccessFlags()),
+                unmaskAccFlag(method.getAccessFlags()),
                 method.getNameIndex(),
                 method.getName(),
                 method.getSignatureIndex(),
@@ -237,7 +240,7 @@ public class Disassembler {
                 .map(a -> getAttributeInfo(javaClass, a))
                 .collect(Collectors.toList());
         return new FieldInfo(
-                unmaskFlag(field.getAccessFlags()),
+                unmaskAccFlag(field.getAccessFlags()),
                 field.getNameIndex(),
                 field.getName(),
                 field.getSignatureIndex(),
@@ -576,7 +579,7 @@ public class Disassembler {
                 outerClassName,
                 innerClass.getInnerNameIndex(),
                 innerName,
-                unmaskFlag(innerClass.getInnerAccessFlags())
+                unmaskAccFlag(innerClass.getInnerAccessFlags())
         );
     }
 
@@ -680,7 +683,219 @@ public class Disassembler {
                 bootstrapMethodInfos
         );
     }
+    public MethodParameter getMethodParameter(JavaClass javaClass, org.apache.bcel.classfile.MethodParameter methodParameter){
+        return new MethodParameter(
+                methodParameter.getNameIndex(),
+                methodParameter.getParameterName(javaClass.getConstantPool()),
+                unmaskAccFlag(methodParameter.getAccessFlags())
+        );
+    }
 
+    public AttributeMethodParameters getMethodParametersAttribute(JavaClass javaClass, Attribute attribute){
+        MethodParameters methodParameters = (MethodParameters) attribute;
+        List<MethodParameter> bootstrapMethodInfos = Arrays.stream(methodParameters.getParameters())
+                .map(m -> getMethodParameter(javaClass, m))
+                .collect(Collectors.toList());
+        return new AttributeMethodParameters(
+                methodParameters.getNameIndex(),
+                methodParameters.getName(),
+                methodParameters.getLength(),
+                bootstrapMethodInfos
+        );
+    }
+
+    List<ModFlag> unmaskModFlags(int flags){
+        List<ModFlag> modFlags = new ArrayList<>();
+        for(ModFlag modFlag : ModFlag.values()){
+            if((flags & modFlag.getValue()) > 0){
+                modFlags.add(modFlag);
+            }
+        }
+        return modFlags;
+    }
+
+    List<ExpFlag> unmaskExpFlags(int flags){
+        List<ExpFlag> expFlags = new ArrayList<>();
+        for(ExpFlag expFlag : ExpFlag.values()){
+            if((flags & expFlag.getValue()) > 0){
+                expFlags.add(expFlag);
+            }
+        }
+        return expFlags;
+    }
+
+    List<OpenFlag> unmaskOpenFlags(int flags){
+        List<OpenFlag> openFlags = new ArrayList<>();
+        for(OpenFlag openFlag : OpenFlag.values()){
+            if((flags & openFlag.getValue()) > 0){
+                openFlags.add(openFlag);
+            }
+        }
+        return openFlags;
+    }
+
+    List<ReqFlag> unmaskReqFlags(int flags){
+        List<ReqFlag> reqFlags = new ArrayList<>();
+        for(ReqFlag reqFlag : ReqFlag.values()){
+            if((flags & reqFlag.getValue()) > 0){
+                reqFlags.add(reqFlag);
+            }
+        }
+        return reqFlags;
+    }
+
+    RequireInfo getRequireInfo(JavaClass javaClass, ModuleRequires moduleRequires) {
+        try {
+            int requiresIndex = (int) FieldUtils.readField(moduleRequires, "requiresIndex", true);
+            int requiresFlags = (int) FieldUtils.readField(moduleRequires, "requiresFlags", true);
+            int requiresVersionIndex = (int) FieldUtils.readField(moduleRequires, "requiresVersionIndex", true);
+            return new RequireInfo(
+                    requiresIndex,
+                    getConstantModuleInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(requiresIndex)).getName(),
+                    requiresVersionIndex,
+                    getConstantUtf8Info(javaClass.getConstantPool().getConstant(requiresVersionIndex)).getValue(),
+                    unmaskReqFlags(requiresFlags)
+            );
+        }catch (IllegalAccessException e){
+            throw ApiException.error("Invalid BCEL: " + e.getMessage());
+        }
+    }
+
+    ExportInfo getExportInfo(JavaClass javaClass, ModuleExports moduleExports) {
+        try {
+            int exportsIndex = (int) FieldUtils.readField(moduleExports, "exportsIndex", true);
+            int exportsFlags = (int) FieldUtils.readField(moduleExports, "exportsFlags", true);
+            int[] exportsTo = (int[]) FieldUtils.readField(moduleExports, "exportsToIndex", true);
+            return new ExportInfo(
+                    exportsIndex,
+                    getConstantPackageInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(exportsIndex)).getName(),
+                    unmaskExpFlags(exportsFlags),
+                    exportsTo
+            );
+        }catch (IllegalAccessException e){
+            throw ApiException.error("Invalid BCEL: " + e.getMessage());
+        }
+    }
+
+    OpenInfo getOpenInfo(JavaClass javaClass, ModuleOpens moduleOpens) {
+        try {
+            int opensIndex = (int) FieldUtils.readField(moduleOpens, "opensIndex", true);
+            int opensFlags = (int) FieldUtils.readField(moduleOpens, "opensFlags", true);
+            int[] opensTo = (int[]) FieldUtils.readField(moduleOpens, "opensTo", true);
+            return new OpenInfo(
+                    opensIndex,
+                    getConstantPackageInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(opensIndex)).getName(),
+                    unmaskOpenFlags(opensFlags),
+                    opensTo
+            );
+        }catch (IllegalAccessException e){
+            throw ApiException.error("Invalid BCEL: " + e.getMessage());
+        }
+    }
+
+    ProvideInfo getProvideInfo(JavaClass javaClass, ModuleProvides moduleProvides) {
+        try {
+            int providesIndex = (int) FieldUtils.readField(moduleProvides, "providesIndex", true);
+            int[] providesWith = (int[]) FieldUtils.readField(moduleProvides, "providesWith", true);
+            return new ProvideInfo(
+                    providesIndex,
+                    getConstantClassInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(providesIndex)).getName(),
+                    providesWith
+            );
+        }catch (IllegalAccessException e){
+            throw ApiException.error("Invalid BCEL: " + e.getMessage());
+        }
+    }
+
+
+    public AttributeModule getModuleAttribute(JavaClass javaClass, Attribute attribute){
+        Module module = (Module) attribute;
+        try {
+            int moduleNameIndex = (int) FieldUtils.readField(module, "moduleNameIndex", true);
+            int moduleFlags = (int) FieldUtils.readField(module, "moduleFlags", true);
+            int moduleVersionIndex = (int) FieldUtils.readField(module, "moduleVersionIndex", true);
+            String moduleVersion = moduleVersionIndex > 0 ?
+                    getConstantUtf8Info(javaClass.getConstantPool().getConstant(moduleVersionIndex)).getValue()
+                    : "";
+            int[] usesIndices = (int[]) FieldUtils.readField(module, "usesIndex", true);
+            List<RequireInfo> requireInfos = Arrays.stream(module.getRequiresTable())
+                    .map(r -> getRequireInfo(javaClass, r))
+                    .collect(Collectors.toList());
+            List<ExportInfo> exportInfos = Arrays.stream(module.getExportsTable())
+                    .map(r -> getExportInfo(javaClass, r))
+                    .collect(Collectors.toList());
+            List<OpenInfo> openInfos = Arrays.stream(module.getOpensTable())
+                    .map(r -> getOpenInfo(javaClass, r))
+                    .collect(Collectors.toList());
+            List<ProvideInfo> provideInfos = Arrays.stream(module.getProvidesTable())
+                    .map(r -> getProvideInfo(javaClass, r))
+                    .collect(Collectors.toList());
+            return new AttributeModule(
+                    module.getNameIndex(),
+                    module.getName(),
+                    module.getLength(),
+                    moduleNameIndex,
+                    getConstantModuleInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(moduleNameIndex)).getName(),
+                    unmaskModFlags(moduleFlags),
+                    moduleVersionIndex,
+                    moduleVersion,
+                    requireInfos,
+                    exportInfos,
+                    openInfos,
+                    usesIndices,
+                    provideInfos
+            );
+        } catch (IllegalAccessException e) {
+            throw ApiException.error("Invalid BCEL: " + e.getMessage());
+        }
+
+    }
+    private AttributeNestMembers getNestMembersAttribute(JavaClass javaClass, Attribute attribute){
+        NestMembers nestMembers = (NestMembers) attribute;
+        try{
+            int[] classes = (int[]) FieldUtils.readField(nestMembers, "classes", true);
+            return new AttributeNestMembers(
+                    nestMembers.getNameIndex(),
+                    nestMembers.getName(),
+                    nestMembers.getLength(),
+                    classes
+            );
+        } catch (IllegalAccessException e) {
+            throw ApiException.error("Invalid BCEL: " + e.getMessage());
+        }
+    }
+
+    private AttributeNestHost getNestHostAttribute(JavaClass javaClass, Attribute attribute){
+        NestHost nestHost = (NestHost) attribute;
+        return new AttributeNestHost(
+                nestHost.getNameIndex(),
+                nestHost.getName(),
+                nestHost.getLength(),
+                nestHost.getHostClassIndex(),
+                getConstantClassInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(nestHost.getHostClassIndex())).getName()
+        );
+    }
+
+    private AttributeModuleMainClass getModuleMainClassAttribute(JavaClass javaClass, Attribute attribute){
+        ModuleMainClass moduleMainClass = (ModuleMainClass) attribute;
+        return new AttributeModuleMainClass(
+                moduleMainClass.getNameIndex(),
+                moduleMainClass.getName(),
+                moduleMainClass.getLength(),
+                moduleMainClass.getHostClassIndex(),
+                getConstantClassInfo(javaClass.getConstantPool(), javaClass.getConstantPool().getConstant(moduleMainClass.getHostClassIndex())).getName()
+        );
+    }
+
+    private AttributeModulePackages getModulePackagesAttribute(JavaClass javaClass, Attribute attribute){
+        ModulePackages modulePackages = (ModulePackages) attribute;
+        return new AttributeModulePackages(
+                modulePackages.getNameIndex(),
+                modulePackages.getName(),
+                modulePackages.getLength(),
+                modulePackages.getPackageIndexTable()
+        );
+    }
     public AttributeInfo getAttributeInfo(JavaClass javaClass, Attribute attribute){
         if(attribute instanceof ConstantValue){
             return getConstantValueAttribute(javaClass, attribute);
@@ -747,9 +962,24 @@ public class Disassembler {
         if(attribute instanceof BootstrapMethods){
             return getBootstrapMethodsAttribute(javaClass, attribute);
         }
-//        if(attribute instanceof MethodParameters){
-//            return getMethodParametersAttribute(javaClass, attribute);
-//        }
+        if(attribute instanceof MethodParameters){
+            return getMethodParametersAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof Module){
+            return getModuleAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof NestMembers){
+            return getNestMembersAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof NestHost){
+            return getNestHostAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof ModuleMainClass){
+            return getModuleMainClassAttribute(javaClass, attribute);
+        }
+        if(attribute instanceof ModulePackages){
+            return getModulePackagesAttribute(javaClass, attribute);
+        }
         throw new RuntimeException("Invalid attribute " + attribute.getName());
     }
 
@@ -765,7 +995,7 @@ public class Disassembler {
         disassembledClassFile.setMinorVersion(javaClass.getMinor());
         disassembledClassFile.setSourceFileName(javaClass.getSourceFileName());
         disassembledClassFile.setClassName(new ConstantClassInfo(javaClass.getClassNameIndex(), javaClass.getClassName()));
-        disassembledClassFile.setAccessFlags(unmaskFlag(javaClass.getAccessFlags()));
+        disassembledClassFile.setAccessFlags(unmaskAccFlag(javaClass.getAccessFlags()));
         if(javaClass.getSuperclassName() != null){
             disassembledClassFile.setSuperClassName(new ConstantClassInfo(javaClass.getSuperclassNameIndex(), javaClass.getSuperclassName()));
         }
@@ -781,7 +1011,7 @@ public class Disassembler {
         }
     }
 
-    public List<AccFlag> unmaskFlag(int accessFlag){
+    public List<AccFlag> unmaskAccFlag(int accessFlag){
         List<AccFlag> accFlags = new ArrayList<>();
         for(AccFlag accFlag : AccFlag.values()){
             if((accessFlag & accFlag.getValue()) > 0){

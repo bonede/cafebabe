@@ -10,11 +10,13 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 @Slf4j
 class DisassemblerTest {
-
+    private byte[] loadsClassBinary(String classFileName) throws IOException {
+        return ResourcesUtils.readResourceToBytes(this.getClass(), "source/build/" + classFileName);
+    }
     @Test
-    void disassembleClass() throws IOException {
+    void disassembleMain() throws IOException {
         Disassembler disassembler = new Disassembler();
-        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main.class");
+        byte[] classBinary = loadsClassBinary("main/Main.class");
         DisassembledClassFile result = disassembler.disassemble(classBinary);
         log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
     }
@@ -22,7 +24,7 @@ class DisassemblerTest {
     @Test
     void disassembleAnnotation() throws IOException {
         Disassembler disassembler = new Disassembler();
-        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Foo.class");
+        byte[] classBinary = loadsClassBinary("main/Foo.class");
         DisassembledClassFile result = disassembler.disassemble(classBinary);
         log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
     }
@@ -30,7 +32,7 @@ class DisassemblerTest {
     @Test
     void disassembleSubClass() throws IOException {
         Disassembler disassembler = new Disassembler();
-        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main$Sub.class");
+        byte[] classBinary = loadsClassBinary("main/Main$Sub.class");
         DisassembledClassFile result = disassembler.disassemble(classBinary);
         log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
     }
@@ -38,7 +40,7 @@ class DisassemblerTest {
     @Test
     void disassembleAnonymousClass() throws IOException {
         Disassembler disassembler = new Disassembler();
-        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main$1.class");
+        byte[] classBinary = loadsClassBinary("main/Main$1.class");
         DisassembledClassFile result = disassembler.disassemble(classBinary);
         log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
     }
@@ -46,7 +48,15 @@ class DisassemblerTest {
     @Test
     void disassembleInnerClass() throws IOException {
         Disassembler disassembler = new Disassembler();
-        byte[] classBinary = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main$Inner.class");
+        byte[] classBinary = loadsClassBinary("main/Main$Inner.class");
+        DisassembledClassFile result = disassembler.disassemble(classBinary);
+        log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
+    }
+
+    @Test
+    void disassembleModuleInfo() throws IOException {
+        Disassembler disassembler = new Disassembler();
+        byte[] classBinary = loadsClassBinary("module-info.class");
         DisassembledClassFile result = disassembler.disassemble(classBinary);
         log.info("result\n{}", JSONObject.toJSONString(result, SerializerFeature.PrettyFormat));
     }

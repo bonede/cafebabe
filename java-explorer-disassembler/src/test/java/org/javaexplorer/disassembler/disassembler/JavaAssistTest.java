@@ -12,7 +12,7 @@ public class JavaAssistTest {
     @Test
     public void testJavaAssist() throws IOException {
         ClassPool classPool = new ClassPool();
-        ClassFile classFile = classPool.makeClass(ResourcesUtils.readResource(this.getClass(), "source/Main.class"))
+        ClassFile classFile = classPool.makeClass(ResourcesUtils.readResource(this.getClass(), "source/main/Main.class"))
                 .getClassFile();
         classFile.getAttributes();
     }

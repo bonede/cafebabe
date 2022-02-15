@@ -1,7 +1,10 @@
+package main;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import main.Bar;
+
 @Deprecated
 @Anno
 public final class Main extends Object implements Serializable{
