@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ExplorerService {
@@ -28,13 +30,13 @@ public class ExplorerService {
     @Autowired
     private StorageService storageService;
 
-    public ApiResp<CompileResult> compile(String compilerNickname, CompileReq compileReq){
+    public ApiResp<CompileResult> compile(CompileReq compileReq){
         URI uri = compilerClientConfig.getUrl() != null ? java.net.URI.create(compilerClientConfig.getUrl()) :
-                java.net.URI.create("http://" + compilerNickname);
+                java.net.URI.create("http://" + compileReq.getCompilerNickname());
         return compilerClient.compile(uri, compileReq);
     }
 
-    public ApiResp<DisassembleResult> disassemble(DisassembleReq disassembleReq){
+    public ApiResp<Map<String, Object>> disassemble(DisassembleReq disassembleReq){
         return disassemblerClient.disassemble(disassembleReq);
     }
 
@@ -44,8 +46,8 @@ public class ExplorerService {
         compileReq.setJavaFiles(explorerReq.getJavaFiles());
         compileReq.setCompilerOptions(explorerReq.getCompilerOptions());
         ExplorerResult explorerResult = new ExplorerResult();
-        ApiResp<CompileResult> compileResult = compile(explorerReq.getCompilerNickname(), compileReq);
-        if(compileResult.isSuccess()){
+        ApiResp<CompileResult> compileResult = compile(compileReq);
+        if(!compileResult.isSuccess()){
             throw ApiException.error(compileResult.getMsg());
         }
         if(!compileResult.getData().isSuccess()){
@@ -55,25 +57,26 @@ public class ExplorerService {
         }
         DisassembleReq disassembleReq = new DisassembleReq();
         disassembleReq.setClassFiles(compileResult.getData().getClassFiles());
-        ApiResp<DisassembleResult> disassembleResult = disassemble(disassembleReq);
-        if(disassembleResult.isSuccess()){
+        ApiResp<Map<String, Object>> disassembleResult = disassemble(disassembleReq);
+        if(!disassembleResult.isSuccess()){
             throw ApiException.error(disassembleResult.getMsg());
         }
 
-        if(!disassembleResult.getData().isSuccess()){
+        if(!disassembleResult.isSuccess()){
             explorerResult.setSuccess(false);
             explorerResult.setMsg(disassembleResult.getMsg());
             return explorerResult;
         }
 
         explorerResult.setSuccess(true);
-        explorerResult.setDisassembledClassFiles(disassembleResult.getData().getDisassembledClassFiles());
+        List<Map<String, Object>> disassembledClassFiles = (List<Map<String, Object>>) disassembleResult.getData().get("disassembledClassFiles");
+        explorerResult.setDisassembledClassFiles(disassembledClassFiles);
         if(explorerReq.isSave()){
             explorerResult.setShareUrl(storageService.storeWithUrl(
                     compileReq.getCompilerNickname(),
                     compileReq.getCompilerNickname(),
                     compileReq.getJavaFiles(),
-                    disassembleResult.getData().getDisassembledClassFiles()
+                    disassembledClassFiles
             ));
         }
         return explorerResult;

@@ -1,13 +1,13 @@
 package org.javaexplorer.model.vo;
 
 import lombok.Data;
-import org.javaexplorer.model.classfile.DisassembledClassFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class ExplorerResult {
-    private List<DisassembledClassFile> disassembledClassFiles;
+    private List<Map<String, Object>> disassembledClassFiles;
     private boolean success;
     private String msg;
     private String shareUrl;

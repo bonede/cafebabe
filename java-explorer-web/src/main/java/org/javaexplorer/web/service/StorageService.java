@@ -1,12 +1,12 @@
 package org.javaexplorer.web.service;
 
 import org.javaexplorer.model.JavaFile;
-import org.javaexplorer.model.classfile.DisassembledClassFile;
 import org.javaexplorer.web.config.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class StorageService {
@@ -17,7 +17,7 @@ public class StorageService {
             String compilerNickname,
             String compilerOptions,
             List<JavaFile> javaFiles,
-            List<DisassembledClassFile> disassembledClassFiles
+            List<Map<String, Object>> disassembledClassFiles
     ){
         // TODO implement
         return "foo";
@@ -26,7 +26,7 @@ public class StorageService {
     public String storeWithUrl(String compilerNickname,
                                String compilerOptions,
                                List<JavaFile> javaFiles,
-                               List<DisassembledClassFile> disassembledClassFiles){
+                               List<Map<String, Object>> disassembledClassFiles){
         String storeId = store(compilerNickname, compilerOptions, javaFiles, disassembledClassFiles);
         return getStoreUrl(storeId);
     }

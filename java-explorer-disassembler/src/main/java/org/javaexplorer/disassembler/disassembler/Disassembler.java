@@ -23,11 +23,18 @@ import java.util.stream.Collectors;
 
 public class Disassembler {
     private static final String CLASS_FILE_NAME = "example.class";
-    public DisassembledClassFile disassemble(byte[] classFileBinary) throws IOException {
-        JavaClass javaClass = new ClassParser(
-                new ByteArrayInputStream(classFileBinary),
-                CLASS_FILE_NAME
-        ).parse();
+    public DisassembledClassFile disassemble(byte[] classFileBinary) {
+        JavaClass javaClass = null;
+        try {
+            javaClass = new ClassParser(
+                    new ByteArrayInputStream(classFileBinary),
+                    CLASS_FILE_NAME
+            ).parse();
+        }catch (ClassFormatException e) {
+            throw ApiException.error("BCEL error: " + e.getMessage());
+        } catch (IOException e) {
+            throw ApiException.error("BCEL error: " + e.getMessage());
+        }
         DisassembledClassFile classFile = new DisassembledClassFile();
         getMetaData(javaClass, classFile);
         getConstantPool(javaClass, classFile);
