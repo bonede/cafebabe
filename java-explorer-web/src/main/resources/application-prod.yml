@@ -1,4 +1,12 @@
 app:
   url: https://www.javaexplorer.org
-disassembler:
-  url: http://disassembler:8080
+
+compiler:
+  working-dir: /opt/app
+  build-dir: build
+  compilers:
+    - name: openjdk8
+      cmd: docker run --rm -v {WORKING_DIR}:/data/src -w /data/src openjdk:8 javac -d build {OPTS} {SRC_FILES}
+    - name: openjdk11
+      cmd: docker run --rm -v {WORKING_DIR}:/data/src -w /data/src openjdk:11 javac -d build {OPTS} {SRC_FILES}
+

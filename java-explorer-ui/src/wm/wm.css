@@ -1,0 +1,13 @@
+.jswm-canvas{
+    position: relative;
+}
+.jswm-window{
+    position: absolute;
+}
+.jswm-window-title-bar{
+    color: #fff;
+    background: #282c34;
+}
+.wm-frame{
+    position: absolute;
+}

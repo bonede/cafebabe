@@ -1,8 +1,0 @@
-version: "3.9"
-services:
-  openjdk8:
-    image: "openjdk:8-jdk-slim"
-    tty: true
-  openjdk11:
-    image: "openjdk:11-jdk-slim"
-    tty: true

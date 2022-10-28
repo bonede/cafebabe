@@ -1,6 +1,12 @@
 app:
   url: http://locahost:8080
+
 compiler:
-  url: http://localhost:8081
-disassembler:
-  url: http://localhost:8082
+  working-dir: /opt/app
+  build-dir: build
+  compilers:
+    - name: openjdk8
+      cmd: javac -d build {OPTS} {SRC_FILES}
+    - name: openjdk11
+      cmd: javac -d build {OPTS} {SRC_FILES}
+

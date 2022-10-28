@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/explorer")
@@ -22,9 +23,11 @@ public class ExplorerController {
 
     @PostMapping
     public ApiResp<ExplorerResult> explorer(
-            @RequestBody @Valid ExplorerReq explorerReq) {
+            @RequestBody @Valid ExplorerReq explorerReq) throws IOException {
         return ApiResp.ok(
                 explorerService.explore(explorerReq)
         );
     }
+
+
 }

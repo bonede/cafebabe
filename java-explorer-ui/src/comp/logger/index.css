@@ -1,0 +1,17 @@
+.pl-logger{
+    font-size: 16px;
+    flex: 1;
+    overflow-y: scroll;
+    background: #1e1e1e;
+    font-family: Consolas, "Courier New", monospace;
+    user-select: text;
+}
+.pl-logger-item{
+    margin: 10px;
+}
+.pl-logger-item.info{
+    color: #608b4e;
+}
+.pl-logger-item.error{
+    color: #f14c4c;
+}

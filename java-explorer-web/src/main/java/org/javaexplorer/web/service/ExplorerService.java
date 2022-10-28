@@ -1,83 +1,41 @@
 package org.javaexplorer.web.service;
 
-import org.javaexplorer.error.ApiException;
-import org.javaexplorer.model.vo.*;
-import org.javaexplorer.web.client.CompilerClient;
-import org.javaexplorer.web.client.DisassemblerClient;
-import org.javaexplorer.web.config.CompilerClientConfig;
-import org.javaexplorer.web.config.DisassemblerConfig;
+import org.javaexplorer.compiler.service.CompilerService;
+import org.javaexplorer.model.vo.CompileResult;
+import org.javaexplorer.model.vo.ExplorerReq;
+import org.javaexplorer.model.vo.ExplorerResult;
+import org.javaexplorer.parser.service.ParserService;
+import org.javaexplorer.web.config.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Service
 public class ExplorerService {
     @Autowired
-    private CompilerClient compilerClient;
+    private CompilerService compilerService;
 
     @Autowired
-    private DisassemblerClient disassemblerClient;
+    private ParserService parserService;
 
     @Autowired
-    private CompilerClientConfig compilerClientConfig;
+    private AppConfig appConfig;
 
-    @Autowired
-    private DisassemblerConfig disassemblerConfig;
 
-    @Autowired
-    private StorageService storageService;
-
-    public ApiResp<CompileResult> compile(CompileReq compileReq){
-        URI uri = compilerClientConfig.getUrl() != null ? java.net.URI.create(compilerClientConfig.getUrl()) :
-                java.net.URI.create("http://" + compileReq.getCompilerNickname());
-        return compilerClient.compile(uri, compileReq);
-    }
-
-    public ApiResp<Map<String, Object>> disassemble(DisassembleReq disassembleReq){
-        return disassemblerClient.disassemble(disassembleReq);
-    }
-
-    public ExplorerResult explore(ExplorerReq explorerReq){
-        CompileReq compileReq = new CompileReq();
-        compileReq.setCompilerNickname(explorerReq.getCompilerNickname());
-        compileReq.setJavaFiles(explorerReq.getJavaFiles());
-        compileReq.setCompilerOptions(explorerReq.getCompilerOptions());
+    public ExplorerResult explore(ExplorerReq explorerReq) throws IOException {
         ExplorerResult explorerResult = new ExplorerResult();
-        ApiResp<CompileResult> compileResult = compile(compileReq);
-        if(!compileResult.isSuccess()){
-            throw ApiException.error(compileResult.getMsg());
-        }
-        if(!compileResult.getData().isSuccess()){
-            explorerResult.setSuccess(false);
-            explorerResult.setMsg(compileResult.getMsg());
-            return explorerResult;
-        }
-        DisassembleReq disassembleReq = new DisassembleReq();
-        disassembleReq.setClassFiles(compileResult.getData().getClassFiles());
-        ApiResp<Map<String, Object>> disassembleResult = disassemble(disassembleReq);
-        if(!disassembleResult.isSuccess()){
-            throw ApiException.error(disassembleResult.getMsg());
-        }
-
-        if(!disassembleResult.isSuccess()){
-            explorerResult.setSuccess(false);
-            explorerResult.setMsg(disassembleResult.getMsg());
-            return explorerResult;
-        }
-
-        explorerResult.setSuccess(true);
-        List<Map<String, Object>> disassembledClassFiles = (List<Map<String, Object>>) disassembleResult.getData().get("disassembledClassFiles");
-        explorerResult.setDisassembledClassFiles(disassembledClassFiles);
-        if(explorerReq.isSave()){
-            explorerResult.setShareUrl(storageService.storeWithUrl(
-                    compileReq.getCompilerNickname(),
-                    compileReq.getCompilerNickname(),
-                    compileReq.getJavaFiles(),
-                    disassembledClassFiles
-            ));
+        explorerResult.setClassImages(new ArrayList<>());
+        CompileResult compileResult = compilerService.compile(
+                explorerReq.getCompilerName(),
+                explorerReq.getCompilerOptions(),
+                explorerReq.getSrcFiles()
+        );
+        explorerResult.setCode(compileResult.getCode());
+        explorerResult.setOutput(compileResult.getOutput());
+        if(explorerResult.getCode() == 0){
+            explorerResult.setClassImages(parserService.parse(compileResult.getClassFiles()));
         }
         return explorerResult;
     }

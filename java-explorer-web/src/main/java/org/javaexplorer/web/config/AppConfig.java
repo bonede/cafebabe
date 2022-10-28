@@ -13,7 +13,11 @@ import javax.validation.constraints.NotNull;
 @Data
 @Validated
 public class AppConfig {
+    /**
+     * Web url.
+     */
     @URL
     @NotNull
     private String url;
+
 }

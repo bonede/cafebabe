@@ -1,6 +1,6 @@
 package org.javaexplorer.web.service;
 
-import org.javaexplorer.model.JavaFile;
+import org.javaexplorer.model.SrcFile;
 import org.javaexplorer.web.config.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class StorageService {
     public String store(
             String compilerNickname,
             String compilerOptions,
-            List<JavaFile> javaFiles,
+            List<SrcFile> srcFiles,
             List<Map<String, Object>> disassembledClassFiles
     ){
         // TODO implement
@@ -25,9 +25,9 @@ public class StorageService {
 
     public String storeWithUrl(String compilerNickname,
                                String compilerOptions,
-                               List<JavaFile> javaFiles,
+                               List<SrcFile> srcFiles,
                                List<Map<String, Object>> disassembledClassFiles){
-        String storeId = store(compilerNickname, compilerOptions, javaFiles, disassembledClassFiles);
+        String storeId = store(compilerNickname, compilerOptions, srcFiles, disassembledClassFiles);
         return getStoreUrl(storeId);
     }
 
