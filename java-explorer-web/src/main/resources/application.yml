@@ -2,7 +2,7 @@ app:
   url: http://locahost:8080
 
 compiler:
-  working-dir: /opt/app
+  working-dir: /data/java-explorer
   build-dir: build
   compilers:
     - name: openjdk8

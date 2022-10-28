@@ -2,6 +2,11 @@ package org.javaexplorer.utils;
 
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public abstract class CommandUtils {
 
@@ -15,8 +20,12 @@ public abstract class CommandUtils {
     }
 
 
-    public static CommandResult run(String... args){
-        ProcessBuilder pb = new ProcessBuilder(args);
+    public static CommandResult run(File workingDir, String... args){
+        String[] sanitizedArgs = Arrays.asList(args)
+                .stream().filter(arg -> StringUtils.isNotBlank(arg))
+                .collect(Collectors.toList()).toArray(new String[]{});
+        ProcessBuilder pb = new ProcessBuilder(sanitizedArgs);
+        pb.directory(workingDir);
         pb.redirectErrorStream(true);
         try {
             Process process = pb.start();

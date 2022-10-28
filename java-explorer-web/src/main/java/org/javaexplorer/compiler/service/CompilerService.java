@@ -2,6 +2,7 @@ package org.javaexplorer.compiler.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.javaexplorer.config.CompilerConfig;
@@ -116,12 +117,14 @@ public class CompilerService {
 
         Path workingDir = saveFile(srcFiles);
         String cmd = formatCmd(compiler.getCmd(), workingDir.toString(), compilerOptions, srcFiles);
-        CommandUtils.CommandResult result = CommandUtils.run(cmd.split(" "));
+        CommandUtils.CommandResult result = CommandUtils.run(workingDir.toFile(), cmd.split(" "));
+
         if(result.getCode() == 0){
             CompileResult compileResult = CompileResult.success(collectClassFile(workingDir), result.getOutput(), compilerName, compilerOptions);
-            Files.delete(workingDir);
+            FileUtils.deleteDirectory(workingDir.toFile());
             return compileResult;
         }else {
+            FileUtils.deleteDirectory(workingDir.toFile());
             return CompileResult.fail(result.getCode(), result.getOutput(), compilerName, compilerOptions);
         }
 
