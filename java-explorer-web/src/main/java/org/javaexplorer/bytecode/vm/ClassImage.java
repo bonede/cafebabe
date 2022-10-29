@@ -309,11 +309,10 @@ public class ClassImage {
         return attributes;
     }
 
-    public boolean parse(){
+    public void parse(){
         int magic = readMagic();
         if(magic != 0xCAFEBABE){
-            System.out.println("Not a class file");
-            return false;
+            throw new RuntimeException("Invalid class file");
         }
         parseMinorVersion();
         parseMajorVersion();
@@ -328,7 +327,6 @@ public class ClassImage {
         parseFields();
         parseMethodCount();
         parseMethods();
-        return true;
     }
 
     private void parseMethods() {

@@ -66,7 +66,7 @@ public class CompilerService {
 
     public List<ClassFile> collectClassFile(Path workingDir) throws IOException {
         return Files.walk(workingDir)
-                .filter(p -> p.toFile().isFile())
+                .filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".class"))
                 .map(p -> {
                     try {
                         return toClassFile(workingDir, p);
