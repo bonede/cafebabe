@@ -1,7 +1,6 @@
 package org.javaexplorer.bytecode.vm;
 
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.javaexplorer.bytecode.op.DescriptorParser;
 import org.javaexplorer.bytecode.op.Instruction;
@@ -341,6 +340,7 @@ public class ClassImage {
             int attributes_count = readu2();
             attribute_info[] attributes = parseAttributeInfo(attributes_count);
             methods[i] = new method_info(
+                    this,
                     i,
                     access_flags,
                     name_index,
@@ -537,6 +537,8 @@ public class ClassImage {
     }
 
     public static class method_info{
+        private ClassImage classImage;
+
         private int index;
         private List<method_access_flag> access_flags;
         private int name_index;
@@ -545,6 +547,7 @@ public class ClassImage {
         private attribute_info[] attributes;
         private Code_attribute code_attribute;
         public method_info(
+                            ClassImage classImage,
                             int index,
                             List<method_access_flag> access_flags,
                             int name_index,
@@ -552,6 +555,7 @@ public class ClassImage {
                             int attributes_count,
                             attribute_info[] attributes
         ) {
+            this.classImage = classImage;
             this.index = index;
             this.access_flags = access_flags;
             this.name_index = name_index;
@@ -592,7 +596,7 @@ public class ClassImage {
         public int name_index() {
             return name_index;
         }
-        public String getName(ClassImage classImage){
+        public String getName(){
             return classImage.getUtf8At(name_index);
         }
         public String getDescriptor(ClassImage classImage){
@@ -1145,6 +1149,10 @@ public class ClassImage {
         private int max_locals;
         private int code_length;
 
+        public int getCodeLength(){
+            return code_length;
+        }
+
         public int getMax_stack() {
             return max_stack;
         }
@@ -1197,12 +1205,12 @@ public class ClassImage {
             this.exception_table = exception_table.toArray(new exception_table_item[]{});
         }
 
-        int readu1(int offset){
-            return Byte.toUnsignedInt(codeBuffer.get(offset));
+        private int readu1(ByteBuffer byteBuffer, int offset){
+            return Byte.toUnsignedInt(byteBuffer.get(offset));
         }
 
         public Instruction getInstructionAt(int offset){
-            int opCode = readu1(offset);
+            int opCode = readu1(codeBuffer, offset);
             Instruction instruction = Op.instructionOf(opCode);
             codeBuffer.position(offset + 1);
             instruction.parse(this);
@@ -1216,6 +1224,18 @@ public class ClassImage {
 
         public byte readByte(){
             return codeBuffer.get();
+        }
+
+        public List<Instruction> getInstructions(){
+            codeBuffer.clear();
+            List<Instruction> instructions = new ArrayList<>();
+            while (codeBuffer.hasRemaining()){
+                int opCode = Byte.toUnsignedInt(codeBuffer.get());
+                Instruction instruction = Op.instructionOf(opCode);
+                instruction.parse(this);
+                instructions.add(instruction);
+            }
+            return instructions;
         }
 
         @Override

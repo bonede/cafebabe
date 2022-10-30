@@ -267,7 +267,7 @@ public class Vm {
             ClassImage.method_info method = classImage.getMethodByIndex(stackFrame.getMi());
             System.out.println(
                     classImage.getClassName() + "." +
-                    method.getName(classImage) +
+                    method.getName() +
                     method.getDescriptor(classImage)
             );
         }

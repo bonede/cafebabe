@@ -5,6 +5,9 @@ import org.javaexplorer.bytecode.vm.ClassImage;
 import org.javaexplorer.bytecode.vm.Vm;
 
 public interface Instruction {
+    default String getOpMnemonic(){
+        return toString();
+    }
     void execute(Vm vm);
 
     /**
@@ -14,5 +17,5 @@ public interface Instruction {
      */
     void parse(ClassImage.Code_attribute code_attribute);
     int getOpCode();
-    int size();
+    int getSize();
 }

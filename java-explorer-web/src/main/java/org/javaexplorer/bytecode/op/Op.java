@@ -172,7 +172,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpNull();
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -186,7 +186,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -202,7 +202,7 @@ public class Op {
             int value = vm.popOpInt();
             vm.pushOpInt(value);
             vm.pushOpInt(value);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -216,7 +216,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -240,7 +240,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpByte(value);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -254,7 +254,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 2;
         }
 
@@ -268,7 +268,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(0);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -283,7 +283,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -297,7 +297,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(1);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
         @Override
         public void parse(ClassImage.Code_attribute code_attribute) {
@@ -308,7 +308,7 @@ public class Op {
             return OpCode.iconst_1;
         }
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -322,7 +322,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(2);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -336,7 +336,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -350,7 +350,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(3);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -364,7 +364,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -378,7 +378,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(4);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -393,7 +393,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -407,7 +407,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(5);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -421,7 +421,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -435,7 +435,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpDouble(0d);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -449,7 +449,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -463,7 +463,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpDouble(1d);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -477,7 +477,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -499,7 +499,7 @@ public class Op {
             }else {
                 throw new RuntimeException("Must be long or double constant");
             }
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -513,7 +513,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -547,7 +547,7 @@ public class Op {
                 // TODO implement push reference to Class, Method
                 throw new RuntimeException("Must be int,float,short,string constant: " + c.getClass());
             }
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -561,7 +561,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 2;
         }
 
@@ -576,7 +576,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpShort(value);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -590,7 +590,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -615,7 +615,7 @@ public class Op {
             if(vm.popOpInt() == vm.popOpInt()){
                 vm.increasePc(offset);
             }else {
-                vm.increasePc(size());
+                vm.increasePc(getSize());
             }
         }
 
@@ -630,7 +630,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -655,7 +655,7 @@ public class Op {
             if(vm.popOpInt() != vm.popOpInt()){
                 vm.increasePc(offset);
             }else {
-                vm.increasePc(size());
+                vm.increasePc(getSize());
             }
         }
 
@@ -670,7 +670,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -695,7 +695,7 @@ public class Op {
             if(vm.popOpInt() > vm.popOpInt()){
                 vm.increasePc(offset);
             }else {
-                vm.increasePc(size());
+                vm.increasePc(getSize());
             }
         }
 
@@ -710,7 +710,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -734,7 +734,7 @@ public class Op {
             if(value1 >= value2){
                 vm.increasePc(offset);
             }else {
-                vm.increasePc(size());
+                vm.increasePc(getSize());
             }
         }
 
@@ -749,7 +749,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -772,7 +772,7 @@ public class Op {
             if(vm.getHeap().contains(ref)){
                 vm.increasePc(offset);
             }else {
-                vm.increasePc(size());
+                vm.increasePc(getSize());
             }
         }
 
@@ -787,7 +787,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -823,7 +823,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -837,7 +837,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpFloat(1f);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -851,7 +851,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -865,7 +865,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpFloat(2f);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -879,7 +879,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -902,7 +902,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(vm.getLocalInt(index));
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -916,7 +916,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 2;
         }
 
@@ -933,7 +933,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(vm.getLocalInt(0));
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -946,7 +946,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -964,7 +964,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(vm.getLocalInt(1));
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -977,7 +977,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1000,7 +1000,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(vm.getLocalInt(index));
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1014,7 +1014,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 2;
         }
 
@@ -1028,7 +1028,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(vm.popOpInt() + vm.popOpInt());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1042,7 +1042,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1056,7 +1056,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(vm.getLocalInt(0));
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1070,7 +1070,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1084,7 +1084,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(vm.getLocalInt(1));
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1098,7 +1098,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1112,7 +1112,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.pushOpInt(vm.getLocalInt(2));
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1126,7 +1126,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1141,7 +1141,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalInt(index, vm.popOpInt());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1155,7 +1155,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 2;
         }
 
@@ -1170,7 +1170,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalInt(2, vm.popOpRef());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1184,7 +1184,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1199,7 +1199,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalInt(1, vm.popOpRef());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1213,7 +1213,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1228,7 +1228,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalInt(index, vm.popOpInt());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1242,7 +1242,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 2;
         }
 
@@ -1256,7 +1256,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalInt(0, vm.popOpInt());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1271,7 +1271,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1285,7 +1285,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalInt(1, vm.popOpInt());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1299,7 +1299,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1313,7 +1313,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalInt(2, vm.popOpInt());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1327,7 +1327,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1341,7 +1341,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalLong(1, vm.popOpLong());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1355,7 +1355,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1369,7 +1369,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalDouble(3, vm.popOpDouble());
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1383,7 +1383,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1400,7 +1400,7 @@ public class Op {
             int value2 = vm.popOpInt();
             int value1 = vm.popOpInt();
             vm.pushOpInt(value2 * value1);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1414,7 +1414,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -1430,7 +1430,7 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             vm.setLocalInt(index, vm.getLocalInt(index) + value);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1445,7 +1445,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1490,7 +1490,7 @@ public class Op {
                         params.add(vm.popOpRef()); continue;
                 }
             }
-            vm.pushFrame(method.getIndex(), classImage.hashCode(), size());
+            vm.pushFrame(method.getIndex(), classImage.hashCode(), getSize());
             vm.setLocalRef(0, ref);
             for(int i = 0; i < params.size(); i++){
                 Object p = params.get(i);
@@ -1528,7 +1528,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1557,7 +1557,7 @@ public class Op {
             DescriptorParser.MethodType methodType = (MethodType) DescriptorParser.parse(methodDescriptor);
             if(method.access_flags().contains(ClassImage.method_access_flag.ACC_NATIVE)){
                 if(methodType.getReturnType().getTag() == FieldTag.V){
-                    vm.increasePc(size());
+                    vm.increasePc(getSize());
                     return;
                 }
                 throw new RuntimeException("Native method not supported: " + className + "." + methodName);
@@ -1579,7 +1579,7 @@ public class Op {
                         params.add(vm.popOpRef()); continue;
                 }
             }
-            vm.pushFrame(method.getIndex(), classImage.hashCode(), size());
+            vm.pushFrame(method.getIndex(), classImage.hashCode(), getSize());
             for(int i = 0; i < params.size(); i++){
                 Object p = params.get(i);
                 int index = i;
@@ -1616,7 +1616,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1645,7 +1645,7 @@ public class Op {
             DescriptorParser.MethodType methodType = (MethodType) DescriptorParser.parse(methodDescriptor);
             if(method.access_flags().contains(ClassImage.method_access_flag.ACC_NATIVE)){
                 if(methodType.getReturnType().getTag() == FieldTag.V){
-                    vm.increasePc(size());
+                    vm.increasePc(getSize());
                     return;
                 }
                 throw new RuntimeException("Native method not supported: " + className + "." + methodName);
@@ -1669,7 +1669,7 @@ public class Op {
                         params.add(vm.popOpRef()); continue;
                 }
             }
-            vm.pushFrame(method.getIndex(), classImage.hashCode(), size());
+            vm.pushFrame(method.getIndex(), classImage.hashCode(), getSize());
             vm.setLocalRef(0, ref);
             for(int i = 0; i < params.size(); i++){
                 Object p = params.get(i);
@@ -1707,7 +1707,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1721,7 +1721,7 @@ public class Op {
         private int index;
         @Override
         public void execute(Vm vm) {
-            vm.increasePc(size());
+            vm.increasePc(getSize());
             throw new RuntimeException("TODO");
         }
 
@@ -1736,7 +1736,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1790,7 +1790,7 @@ public class Op {
                 default:
                     throw new RuntimeException("Should not reach");
             }
-            vm.increasePc(size());
+            vm.increasePc(getSize());
 
         }
 
@@ -1805,7 +1805,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1862,7 +1862,7 @@ public class Op {
                 default:
                     throw new RuntimeException("Should not reach");
             }
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1876,7 +1876,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1894,7 +1894,7 @@ public class Op {
             String className = vm.getCurrentClassImage().getClassInfoAt(index).getName();
             int ref = vm.getHeap().createObject(className);
             vm.pushOpRef(ref);
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1908,7 +1908,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1945,7 +1945,7 @@ public class Op {
                 case CLASS: vm.pushOpRef(heapObject.getRef(className, fieldName)); break;
                 default: throw new RuntimeException("Invalid field tag: " + fieldType.getTag());
             }
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -1959,7 +1959,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 3;
         }
 
@@ -1987,7 +1987,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -2017,7 +2017,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -2047,7 +2047,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -2063,7 +2063,7 @@ public class Op {
         public void execute(Vm vm) {
             // TODO implement enter monitor
             vm.popOpRef();
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -2077,7 +2077,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
@@ -2092,7 +2092,7 @@ public class Op {
         public void execute(Vm vm) {
             // TODO implement exit monitor
             vm.popOpRef();
-            vm.increasePc(size());
+            vm.increasePc(getSize());
         }
 
         @Override
@@ -2106,7 +2106,7 @@ public class Op {
         }
 
         @Override
-        public int size() {
+        public int getSize() {
             return 1;
         }
 
