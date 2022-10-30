@@ -125,7 +125,7 @@ public class Vm {
 
 
     public void initImage(ClassImage classImage){
-        for(ClassImage.cp_info c : classImage.getConstant_pool()){
+        for(ClassImage.cp_info c : classImage.getConstantPool()){
             if(c instanceof ClassImage.CONSTANT_String_info){
                 String value = ((ClassImage.CONSTANT_String_info) c).getValue(classImage);
                 // TODO put string to heap

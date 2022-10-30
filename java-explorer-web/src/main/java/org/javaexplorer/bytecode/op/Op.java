@@ -541,7 +541,7 @@ public class Op {
                 // string
                 vm.pushOpInt(((ClassImage.CONSTANT_String_info) c).getValue(vm.getCurrentClassImage()).hashCode());
             }else if(c instanceof ClassImage.CONSTANT_Class_info){
-                String className = ((ClassImage.CONSTANT_Class_info) c).getName(vm.getCurrentClassImage());
+                String className = ((ClassImage.CONSTANT_Class_info) c).getName();
                 vm.pushOpRef(vm.getClassImageByName(className).hashCode());
             }else {
                 // TODO implement push reference to Class, Method
@@ -1464,11 +1464,11 @@ public class Op {
         @Override
         public void execute(Vm vm) {
             ClassImage.CONSTANT_Methodref_info method_ref = (ClassImage.CONSTANT_Methodref_info) vm.getConstant(index);
-            String className = method_ref.getClassName(vm.getCurrentClassImage());
-            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType(vm.getCurrentClassImage());
+            String className = method_ref.getClassName();
+            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
             ClassImage classImage = vm.findClassImageByClassName(className);
-            String methodName = nameAndType.getName(vm.getCurrentClassImage());
-            String methodDescriptor = nameAndType.getDescriptor(vm.getCurrentClassImage());
+            String methodName = nameAndType.getName();
+            String methodDescriptor = nameAndType.getDescriptor();
             ClassImage.method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
 
             int ref = vm.popOpRef();
@@ -1548,11 +1548,11 @@ public class Op {
         public void execute(Vm vm) {
 
             ClassImage.CONSTANT_Methodref_info method_ref = (ClassImage.CONSTANT_Methodref_info) vm.getConstant(index);
-            String className = method_ref.getClassName(vm.getCurrentClassImage());
-            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType(vm.getCurrentClassImage());
+            String className = method_ref.getClassName();
+            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
             ClassImage classImage = vm.findClassImageByClassName(className);
-            String methodName = nameAndType.getName(vm.getCurrentClassImage());
-            String methodDescriptor = nameAndType.getDescriptor(vm.getCurrentClassImage());
+            String methodName = nameAndType.getName();
+            String methodDescriptor = nameAndType.getDescriptor();
             ClassImage.method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
             DescriptorParser.MethodType methodType = (MethodType) DescriptorParser.parse(methodDescriptor);
             if(method.access_flags().contains(ClassImage.method_access_flag.ACC_NATIVE)){
@@ -1636,11 +1636,11 @@ public class Op {
         public void execute(Vm vm) {
 
             ClassImage.CONSTANT_Methodref_info method_ref = (ClassImage.CONSTANT_Methodref_info) vm.getConstant(index);
-            String className = method_ref.getClassName(vm.getCurrentClassImage());
-            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType(vm.getCurrentClassImage());
+            String className = method_ref.getClassName();
+            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
             ClassImage classImage = vm.findClassImageByClassName(className);
-            String methodName = nameAndType.getName(vm.getCurrentClassImage());
-            String methodDescriptor = nameAndType.getDescriptor(vm.getCurrentClassImage());
+            String methodName = nameAndType.getName();
+            String methodDescriptor = nameAndType.getDescriptor();
             ClassImage.method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
             DescriptorParser.MethodType methodType = (MethodType) DescriptorParser.parse(methodDescriptor);
             if(method.access_flags().contains(ClassImage.method_access_flag.ACC_NATIVE)){
@@ -1755,10 +1755,10 @@ public class Op {
                 throw new RuntimeException("Not a field ref: @" + index);
             }
             ClassImage.CONSTANT_Fieldref_info field_ref = (ClassImage.CONSTANT_Fieldref_info) c;
-            String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.class_index()).getName(vm.getCurrentClassImage());
+            String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.class_index()).getName();
             ClassImage.CONSTANT_NameAndType_info nameAndType = (ClassImage.CONSTANT_NameAndType_info) vm.getConstant(field_ref.name_and_type_index());
-            String fieldName = nameAndType.getName(vm.getCurrentClassImage());
-            String fieldDescriptor = nameAndType.getDescriptor(vm.getCurrentClassImage());
+            String fieldName = nameAndType.getName();
+            String fieldDescriptor = nameAndType.getDescriptor();
             FieldType fieldType = (DescriptorParser.FieldType) DescriptorParser.parse(fieldDescriptor);
 
             switch (fieldType.getTag()){
@@ -1824,10 +1824,10 @@ public class Op {
                 throw new RuntimeException("Not a field ref: @" + index);
             }
             ClassImage.CONSTANT_Fieldref_info field_ref = (ClassImage.CONSTANT_Fieldref_info) c;
-            String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.class_index()).getName(vm.getCurrentClassImage());
+            String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.class_index()).getName();
             ClassImage.CONSTANT_NameAndType_info nameAndType = (ClassImage.CONSTANT_NameAndType_info) vm.getConstant(field_ref.name_and_type_index());
-            String fieldName = nameAndType.getName(vm.getCurrentClassImage());
-            String fieldDescriptor = nameAndType.getDescriptor(vm.getCurrentClassImage());
+            String fieldName = nameAndType.getName();
+            String fieldDescriptor = nameAndType.getDescriptor();
             FieldType fieldType = (DescriptorParser.FieldType) DescriptorParser.parse(fieldDescriptor);
 
             switch (fieldType.getTag()){
@@ -1891,7 +1891,7 @@ public class Op {
 
         @Override
         public void execute(Vm vm) {
-            String className = vm.getCurrentClassImage().getClassInfoAt(index).getName(vm.getCurrentClassImage());
+            String className = vm.getCurrentClassImage().getClassInfoAt(index).getName();
             int ref = vm.getHeap().createObject(className);
             vm.pushOpRef(ref);
             vm.increasePc(size());
@@ -1926,7 +1926,7 @@ public class Op {
             int ref = vm.popOpRef();
             HeapObject heapObject = vm.getHeap().get(ref);
             ClassImage.CONSTANT_Fieldref_info fieldRef = vm.getCurrentClassImage().getFieldrefAt(index);
-            String className = fieldRef.getClassName(vm.getCurrentClassImage());
+            String className = fieldRef.getClassName();
             String fieldName = fieldRef.getFieldName(vm.getCurrentClassImage());
             FieldType fieldType = fieldRef.getFileType(vm.getCurrentClassImage());
             if(heapObject == null){

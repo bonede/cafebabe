@@ -2,6 +2,7 @@ package org.javaexplorer.bytecode.vm;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.javaexplorer.bytecode.op.DescriptorParser;
 import org.javaexplorer.bytecode.op.Instruction;
 import org.javaexplorer.bytecode.op.Op;
@@ -13,68 +14,69 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClassImage {
+    public static final int MAGIC = 0xCAFEBABE;
     /*
-        ClassFile {
-            u4             magic;
-            u2             minor_version;
-            u2             major_version;
-            u2             constant_pool_count;
-            cp_info        constant_pool[constant_pool_count-1];
-            u2             access_flags;
-            u2             this_class;
-            u2             super_class;
-            u2             interfaces_count;
-            u2             interfaces[interfaces_count];
-            u2             fields_count;
-            field_info     fields[fields_count];
-            u2             methods_count;
-            method_info    methods[methods_count];
-            u2             attributes_count;
-            attribute_info attributes[attributes_count];
-        }
+                ClassFile {
+                    u4             magic;
+                    u2             minor_version;
+                    u2             major_version;
+                    u2             constant_pool_count;
+                    cp_info        constant_pool[constant_pool_count-1];
+                    u2             access_flags;
+                    u2             this_class;
+                    u2             super_class;
+                    u2             interfaces_count;
+                    u2             interfaces[interfaces_count];
+                    u2             fields_count;
+                    field_info     fields[fields_count];
+                    u2             methods_count;
+                    method_info    methods[methods_count];
+                    u2             attributes_count;
+                    attribute_info attributes[attributes_count];
+                }
 
-        cp_info {
-            u1 tag;
-            u1 info[];
-        }
+                cp_info {
+                    u1 tag;
+                    u1 info[];
+                }
 
-        field_info {
-            u2             access_flags;
-            u2             name_index;
-            u2             descriptor_index;
-            u2             attributes_count;
-            attribute_info attributes[attributes_count];
-        }
-        method_info {
-                u2             access_flags;
-                u2             name_index;
-                u2             descriptor_index;
-                u2             attributes_count;
-                attribute_info attributes[attributes_count];
-        }
-        Sppecial method name:
-            1. <init> is the (or one of the) constructor(s) for the instance, and
-                non-static field initialization.
-            2. <clinit> are the static initialization blocks for the class, and
-                static field initialization.
+                field_info {
+                    u2             access_flags;
+                    u2             name_index;
+                    u2             descriptor_index;
+                    u2             attributes_count;
+                    attribute_info attributes[attributes_count];
+                }
+                method_info {
+                        u2             access_flags;
+                        u2             name_index;
+                        u2             descriptor_index;
+                        u2             attributes_count;
+                        attribute_info attributes[attributes_count];
+                }
+                Sppecial method name:
+                    1. <init> is the (or one of the) constructor(s) for the instance, and
+                        non-static field initialization.
+                    2. <clinit> are the static initialization blocks for the class, and
+                        static field initialization.
 
-        Constant pool tags
-        Constant Type	                Value
-        CONSTANT_Class	                 7
-        CONSTANT_Fieldref	             9
-        CONSTANT_Methodref	            10
-        CONSTANT_InterfaceMethodref	    11
-        CONSTANT_String	                 8
-        CONSTANT_Integer	             3
-        CONSTANT_Float	                 4
-        CONSTANT_Long	                 5
-        CONSTANT_Double             	 6
-        CONSTANT_NameAndType	        12
-        CONSTANT_Utf8                	 1
-        CONSTANT_MethodHandle	        15
-        CONSTANT_MethodType	            16
-        CONSTANT_InvokeDynamic	        18
-     */
+                Constant pool tags
+                Constant Type	                Value
+                CONSTANT_Class	                 7
+                CONSTANT_Fieldref	             9
+                CONSTANT_Methodref	            10
+                CONSTANT_InterfaceMethodref	    11
+                CONSTANT_String	                 8
+                CONSTANT_Integer	             3
+                CONSTANT_Float	                 4
+                CONSTANT_Long	                 5
+                CONSTANT_Double             	 6
+                CONSTANT_NameAndType	        12
+                CONSTANT_Utf8                	 1
+                CONSTANT_MethodHandle	        15
+                CONSTANT_MethodType	            16
+                CONSTANT_InvokeDynamic	        18
+             */
     private final ByteBuffer byteBuffer;
 
     // Reader pointer
@@ -117,14 +119,14 @@ public class ClassImage {
     }
 
     public String getClassName(){
-        return getClassInfoAt(this_class).getName(this);
+        return getClassInfoAt(this_class).getName();
     }
 
     public CONSTANT_NameAndType_info getNameAndTypeInfo(int index){
         return (CONSTANT_NameAndType_info) getConstant(index);
     }
 
-    public cp_info[] getConstant_pool() {
+    public cp_info[] getConstantPool() {
         return constant_pool;
     }
 
@@ -132,7 +134,7 @@ public class ClassImage {
         return methods;
     }
 
-    public short getMinor_version() {
+    public short getMinorVersion() {
         return minor_version;
     }
 
@@ -163,7 +165,7 @@ public class ClassImage {
         return methods[index];
     }
 
-    public short getMajor_version() {
+    public short getMajorVersion() {
         return major_version;
     }
 
@@ -171,7 +173,7 @@ public class ClassImage {
         return constant_pool[index];
     }
 
-    public short getConstant_pool_count() {
+    public short getConstantPoolCount() {
         return constant_pool_count;
     }
 
@@ -239,25 +241,25 @@ public class ClassImage {
 
     public cp_info readConstantInfo(){
         tag t = tag.valueOf(readByte());
-        cp_info info = null;
+        cp_info info;
         switch (t){
-            case CONSTANT_Class: info = new CONSTANT_Class_info(); break;
-            case CONSTANT_Fieldref: info = new CONSTANT_Fieldref_info(); break;
-            case CONSTANT_Methodref: info = new CONSTANT_Methodref_info(); break;
-            case CONSTANT_InterfaceMethodref: info = new CONSTANT_InterfaceMethodref_info(); break;
-            case CONSTANT_String: info = new CONSTANT_String_info(); break;
-            case CONSTANT_Integer: info = new CONSTANT_Integer_info(); break;
-            case CONSTANT_Float: info = new CONSTANT_Float_info(); break;
-            case CONSTANT_Long: info = new CONSTANT_Long_info(); break;
-            case CONSTANT_Double: info = new CONSTANT_Double_info(); break;
-            case CONSTANT_NameAndType: info = new CONSTANT_NameAndType_info(); break;
-            case CONSTANT_Utf8: info = new CONSTANT_Utf8_info(); break;
-            case CONSTANT_MethodHandle: info = new CONSTANT_MethodHandle_info(); break;
-            case CONSTANT_MethodType: info = new CONSTANT_MethodType_info(); break;
-            case CONSTANT_InvokeDynamic: info = new CONSTANT_InvokeDynamic_info(); break;
+            case CONSTANT_Class: info = new CONSTANT_Class_info(this); break;
+            case CONSTANT_Fieldref: info = new CONSTANT_Fieldref_info(this); break;
+            case CONSTANT_Methodref: info = new CONSTANT_Methodref_info(this); break;
+            case CONSTANT_InterfaceMethodref: info = new CONSTANT_InterfaceMethodref_info(this); break;
+            case CONSTANT_String: info = new CONSTANT_String_info(this); break;
+            case CONSTANT_Integer: info = new CONSTANT_Integer_info(this); break;
+            case CONSTANT_Float: info = new CONSTANT_Float_info(this); break;
+            case CONSTANT_Long: info = new CONSTANT_Long_info(this); break;
+            case CONSTANT_Double: info = new CONSTANT_Double_info(this); break;
+            case CONSTANT_NameAndType: info = new CONSTANT_NameAndType_info(this); break;
+            case CONSTANT_Utf8: info = new CONSTANT_Utf8_info(this); break;
+            case CONSTANT_MethodHandle: info = new CONSTANT_MethodHandle_info(this); break;
+            case CONSTANT_MethodType: info = new CONSTANT_MethodType_info(this); break;
+            case CONSTANT_InvokeDynamic: info = new CONSTANT_InvokeDynamic_info(this); break;
             default: throw new RuntimeException("Should not reach");
         }
-        info.read(this);
+        info.read();
         return info;
     }
 
@@ -269,12 +271,13 @@ public class ClassImage {
         return byteBuffer.getFloat();
     }
 
+    @JsonIgnore
     public ByteBuffer getByteBuffer(){
         return byteBuffer;
     }
 
     public String getUtf8At(int index){
-        return ((CONSTANT_Utf8_info) constant_pool[index]).value();
+        return ((CONSTANT_Utf8_info) constant_pool[index]).getValue();
     }
 
     public CONSTANT_Class_info getClassInfoAt(int index){
@@ -285,25 +288,25 @@ public class ClassImage {
         return ((CONSTANT_Fieldref_info)constant_pool[index]);
     }
 
-    public attribute_info[] parseAttributeInfo(int attributes_count, ClassImage classImage){
+    public attribute_info[] parseAttributeInfo(int attributes_count){
         attribute_info[] attributes = new attribute_info[attributes_count];
         for(short i = 0; i < attributes_count; i++){
-            int name_index = classImage.readu2();
-            int length = classImage.readInt();
-            String name = classImage.getUtf8At(name_index);
+            int name_index = this.readu2();
+            int length = this.readInt();
+            String name = this.getUtf8At(name_index);
             attribute_info attribute_info = null;
             switch (name){
-                case "ConstantValue": attribute_info = new ConstantValue_attribute(name_index, length); break;
-                case "Code": attribute_info = new Code_attribute(name_index, length); break;
-                case "LineNumberTable": attribute_info = new LineNumberTable_attribute(name_index, length); break;
-                case "StackMapTable": attribute_info = new StackMapTable_attribute(name_index, length); break;
-                case "Signature": attribute_info = new Signature_attribute(name_index, length); break;
-                case "Exceptions": attribute_info = new Exceptions_attribute(name_index, length); break;
-                case "Deprecated": attribute_info = new Deprecated_attribute(name_index, length); break;
-                case "RuntimeVisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(name_index, length); break;
+                case "ConstantValue": attribute_info = new ConstantValue_attribute(this, name_index, length); break;
+                case "Code": attribute_info = new Code_attribute(this, name_index, length); break;
+                case "LineNumberTable": attribute_info = new LineNumberTable_attribute(this, name_index, length); break;
+                case "StackMapTable": attribute_info = new StackMapTable_attribute(this, name_index, length); break;
+                case "Signature": attribute_info = new Signature_attribute(this, name_index, length); break;
+                case "Exceptions": attribute_info = new Exceptions_attribute(this, name_index, length); break;
+                case "Deprecated": attribute_info = new Deprecated_attribute(this, name_index, length); break;
+                case "RuntimeVisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
                 default: throw new RuntimeException("Unimplemented attribute: " + name);
             }
-            attribute_info.read(classImage);
+            attribute_info.read();
             attributes[i] = attribute_info;
         }
         return attributes;
@@ -311,7 +314,7 @@ public class ClassImage {
 
     public void parse(){
         int magic = readMagic();
-        if(magic != 0xCAFEBABE){
+        if(magic != MAGIC){
             throw new RuntimeException("Invalid class file");
         }
         parseMinorVersion();
@@ -336,7 +339,7 @@ public class ClassImage {
             int name_index = readu2();
             int descriptor_index = readu2();
             int attributes_count = readu2();
-            attribute_info[] attributes = parseAttributeInfo(attributes_count, this);
+            attribute_info[] attributes = parseAttributeInfo(attributes_count);
             methods[i] = new method_info(
                     i,
                     access_flags,
@@ -359,7 +362,7 @@ public class ClassImage {
             short name_index = this.readShort();
             short descriptor_index = this.readShort();
             short attributes_count = this.readShort();
-            attribute_info[] attributes = parseAttributeInfo(attributes_count, this);
+            attribute_info[] attributes = parseAttributeInfo(attributes_count);
             fields[i] = new field_info(
                     access_flag.fromBitField(access_flags),
                     name_index,
@@ -529,8 +532,8 @@ public class ClassImage {
     }
 
     public interface cp_info{
-        tag tag();
-        void read(ClassImage classImage);
+        tag getTag();
+        void read();
     }
 
     public static class method_info{
@@ -625,19 +628,26 @@ public class ClassImage {
     }
 
     public static class CONSTANT_Class_info implements cp_info {
+        private ClassImage classImage;
+
+
+        public CONSTANT_Class_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private short name_index;
 
-        public String getName(ClassImage classImage){
+        public String getName(){
             return classImage.getUtf8At(name_index);
         }
 
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_Class;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.name_index = classImage.readShort();
         }
 
@@ -650,18 +660,24 @@ public class ClassImage {
     }
 
     public static class CONSTANT_Fieldref_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_Fieldref_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private short class_index;
         private short name_and_type_index;
 
-        public String getClassName(ClassImage classImage){
-            return classImage.getClassInfoAt(class_index).getName(classImage);
+        public String getClassName(){
+            return classImage.getClassInfoAt(class_index).getName();
         }
         public String getFieldName(ClassImage classImage){
-            return classImage.getNameAndTypeInfo(name_and_type_index).getName(classImage);
+            return classImage.getNameAndTypeInfo(name_and_type_index).getName();
         }
 
         public DescriptorParser.FieldType getFileType(ClassImage classImage){
-            return (DescriptorParser.FieldType) DescriptorParser.parse(classImage.getNameAndTypeInfo(name_and_type_index).getDescriptor(classImage));
+            return (DescriptorParser.FieldType) DescriptorParser.parse(classImage.getNameAndTypeInfo(name_and_type_index).getDescriptor());
         }
 
         public short class_index() {
@@ -673,12 +689,12 @@ public class ClassImage {
         }
 
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_Fieldref;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.class_index = classImage.readShort();
             this.name_and_type_index = classImage.readShort();
         }
@@ -693,26 +709,30 @@ public class ClassImage {
     }
 
     public static class CONSTANT_Methodref_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_Methodref_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private short class_index;
         private short name_and_type_index;
 
-        public String getClassName(ClassImage classImage){
-            return classImage.getClassInfoAt(class_index).getName(classImage);
+        public String getClassName(){
+            return classImage.getClassInfoAt(class_index).getName();
         }
 
-        public CONSTANT_NameAndType_info getNameAndType(ClassImage classImage){
+        public CONSTANT_NameAndType_info getNameAndType(){
             return classImage.getNameAndTypeInfo(name_and_type_index);
         }
 
-
-
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_Methodref;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.class_index = classImage.readShort();
             this.name_and_type_index = classImage.readShort();
         }
@@ -727,15 +747,21 @@ public class ClassImage {
     }
 
     public static class CONSTANT_InterfaceMethodref_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_InterfaceMethodref_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private short class_index;
         private short name_and_type_index;
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_InterfaceMethodref;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.class_index = classImage.readShort();
             this.name_and_type_index = classImage.readShort();
         }
@@ -750,15 +776,21 @@ public class ClassImage {
     }
 
     public static class CONSTANT_String_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_String_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private int string_index;
         private String value;
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_String;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             string_index = classImage.readu2();
         }
 
@@ -775,13 +807,19 @@ public class ClassImage {
     }
 
     public static class CONSTANT_Integer_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_Integer_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private int value;
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_Integer;
         }
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.value = classImage.readInt();
         }
 
@@ -796,14 +834,20 @@ public class ClassImage {
     }
 
     public static class CONSTANT_Float_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_Float_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private float value;
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_Float;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.value = classImage.readFloat();
         }
 
@@ -818,6 +862,12 @@ public class ClassImage {
     }
 
     public static class CONSTANT_Long_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_Long_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private long value;
 
         public long getValue() {
@@ -825,12 +875,12 @@ public class ClassImage {
         }
 
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_Long;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.value = classImage.readLong();
         }
         @Override
@@ -840,6 +890,12 @@ public class ClassImage {
     }
 
     public static class CONSTANT_Double_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_Double_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private double value;
 
         public double getValue() {
@@ -847,11 +903,11 @@ public class ClassImage {
         }
 
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_Double;
         }
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.value = classImage.readDouble();
         }
 
@@ -862,24 +918,31 @@ public class ClassImage {
     }
 
     public static class CONSTANT_NameAndType_info implements cp_info {
+        private ClassImage classImage;
         private int name_index;
+
+        public CONSTANT_NameAndType_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private int descriptor_index;
 
-        public String getName(ClassImage classImage){
+
+        public String getName(){
             return classImage.getUtf8At(name_index);
         }
 
-        public String getDescriptor(ClassImage classImage){
+        public String getDescriptor(){
             return classImage.getUtf8At(descriptor_index);
         }
 
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_NameAndType;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.name_index = classImage.readShort();
             this.descriptor_index = classImage.readShort();
         }
@@ -894,17 +957,23 @@ public class ClassImage {
     }
 
     public static class CONSTANT_Utf8_info implements cp_info {
+        private ClassImage classImage;
         private short length;
+
+        public CONSTANT_Utf8_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private String value;
-        public String value(){
+        public String getValue(){
             return value;
         }
         @Override
-        public tag tag() {
-            return tag.CONSTANT_NameAndType;
+        public tag getTag() {
+            return tag.CONSTANT_Utf8;
         }
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.length = classImage.readShort();
             this.value = new String(classImage.readBytes(this.length));
         }
@@ -919,14 +988,20 @@ public class ClassImage {
     }
 
     public static class CONSTANT_MethodHandle_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_MethodHandle_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private Kind kind;
         private short reference_index;
         @Override
-        public tag tag() {
-            return tag.CONSTANT_NameAndType;
+        public tag getTag() {
+            return tag.CONSTANT_MethodHandle;
         }
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.kind = Kind.ofValue(classImage.readByte());
             this.reference_index = classImage.readShort();
         }
@@ -941,14 +1016,20 @@ public class ClassImage {
     }
 
     public static class CONSTANT_MethodType_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_MethodType_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private short descriptor_index;
         @Override
-        public tag tag() {
-            return tag.CONSTANT_NameAndType;
+        public tag getTag() {
+            return tag.CONSTANT_MethodType;
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.descriptor_index = classImage.readShort();
         }
 
@@ -961,14 +1042,20 @@ public class ClassImage {
     }
 
     public static class CONSTANT_InvokeDynamic_info implements cp_info {
+        private ClassImage classImage;
+
+        public CONSTANT_InvokeDynamic_info(ClassImage classImage) {
+            this.classImage = classImage;
+        }
+
         private short bootstrap_method_attr_index;
         private short name_and_type_index;
         @Override
-        public tag tag() {
+        public tag getTag() {
             return tag.CONSTANT_InvokeDynamic;
         }
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             this.bootstrap_method_attr_index = classImage.readShort();
             this.name_and_type_index = classImage.readShort();
         }
@@ -982,11 +1069,21 @@ public class ClassImage {
     }
 
     public static abstract class attribute_info{
+        protected ClassImage classImage;
         protected int attribute_name_index;
         protected int attribute_length;
-        public attribute_info(int attribute_name_index, int attribute_length) {
+        public attribute_info(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            this.classImage = classImage;
             this.attribute_name_index = attribute_name_index;
             this.attribute_length = attribute_length;
+        }
+
+        public int getAttributeNameIndex(){
+            return attribute_name_index;
+        }
+
+        public String getAttributeName(){
+            return classImage.getUtf8At(attribute_name_index);
         }
 
         public int attribute_name_index(){
@@ -995,14 +1092,14 @@ public class ClassImage {
         public int attribute_length(){
             return attribute_length;
         }
-        public abstract void read(ClassImage classImage);
+        public abstract void read();
     }
 
     public static class ConstantValue_attribute extends attribute_info{
         private short constantvalue_index;
 
-        public ConstantValue_attribute(int attribute_name_index, int attribute_length) {
-            super(attribute_name_index, attribute_length);
+        public ConstantValue_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
         }
 
         public short getConstantvalue_index() {
@@ -1010,7 +1107,7 @@ public class ClassImage {
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             constantvalue_index = classImage.readShort();
         }
 
@@ -1047,13 +1144,23 @@ public class ClassImage {
         private int max_stack;
         private int max_locals;
         private int code_length;
+
+        public int getMax_stack() {
+            return max_stack;
+        }
+
+        public int getMax_locals() {
+            return max_locals;
+        }
+
         private int exception_table_length;
         private exception_table_item[] exception_table;
         private int attributes_count;
         private ByteBuffer codeBuffer;
         private byte[] code;
-        public Code_attribute(int attribute_name_index, int attribute_length) {
-            super(attribute_name_index, attribute_length);
+
+        public Code_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
         }
 
         public int max_stack() {
@@ -1065,7 +1172,7 @@ public class ClassImage {
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             max_stack = classImage.readShort();
             max_locals = classImage.readShort();
             code_length = classImage.readInt();
@@ -1073,7 +1180,7 @@ public class ClassImage {
             exception_table_length = classImage.readu2();
             parseExceptionTable(classImage);
             attributes_count = classImage.readu2();
-            attributes = classImage.parseAttributeInfo(attributes_count, classImage);
+            attributes = classImage.parseAttributeInfo(attributes_count);
         }
 
 
@@ -1159,12 +1266,12 @@ public class ClassImage {
     public static class LineNumberTable_attribute extends attribute_info{
         private int line_number_table_length;
         private line_number_table_item[] line_number_table;
-        public LineNumberTable_attribute(int attribute_name_index, int attribute_length) {
-            super(attribute_name_index, attribute_length);
+        public LineNumberTable_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             line_number_table_length = classImage.readu2();
             line_number_table = new line_number_table_item[line_number_table_length];
             for(int i = 0; i < line_number_table_length; i++){
@@ -1190,12 +1297,12 @@ public class ClassImage {
      */
     public static class StackMapTable_attribute extends attribute_info{
         private int number_of_entries;
-        public StackMapTable_attribute(int attribute_name_index, int attribute_length) {
-            super(attribute_name_index, attribute_length);
+        public StackMapTable_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             // TODO implement. Now we just ignore all the bytes
             classImage.readBytes(attribute_length);
         }
@@ -1207,12 +1314,12 @@ public class ClassImage {
      */
     public static class Signature_attribute extends attribute_info{
         private int signature_index;
-        public Signature_attribute(int attribute_name_index, int attribute_length) {
-            super(attribute_name_index, attribute_length);
+        public Signature_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             signature_index = classImage.readu2();
         }
 
@@ -1224,12 +1331,12 @@ public class ClassImage {
     public static class Exceptions_attribute  extends attribute_info{
         private int number_of_exceptions;
         private int exception_index_table[];
-        public Exceptions_attribute (int attribute_name_index, int attribute_length) {
-            super(attribute_name_index, attribute_length);
+        public Exceptions_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
         }
 
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             number_of_exceptions = classImage.readu2();
             exception_index_table = new int[number_of_exceptions];
             for(int i = 0; i < number_of_exceptions; i++){
@@ -1240,12 +1347,13 @@ public class ClassImage {
     }
 
     public static class Deprecated_attribute  extends attribute_info{
-        public Deprecated_attribute (int attribute_name_index, int attribute_length) {
-            super(attribute_name_index, attribute_length);
+        public Deprecated_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
         }
         @Override
-        public void read(ClassImage classImage) {
-
+        public void read() {
+            // TODO implement
+            classImage.readBytes(attribute_length);
         }
 
     }
@@ -1253,11 +1361,11 @@ public class ClassImage {
     public static class RuntimeVisibleAnnotations_attribute  extends attribute_info{
         private int num_annotations;
         private annotation annotations[];
-        public RuntimeVisibleAnnotations_attribute  (int attribute_name_index, int attribute_length) {
-            super(attribute_name_index, attribute_length);
+        public RuntimeVisibleAnnotations_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
         }
         @Override
-        public void read(ClassImage classImage) {
+        public void read() {
             // TODO implement
             classImage.readBytes(attribute_length);
         }

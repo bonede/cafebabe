@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.javaexplorer.model.SrcFile;
 import org.javaexplorer.model.vo.ExplorerReq;
 import org.javaexplorer.model.vo.ExplorerResult;
+import org.javaexplorer.utils.JsonUtils;
 import org.javaexplorer.utils.ResourcesUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,6 @@ class ExplorerServiceTest {
         explorerReq.setSave(false);
         explorerReq.setSrcFiles(Arrays.asList(srcFile));
         ExplorerResult result = explorerService.explore(explorerReq);
-        log.info("result {}", result);
+        log.info("result {}", JsonUtils.toJson(result));
     }
 }
