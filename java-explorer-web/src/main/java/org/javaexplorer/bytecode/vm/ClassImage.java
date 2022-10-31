@@ -2,6 +2,7 @@ package org.javaexplorer.bytecode.vm;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.extern.slf4j.Slf4j;
 import org.javaexplorer.bytecode.op.DescriptorParser;
 import org.javaexplorer.bytecode.op.Instruction;
 import org.javaexplorer.bytecode.op.Op;
@@ -78,9 +79,6 @@ public class ClassImage {
              */
     private final ByteBuffer byteBuffer;
 
-    // Reader pointer
-    private int rp;
-
     private short minor_version;
     private short major_version;
     private short constant_pool_count;
@@ -94,9 +92,15 @@ public class ClassImage {
     private field_info[] fields;
     private short methods_count;
     private method_info[] methods;
+    private short attributes_count;
+    private attribute_info[] attributes;
     public ClassImage(byte[] sourceClassFile) {
         this.byteBuffer = ByteBuffer.wrap(sourceClassFile);
         parse();
+    }
+
+    public List<access_flag> getAccessFlags(){
+        return access_flags;
     }
 
     public static String debugAccessFlagString(List<access_flag> access_flags){
@@ -116,13 +120,30 @@ public class ClassImage {
                         .collect(Collectors.toList())
         );
     }
-
+    public int getClassNameIndex(){
+        return this_class;
+    }
+    public int getSuperClassNameIndex(){
+        return super_class;
+    }
     public String getClassName(){
         return getClassInfoAt(this_class).getName();
     }
 
+    public String getSuperClassName() {
+        return getClassInfoAt(super_class).getName();
+    }
+
     public CONSTANT_NameAndType_info getNameAndTypeInfo(int index){
         return (CONSTANT_NameAndType_info) getConstant(index);
+    }
+
+    public short getFieldsCount(){
+        return fields_count;
+    }
+
+    public field_info[] getFields(){
+        return fields;
     }
 
     public cp_info[] getConstantPool() {
@@ -136,11 +157,11 @@ public class ClassImage {
     public short getMinorVersion() {
         return minor_version;
     }
-
+    @JsonIgnore
     public method_info getMainMethod(){
         for(method_info m : methods){
             if( "main".equals(getUtf8At(m.name_index())) &&
-                "([Ljava/lang/String;)V".equals(getUtf8At(m.descriptor_index())) &&
+                "([Ljava/lang/String;)V".equals(getUtf8At(m.getDescriptorIndex())) &&
                 m.access_flags.contains(method_access_flag.ACC_PUBLIC)
             ){
                 return m;
@@ -152,7 +173,7 @@ public class ClassImage {
     public method_info getMethodByNameAndType(String name, String nameAndType){
         for(method_info m : methods){
             if( name.equals(getUtf8At(m.name_index())) &&
-                    nameAndType.equals(getUtf8At(m.descriptor_index()))
+                    nameAndType.equals(getUtf8At(m.getDescriptorIndex()))
             ){
                 return m;
             }
@@ -302,8 +323,9 @@ public class ClassImage {
                 case "Signature": attribute_info = new Signature_attribute(this, name_index, length); break;
                 case "Exceptions": attribute_info = new Exceptions_attribute(this, name_index, length); break;
                 case "Deprecated": attribute_info = new Deprecated_attribute(this, name_index, length); break;
+                case "SourceFile": attribute_info = new SourceFile_attribute(this, name_index, length); break;
                 case "RuntimeVisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
-                default: throw new RuntimeException("Unimplemented attribute: " + name);
+                default: attribute_info = new Unknown_attribute(this, name_index, length); break;
             }
             attribute_info.read();
             attributes[i] = attribute_info;
@@ -329,6 +351,16 @@ public class ClassImage {
         parseFields();
         parseMethodCount();
         parseMethods();
+        parseAttributesCount();
+        parseAttributes();
+    }
+
+    public int getAttributeCount(){
+        return attributes_count;
+    }
+
+    public attribute_info[] getAttributes(){
+        return attributes;
     }
 
     private void parseMethods() {
@@ -351,8 +383,16 @@ public class ClassImage {
         }
     }
 
+
+    private void parseAttributes(){
+        attributes = parseAttributeInfo(attributes_count);
+    }
     private void parseMethodCount() {
         methods_count = readShort();
+    }
+
+    private void parseAttributesCount() {
+        attributes_count = readShort();
     }
 
     private void parseFields() {
@@ -364,6 +404,7 @@ public class ClassImage {
             short attributes_count = this.readShort();
             attribute_info[] attributes = parseAttributeInfo(attributes_count);
             fields[i] = new field_info(
+                    this,
                     access_flag.fromBitField(access_flags),
                     name_index,
                     descriptor_index,
@@ -372,7 +413,6 @@ public class ClassImage {
             );
         }
     }
-
     private void parseFieldsCount() {
         this.fields_count = readShort();
     }
@@ -546,6 +586,12 @@ public class ClassImage {
         private int attributes_count;
         private attribute_info[] attributes;
         private Code_attribute code_attribute;
+        public List<method_access_flag> getAccessFlags(){
+            return access_flags;
+        }
+        public int getNameIndex(){
+            return name_index;
+        }
         public method_info(
                             ClassImage classImage,
                             int index,
@@ -582,11 +628,11 @@ public class ClassImage {
         }
 
         public int getMaxLocals(){
-            return code_attribute.max_locals();
+            return code_attribute.getMaxLocals();
         }
 
         public int getMaxStack(){
-            return code_attribute.max_stack();
+            return code_attribute.getMaxStack();
         }
 
         public List<method_access_flag> access_flags() {
@@ -603,10 +649,13 @@ public class ClassImage {
             return classImage.getUtf8At(descriptor_index);
         }
 
-        public int descriptor_index() {
+        public int getDescriptorIndex() {
             return descriptor_index;
         }
 
+        public String getDescriptor(){
+            return classImage.getUtf8At(descriptor_index);
+        }
         public attribute_info[] getAttributes() {
             return attributes;
         }
@@ -1153,14 +1202,6 @@ public class ClassImage {
             return code_length;
         }
 
-        public int getMax_stack() {
-            return max_stack;
-        }
-
-        public int getMax_locals() {
-            return max_locals;
-        }
-
         private int exception_table_length;
         private exception_table_item[] exception_table;
         private int attributes_count;
@@ -1171,12 +1212,16 @@ public class ClassImage {
             super(classImage, attribute_name_index, attribute_length);
         }
 
-        public int max_stack() {
+        public int getMaxStack() {
             return max_stack;
         }
 
-        public int max_locals() {
+        public int getMaxLocals() {
             return max_locals;
+        }
+
+        public attribute_info[] getAttributes(){
+            return attributes;
         }
 
         @Override
@@ -1277,6 +1322,14 @@ public class ClassImage {
             this.line_number = line_number;
         }
 
+        public int getStartPc(){
+            return start_pc;
+        }
+
+        public int getLineNumber(){
+            return line_number;
+        }
+
         @Override
         public String toString() {
             return String.format("Line: %d -> %d", line_number, start_pc);
@@ -1289,7 +1342,9 @@ public class ClassImage {
         public LineNumberTable_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
             super(classImage, attribute_name_index, attribute_length);
         }
-
+        public line_number_table_item[] getLineNumberTable(){
+            return line_number_table;
+        }
         @Override
         public void read() {
             line_number_table_length = classImage.readu2();
@@ -1378,6 +1433,43 @@ public class ClassImage {
 
     }
 
+    @Slf4j
+    public static class Unknown_attribute extends attribute_info{
+        private byte[] value;
+        private short sourceFileNameIndex;
+        public Unknown_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+            log.info("Unknown attributes: " + getAttributeName());
+        }
+
+        @Override
+        public void read() {
+            value = classImage.readBytes(attribute_length);
+        }
+
+        public byte[] getValue(){
+            return value;
+        }
+
+    }
+
+    public static class SourceFile_attribute  extends attribute_info{
+        private short sourceFileNameIndex;
+        public SourceFile_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+        @Override
+        public void read() {
+            sourceFileNameIndex = classImage.readShort();
+        }
+
+        public String getSourceFileName(){
+            return classImage.getUtf8At(sourceFileNameIndex);
+        }
+
+    }
+
     public static class RuntimeVisibleAnnotations_attribute  extends attribute_info{
         private int num_annotations;
         private annotation annotations[];
@@ -1422,18 +1514,38 @@ public class ClassImage {
     }
 
     public static class field_info{
-        attribute_info[] attributes;
+        private ClassImage classImage;
+        public short getNameIndex(){
+            return name_index;
+        }
+        public String getName(){
+            return classImage.getUtf8At(name_index);
+        }
+        public short descriptor_index(){
+            return descriptor_index;
+        }
+        public String getDescriptor(){
+            return classImage.getUtf8At(descriptor_index);
+        }
+        public attribute_info[] getAttributes(){
+            return attributes;
+        }
+        public List<access_flag> getAccessFlags(){
+            return access_flags;
+        }
+        private attribute_info[] attributes;
         private List<access_flag> access_flags;
         private short name_index;
         private short descriptor_index;
         private short attributes_count;
 
-        public field_info(List<access_flag> access_flags,
+        public field_info(ClassImage classImage, List<access_flag> access_flags,
                           short name_index,
                           short descriptor_index,
                           short attributes_count,
                           attribute_info[] attributes
         ) {
+            this.classImage = classImage;
             this.access_flags = access_flags;
             this.name_index = name_index;
             this.descriptor_index = descriptor_index;

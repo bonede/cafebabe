@@ -1,8 +1,5 @@
-/**
- * Example java source file.
- * You may edit it and click Build button.
- */
 class Main{
+    private int x = 42;
     public static void main(String[] args) {
         System.out.println("Hello world!");
     }
