@@ -82,7 +82,7 @@ public class ClassImage {
     private short minor_version;
     private short major_version;
     private short constant_pool_count;
-    private List<access_flag> access_flags;
+    private List<class_access_flag> access_flags;
     private cp_info[] constant_pool;
     private short this_class;
     private short super_class;
@@ -99,11 +99,11 @@ public class ClassImage {
         parse();
     }
 
-    public List<access_flag> getAccessFlags(){
+    public List<class_access_flag> getAccessFlags(){
         return access_flags;
     }
 
-    public static String debugAccessFlagString(List<access_flag> access_flags){
+    public static String debugAccessFlagString(List<class_access_flag> access_flags){
         return String.join(
                 " ",
                 access_flags.stream()
@@ -405,7 +405,7 @@ public class ClassImage {
             attribute_info[] attributes = parseAttributeInfo(attributes_count);
             fields[i] = new field_info(
                     this,
-                    access_flag.fromBitField(access_flags),
+                    field_access_flag.fromBitField(access_flags),
                     name_index,
                     descriptor_index,
                     attributes_count,
@@ -438,7 +438,7 @@ public class ClassImage {
 
     private void parseAccessFlags() {
         short access_flags = readShort();
-        this.access_flags = access_flag.fromBitField(access_flags);
+        this.access_flags = class_access_flag.fromBitField(access_flags);
     }
 
     @Override
@@ -517,7 +517,31 @@ public class ClassImage {
         }
     }
 
-    public enum access_flag{
+    public enum class_access_flag{
+        ACC_PUBLIC(0x0001),
+        ACC_FINAL(0x0010),
+        ACC_SUPER(0x0020),
+        ACC_INTERFACE(0x0200),
+        ACC_ABSTRACT(0x0400),
+        ACC_SYNTHETIC(0x1000),
+        ACC_ANNOTATION(0x2000),
+        ACC_ENUM(0x4000);
+        private final int value;
+        class_access_flag(int value) {
+            this.value = value;
+        }
+        public static List<class_access_flag> fromBitField(short flags){
+            List<class_access_flag> result = new ArrayList<>();
+            for(class_access_flag flag : class_access_flag.values()){
+                if((flag.value & flags) > 0){
+                    result.add(flag);
+                }
+            }
+            return result;
+        }
+    }
+
+    public enum field_access_flag{
         ACC_PUBLIC(0x0001),
         ACC_PRIVATE(0x0002),
         ACC_PROTECTED(0x0004),
@@ -528,12 +552,12 @@ public class ClassImage {
         ACC_SYNTHETIC(0x1000),
         ACC_ENUM(0x4000);
         private final int value;
-        access_flag(int value) {
+        field_access_flag(int value) {
             this.value = value;
         }
-        public static List<access_flag> fromBitField(short flags){
-            List<access_flag> result = new ArrayList<>();
-            for(access_flag flag : access_flag.values()){
+        public static List<field_access_flag> fromBitField(short flags){
+            List<field_access_flag> result = new ArrayList<>();
+            for(field_access_flag flag : field_access_flag.values()){
                 if((flag.value & flags) > 0){
                     result.add(flag);
                 }
@@ -1530,16 +1554,16 @@ public class ClassImage {
         public attribute_info[] getAttributes(){
             return attributes;
         }
-        public List<access_flag> getAccessFlags(){
+        public List<field_access_flag> getAccessFlags(){
             return access_flags;
         }
         private attribute_info[] attributes;
-        private List<access_flag> access_flags;
+        private List<field_access_flag> access_flags;
         private short name_index;
         private short descriptor_index;
         private short attributes_count;
 
-        public field_info(ClassImage classImage, List<access_flag> access_flags,
+        public field_info(ClassImage classImage, List<field_access_flag> access_flags,
                           short name_index,
                           short descriptor_index,
                           short attributes_count,
@@ -1556,11 +1580,9 @@ public class ClassImage {
         @Override
         public String toString() {
             return String.format(
-                    "name@%d descriptor@%d %s attributes: %d",
+                    "name@%d descriptor@%",
                     name_index,
-                    descriptor_index,
-                    debugAccessFlagString(access_flags),
-                    attributes.length
+                    descriptor_index
             );
         }
     }
