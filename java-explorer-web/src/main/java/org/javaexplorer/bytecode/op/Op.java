@@ -2802,7 +2802,7 @@ public class Op {
         }
     }
 
-    private static class nop implements Instruction {
+    public static class nop implements Instruction {
         private static final String mnemonic = "nop";
         @Override
         public String getOpMnemonic() {
@@ -2838,7 +2838,7 @@ public class Op {
     /**
      * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.wide
      */
-    private static class wide implements Instruction {
+    public static class wide implements Instruction {
         private static final String mnemonic = "wide";
         private int opCode;
         private int index;
@@ -2886,6 +2886,170 @@ public class Op {
         @Override
         public int getSize() {
             return 0;
+        }
+    }
+
+    public static class fconst_0 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "fconst_0";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpFloat(0);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fconst_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class iconst_m1 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "iconst_m1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpInt(-1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iconst_m1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lconst_0 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "lconst_0";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpLong(0);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lconst_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lconst_1 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "lconst_1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpLong(1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lconst_1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.ldc_w
+     */
+    public static class ldc_w implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "ldc_w";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+            throw new RuntimeException("Not implemented");
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ldc_w;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+    }
+
+    public static class aload_2 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "aload_2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpInt(vm.getLocalInt(2));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.aload_2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class aload_3 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "aload_3";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpInt(vm.getLocalInt(3));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.aload_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
         }
     }
 }
