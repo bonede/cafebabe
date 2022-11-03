@@ -1632,6 +1632,36 @@ public class Op {
         }
     }
 
+    public static class iload_3 implements Instruction{
+        @Override
+        public String getOpMnemonic() {
+            return "iload_3";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpInt(vm.getLocalInt(3));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iload_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+
+    }
+
     public static class astore implements Instruction{
         private static final String mnemonic = "astore";
 
@@ -1669,6 +1699,40 @@ public class Op {
         @Override
         public String toString() {
             return mnemonic + " #" + index;
+        }
+    }
+
+    public static class astore_0 implements Instruction{
+        private static final String mnemonic = "astore_0";
+
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalInt(0, vm.popOpRef());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.astore_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic;
         }
     }
 
@@ -1737,6 +1801,310 @@ public class Op {
         @Override
         public String toString() {
             return mnemonic;
+        }
+    }
+
+    public static class astore_3 implements Instruction{
+        private static final String mnemonic = "astore_3";
+
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalInt(3, vm.popOpRef());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.astore_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic;
+        }
+    }
+
+    public static class dstore implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dstore";
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        private int index;
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalDouble(index, vm.popOpDouble());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.index = code_attribute.readu1();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dstore;
+        }
+
+        @Override
+        public int getSize() {
+            return 2;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " #" + index;
+        }
+    }
+
+    public static class dstore_0 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dstore_0";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalDouble(0, vm.popOpDouble());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dstore_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dstore_1 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dstore_1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalDouble(1, vm.popOpDouble());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dstore_1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dstore_2 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dstore_2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalDouble(2, vm.popOpDouble());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dstore_2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dstore_3 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dstore_3";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalDouble(3, vm.popOpDouble());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dstore_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fstore implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fstore";
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        private int index;
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalFloat(index, vm.popOpFloat());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.index = code_attribute.readu1();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dstore;
+        }
+
+        @Override
+        public int getSize() {
+            return 2;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " #" + index;
+        }
+    }
+
+    public static class fstore_0 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fstore_0";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalFloat(0, vm.popOpFloat());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fstore_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fstore_1 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fstore_1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalFloat(1, vm.popOpFloat());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fstore_1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fstore_2 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fstore_2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalFloat(2, vm.popOpFloat());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fstore_2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fstore_3 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fstore_2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalFloat(3, vm.popOpFloat());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fstore_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
         }
     }
 
@@ -1884,12 +2252,106 @@ public class Op {
         }
     }
 
-    public static class lstore_1 implements Instruction{
-        private static final String mnemonic = "lstore_1";
+    public static class istore_3 implements Instruction{
+        private static final String mnemonic = "istore_3";
 
         @Override
         public String getOpMnemonic() {
             return mnemonic;
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalInt(3, vm.popOpInt());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.istore_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+    }
+
+    public static class lstore implements Instruction{
+        private static final String mnemonic = "lstore";
+
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        private int index;
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalLong(index, vm.popOpLong());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.index = code_attribute.readu1();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lstore;
+        }
+
+        @Override
+        public int getSize() {
+            return 2;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic + " #" + index;
+        }
+    }
+
+    public static class lstore_0 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lstore_0";
+        }
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalLong(0, vm.popOpLong());
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lstore_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+    }
+
+    public static class lstore_1 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lstore_1";
         }
         @Override
         public void execute(Vm vm) {
@@ -1912,33 +2374,25 @@ public class Op {
             return 1;
         }
 
-        @Override
-        public String toString() {
-            return mnemonic;
-        }
     }
 
-    public static class dstore_3 implements Instruction{
-        private static final String mnemonic = "dstore_3";
+    public static class lstore_2 implements Instruction{
 
         @Override
         public String getOpMnemonic() {
-            return mnemonic;
+            return "lstore_2";
         }
         @Override
         public void execute(Vm vm) {
-            vm.setLocalDouble(3, vm.popOpDouble());
+            vm.setLocalLong(2, vm.popOpLong());
             vm.increasePc(getSize());
         }
 
-        @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
 
-        }
 
         @Override
         public int getOpCode() {
-            return OpCode.dstore_3;
+            return OpCode.lstore_2;
         }
 
         @Override
@@ -1946,10 +2400,32 @@ public class Op {
             return 1;
         }
 
+    }
+
+    public static class lstore_3 implements Instruction{
+
         @Override
-        public String toString() {
-            return mnemonic;
+        public String getOpMnemonic() {
+            return "lstore_3";
         }
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalLong(3, vm.popOpLong());
+            vm.increasePc(getSize());
+        }
+
+
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lstore_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
     }
 
     public static class imul implements Instruction{
@@ -3052,5 +3528,407 @@ public class Op {
             return 1;
         }
     }
+
+    public static class dload implements Instruction {
+        public int getIndex() {
+            return index;
+        }
+
+        private int index;
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " #" + index;
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            index = code_attribute.readu1();
+        }
+
+        @Override
+        public String getOpMnemonic() {
+            return "dload";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpDouble(vm.getLocalDouble(index));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dload;
+        }
+
+        @Override
+        public int getSize() {
+            return 2;
+        }
+    }
+
+    public static class dload_0 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "dload_0";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpDouble(vm.getLocalDouble(0));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dload_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dload_1 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "dload_1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpDouble(vm.getLocalDouble(1));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dload_1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dload_2 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "dload_2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpDouble(vm.getLocalDouble(2));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dload_2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dload_3 implements Instruction {
+        @Override
+        public String getOpMnemonic() {
+            return "dload_3";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpDouble(vm.getLocalDouble(3));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dload_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fload implements Instruction {
+        public int getIndex() {
+            return index;
+        }
+
+        private int index;
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " #" + index;
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            index = code_attribute.readu1();
+        }
+
+        @Override
+        public String getOpMnemonic() {
+            return "fload";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpFloat(vm.getLocalFloat(index));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fload;
+        }
+
+        @Override
+        public int getSize() {
+            return 2;
+        }
+    }
+
+    public static class fload_0 implements Instruction {
+
+        @Override
+        public String getOpMnemonic() {
+            return "fload_0";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpFloat(vm.getLocalFloat(0));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fload_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fload_1 implements Instruction {
+
+        @Override
+        public String getOpMnemonic() {
+            return "fload_1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpFloat(vm.getLocalFloat(1));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fload_1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fload_2 implements Instruction {
+
+        @Override
+        public String getOpMnemonic() {
+            return "fload_2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpFloat(vm.getLocalFloat(2));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fload_2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fload_3 implements Instruction {
+
+        @Override
+        public String getOpMnemonic() {
+            return "fload_3";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpFloat(vm.getLocalFloat(3));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fload_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lload implements Instruction {
+        public int getIndex() {
+            return index;
+        }
+
+        private int index;
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " #" + index;
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            index = code_attribute.readu1();
+        }
+
+        @Override
+        public String getOpMnemonic() {
+            return "lload";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpLong(vm.getLocalLong(index));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fload;
+        }
+
+        @Override
+        public int getSize() {
+            return 2;
+        }
+    }
+
+    public static class lload_0 implements Instruction {
+
+        @Override
+        public String getOpMnemonic() {
+            return "lload_0";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpLong(vm.getLocalLong(0));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lload_0;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lload_1 implements Instruction {
+
+        @Override
+        public String getOpMnemonic() {
+            return "lload_1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpLong(vm.getLocalLong(1));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lload_1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lload_2 implements Instruction {
+
+        @Override
+        public String getOpMnemonic() {
+            return "lload_2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpLong(vm.getLocalLong(2));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lload_2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lload_3 implements Instruction {
+
+        @Override
+        public String getOpMnemonic() {
+            return "lload_3";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpLong(vm.getLocalLong(3));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lload_3;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
 }
 
