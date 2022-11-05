@@ -15,6 +15,19 @@ import java.util.List;
  * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html
  */
 public class Op {
+    /*
+        Actual  type	Computational type	Category
+        boolean	      int	1
+        byte	      int	1
+        char	      int	1
+        short	      int	1
+        int	          int	1
+        float	      float	1
+        reference	  reference	1
+        returnAddress returnAddress	1
+        long	      long  2
+        double	      double 2
+    */
     public static abstract class OpCode{
         public static final int aconst_null = 1;
         public static final int bipush = 16;
@@ -502,11 +515,6 @@ public class Op {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
-
-        }
-
-        @Override
         public int getOpCode() {
             return OpCode.dup;
         }
@@ -516,9 +524,1777 @@ public class Op {
             return 1;
         }
 
+    }
+
+    public static class dup_x1 implements Instruction{
+
         @Override
-        public String toString() {
-            return mnemonic;
+        public String getOpMnemonic() {
+            return "dup_x1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1);
+            vm.pushOpInt(value2);
+            vm.pushOpInt(value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dup_x1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dup_x2 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dup_x2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+            /*
+            Form 1:
+
+                ..., value3, value2, value1 →
+
+                ..., value1, value3, value2, value1
+
+                where value1, value2, and value3 are all values of a category 1 computational type (§2.11.1).
+
+                Form 2:
+
+                ..., value2, value1 →
+
+                ..., value1, value2, value1
+
+                where value1 is a value of a category 1 computational type and value2 is a value of a category 2 computational type
+             */
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dup_x2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dup2 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dup2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value = vm.popOpLong();
+            vm.pushOpLong(value);
+            vm.pushOpLong(value);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dup2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dup2_x1 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dup2_x1";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            int value2 = vm.popOpInt();
+            vm.pushOpLong(value1);
+            vm.pushOpLong(value2);
+            vm.pushOpLong(value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dup2_x1;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dup2_x2 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dup2_x2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+            /*
+            Form 1:
+
+                ..., value4, value3, value2, value1 →
+
+                ..., value2, value1, value4, value3, value2, value1
+
+                where value1, value2, value3, and value4 are all values of a category 1 computational type (§2.11.1).
+
+                Form 2:
+
+                ..., value3, value2, value1 →
+
+                ..., value1, value3, value2, value1
+
+                where value1 is a value of a category 2 computational type and value2 and value3 are both values of a category 1 computational type (§2.11.1).
+
+                Form 3:
+
+                ..., value3, value2, value1 →
+
+                ..., value2, value1, value3, value2, value1
+
+                where value1 and value2 are both values of a category 1 computational type and value3 is a value of a category 2 computational type (§2.11.1).
+
+                Form 4:
+
+                ..., value2, value1 →
+
+                ..., value1, value2, value1
+
+                where value1 and value2 are both values of a category 2 computational type (§2.11.1).
+             */
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dup2_x2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class pop implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "pop";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.popOpInt();
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.pop;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class pop2 implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "pop2";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.popOpLong();
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.pop2;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class swap implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "swap";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1);
+            vm.pushOpInt(value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.swap;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dadd implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dadd";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            double value2 = vm.popOpDouble();
+            vm.pushOpDouble(value1 + value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dadd;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class ddiv implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ddiv";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            double value2 = vm.popOpDouble();
+            vm.pushOpDouble(value1 / value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ddiv;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dmul implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dmul";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            double value2 = vm.popOpDouble();
+            vm.pushOpDouble(value1 * value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dmul;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dneg implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dneg";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            vm.pushOpDouble(-value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dneg;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class drem implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "drem";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            double value2 = vm.popOpDouble();
+            vm.pushOpDouble(value1 % value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.drem;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dsub implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dsub";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            double value2 = vm.popOpDouble();
+            vm.pushOpDouble(value1 - value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dsub;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fadd implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fadd";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            float value2 = vm.popOpFloat();
+            vm.pushOpFloat(value1 + value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fadd;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fdiv implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fdiv";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            float value2 = vm.popOpFloat();
+            vm.pushOpFloat(value1 / value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fdiv;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fmul implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fmul";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            float value2 = vm.popOpFloat();
+            vm.pushOpFloat(value1 * value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fmul;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fneg implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fneg";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            vm.pushOpFloat(-value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fneg;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class frem implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "frem";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            float value2 = vm.popOpFloat();
+            vm.pushOpFloat(value1 % value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.frem;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fsub implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fsub";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            float value2 = vm.popOpFloat();
+            vm.pushOpFloat(value1 - value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fsub;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class iadd implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "iadd";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1 + value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iadd;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class iand implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "iand";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1 & value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iand;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class idiv implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "idiv";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1 / value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.idiv;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class iinc implements Instruction{
+        private int index;
+        private int value;
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            index = code_attribute.readu1();
+            value = code_attribute.readu1();
+        }
+
+        @Override
+        public String getOpMnemonic() {
+            return "iinc";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            vm.setLocalInt(index, vm.getLocalInt(index) + value);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iinc;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+    }
+
+    public static class imul implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "imul";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1 * value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.imul;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class ineg implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ineg";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            vm.pushOpInt(-value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ineg;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class ior implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ior";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1 | value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ior;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class irem implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "irem";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1 % value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.irem;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class ishl implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ishl";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            int s = value2 & 0b11111;
+            vm.pushOpInt(value1 << s);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ishl;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class ishr implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ishr";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            int s = value2 & 0b11111;
+            vm.pushOpInt(value1 >> s);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ishr;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class isub implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "isub";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1 - value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.isub;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class iushr implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "iushr";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            int s = value2 & 0b11111;
+            vm.pushOpInt((value1 >> s) + (2 << ~s));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iushr;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class ixor implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ixor";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            int value2 = vm.popOpInt();
+            vm.pushOpInt(value1 ^ value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ixor;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class ladd implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ladd";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            vm.pushOpLong(value1 + value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ladd;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class land implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "land";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            vm.pushOpLong(value1 & value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.land;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class ldiv implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ldiv";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            vm.pushOpLong(value1 / value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ldiv;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lmul implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lmul";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            vm.pushOpLong(value1 * value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lmul;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lneg implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lneg";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            vm.pushOpLong(-value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lneg;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lor implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lor";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            vm.pushOpLong(value1 | value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lor;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lrem implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lrem";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            vm.pushOpLong(value1 % value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lrem;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lsub implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lsub";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            vm.pushOpLong(value1 - value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lsub;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lshl implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lshl";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            int value2 = vm.popOpInt();
+            int s = value2 & 0b111111;
+            vm.pushOpLong(value1 << s);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lshl;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lshr implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lshr";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            int value2 = vm.popOpInt();
+            int s = value2 & 0b111111;
+            vm.pushOpLong(value1 >> s);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lshr;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lushr implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lushr";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            int value2 = vm.popOpInt();
+            int s = value2 & 0b111111;
+            vm.pushOpLong((value1 >> s) + (2L << ~s));
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lushr;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lxor implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lxor";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            vm.pushOpLong(value1 | value2);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lxor;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class d2f implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "d2f";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            vm.pushOpFloat((float) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.d2f;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class d2i implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "d2i";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            vm.pushOpInt((int) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.d2i;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class d2l implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "d2l";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            double value1 = vm.popOpDouble();
+            vm.pushOpLong((long) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.d2l;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class f2d implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "f2d";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            vm.pushOpDouble(value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.f2d;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class f2i implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "f2i";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            vm.pushOpInt((int) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.f2i;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class f2l implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "f2l";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            float value1 = vm.popOpFloat();
+            vm.pushOpLong((long) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.f2l;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class i2b implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "i2b";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            vm.pushOpByte((byte) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.i2b;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class i2c implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "i2c";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            vm.pushOpChar((char) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.i2c;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class i2d implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "i2d";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            vm.pushOpDouble(value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.i2d;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class i2f implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "i2f";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            vm.pushOpFloat(value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.i2f;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class i2l implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "i2l";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            vm.pushOpLong(value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.i2l;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class i2s implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "i2s";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int value1 = vm.popOpInt();
+            vm.pushOpShort((short) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.i2s;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class l2d implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "l2d";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            vm.pushOpDouble(value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.l2d;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class l2f implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "l2f";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            vm.pushOpFloat(value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.l2f;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class l2i implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "l2i";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            vm.pushOpInt((int) value1);
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.l2i;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dcmpg implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dcmpg";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO handle NaN
+            //  https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.dcmp_op
+            double value1 = vm.popOpDouble();
+            double value2 = vm.popOpDouble();
+            if(value1 > value2){
+                vm.pushOpInt(1);
+            }else if(value1 == value2){
+                vm.pushOpInt(0);
+            }else {
+                vm.pushOpInt(-1);
+            }
+
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dcmpg;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class dcmpl implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "dcmpl";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO handle NaN
+            //  https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.dcmp_op
+            double value1 = vm.popOpDouble();
+            double value2 = vm.popOpDouble();
+            if(value1 > value2){
+                vm.pushOpInt(1);
+            }else if(value1 == value2){
+                vm.pushOpInt(0);
+            }else {
+                vm.pushOpInt(-1);
+            }
+
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dcmpl;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fcmpg implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fcmpg";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO handle NaN
+            //  https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.fcmp_op
+            double value1 = vm.popOpFloat();
+            double value2 = vm.popOpFloat();
+            if(value1 > value2){
+                vm.pushOpInt(1);
+            }else if(value1 == value2){
+                vm.pushOpInt(0);
+            }else {
+                vm.pushOpInt(-1);
+            }
+
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fcmpg;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class fcmpl implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "fcmpl";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO handle NaN
+            //  https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.fcmp_op
+            double value1 = vm.popOpFloat();
+            double value2 = vm.popOpFloat();
+            if(value1 > value2){
+                vm.pushOpInt(1);
+            }else if(value1 == value2){
+                vm.pushOpInt(0);
+            }else {
+                vm.pushOpInt(-1);
+            }
+
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fcmpl;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    public static class lcmp implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "lcmp";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            long value1 = vm.popOpLong();
+            long value2 = vm.popOpLong();
+            if(value1 > value2){
+                vm.pushOpInt(1);
+            }else if(value1 == value2){
+                vm.pushOpInt(0);
+            }else {
+                vm.pushOpInt(-1);
+            }
+
+            vm.increasePc(getSize());
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lcmp;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
         }
     }
 
@@ -1172,6 +2948,48 @@ public class Op {
         }
     }
 
+    public static class ifnull implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ifnull";
+        }
+        public int getOffset(){
+            return offset;
+        }
+        private int offset;
+
+        @Override
+        public void execute(Vm vm) {
+            int ref = vm.popOpRef();
+            if(!vm.getHeap().contains(ref)){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ifnonnull;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return  getOpMnemonic() + " " + offset;
+        }
+    }
+    
     public static class ifnonnull implements Instruction{
         private static final String mnemonic = "ifnonnull";
 
@@ -1496,39 +3314,6 @@ public class Op {
         }
     }
 
-    public static class iadd implements Instruction{
-        private static final String mnemonic = "iadd";
-
-        @Override
-        public String getOpMnemonic() {
-            return mnemonic;
-        }
-        @Override
-        public void execute(Vm vm) {
-            vm.pushOpInt(vm.popOpInt() + vm.popOpInt());
-            vm.increasePc(getSize());
-        }
-
-        @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
-
-        }
-
-        @Override
-        public int getOpCode() {
-            return OpCode.iadd;
-        }
-
-        @Override
-        public int getSize() {
-            return 1;
-        }
-
-        @Override
-        public String toString() {
-            return mnemonic;
-        }
-    }
 
     public static class iload_0 implements Instruction{
         private static final String mnemonic = "iload_0";
@@ -2426,88 +4211,6 @@ public class Op {
             return 1;
         }
 
-    }
-
-    public static class imul implements Instruction{
-        private static final String mnemonic = "imul";
-
-        @Override
-        public String getOpMnemonic() {
-            return mnemonic;
-        }
-        @Override
-        public void execute(Vm vm) {
-            int value2 = vm.popOpInt();
-            int value1 = vm.popOpInt();
-            vm.pushOpInt(value2 * value1);
-            vm.increasePc(getSize());
-        }
-
-        @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
-
-        }
-
-        @Override
-        public int getOpCode() {
-            return OpCode.imul;
-        }
-
-        @Override
-        public int getSize() {
-            return 1;
-        }
-
-        @Override
-        public String toString() {
-            return mnemonic;
-        }
-    }
-
-    public static class iinc implements Instruction{
-        private static final String mnemonic = "iinc";
-
-        @Override
-        public String getOpMnemonic() {
-            return mnemonic;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public int getValue() {
-            return Byte.toUnsignedInt(value);
-        }
-
-        private int index;
-        private byte value;
-        @Override
-        public void execute(Vm vm) {
-            vm.setLocalInt(index, vm.getLocalInt(index) + value);
-            vm.increasePc(getSize());
-        }
-
-        @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
-            index = code_attribute.readu1();
-            value = code_attribute.readByte();
-        }
-
-        @Override
-        public int getOpCode() {
-            return OpCode.iinc;
-        }
-
-        @Override
-        public int getSize() {
-            return 3;
-        }
-
-        @Override
-        public String toString() {
-            return mnemonic + " #" + index + " " + value;
-        }
     }
 
     public static class invokespecial implements Instruction{
