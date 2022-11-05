@@ -2753,6 +2753,82 @@ public class Op {
         }
     }
 
+    public static class if_acmpeq implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "if_acmpeq";
+        }
+        private int offset;
+
+        @Override
+        public void execute(Vm vm) {
+            if(vm.getHeap().contains(vm.popOpRef()) == vm.getHeap().contains(vm.popOpRef())){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.if_acmpeq;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
+    public static class if_acmpne implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "if_acmpne";
+        }
+        private int offset;
+
+        @Override
+        public void execute(Vm vm) {
+            if(vm.getHeap().contains(vm.popOpRef()) != vm.getHeap().contains(vm.popOpRef())){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.if_acmpne;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
     public static class if_icmpeq implements Instruction{
         private static final String mnemonic = "if_icmpeq";
 
@@ -2948,6 +3024,92 @@ public class Op {
         }
     }
 
+    public static class if_icmpgt implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "if_icmpgt";
+        }
+        public int getOffset(){
+            return offset;
+        }
+        private int offset;
+
+        @Override
+        public void execute(Vm vm) {
+            int value2 = vm.popOpInt();
+            int value1 = vm.popOpInt();
+            if(value1 > value2){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.if_icmpgt;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
+    public static class if_icmple implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "if_icmplt";
+        }
+        public int getOffset(){
+            return offset;
+        }
+        private int offset;
+
+        @Override
+        public void execute(Vm vm) {
+            int value2 = vm.popOpInt();
+            int value1 = vm.popOpInt();
+            if(value1 <= value2){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.if_icmple;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
     public static class ifnull implements Instruction{
 
         @Override
@@ -2989,7 +3151,7 @@ public class Op {
             return  getOpMnemonic() + " " + offset;
         }
     }
-    
+
     public static class ifnonnull implements Instruction{
         private static final String mnemonic = "ifnonnull";
 
