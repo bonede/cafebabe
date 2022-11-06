@@ -3199,6 +3199,415 @@ public class Op {
         }
     }
 
+    public static class ifeq implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ifeq";
+        }
+        private int offset;
+        public int getOffset(){
+            return offset;
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            if(vm.popOpInt() == 0){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ifeq;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
+    public static class ifge implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ifge";
+        }
+        private int offset;
+        public int getOffset(){
+            return offset;
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            if(vm.popOpInt() >= 0){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ifge;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
+    public static class ifgt implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ifgt";
+        }
+        private int offset;
+        public int getOffset(){
+            return offset;
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            if(vm.popOpInt() > 0){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ifgt;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
+    public static class ifle implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ifle";
+        }
+        private int offset;
+        public int getOffset(){
+            return offset;
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            if(vm.popOpInt() <= 0){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ifle;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
+    public static class iflt implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "iflt";
+        }
+        private int offset;
+        public int getOffset(){
+            return offset;
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            if(vm.popOpInt() < 0){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iflt;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
+    public static class ifne implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "ifne";
+        }
+        private int offset;
+        public int getOffset(){
+            return offset;
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            if(vm.popOpInt() != 0){
+                vm.increasePc(offset);
+            }else {
+                vm.increasePc(getSize());
+            }
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ifne;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic() + " " + offset;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.lookupswitch
+     */
+    public static class lookupswitch implements Instruction{
+        int size = 1;
+        int defaultOffset;
+        int npairs;
+
+        public int getDefaultOffset() {
+            return defaultOffset;
+        }
+
+        public int[] getPairs() {
+            return pairs;
+        }
+
+        int[] pairs;
+
+        @Override
+        public String getOpMnemonic() {
+            return "lookupswitch";
+        }
+        @Override
+        public void execute(Vm vm) {
+            // TODO use binary search
+            int key = vm.popOpInt();
+            for(int i = 0; i < npairs; i++){
+                if(key == pairs[i]){
+                    vm.increasePc(pairs[i + 1]);
+                    return;
+                }
+            }
+            vm.increasePc(defaultOffset);
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            int padding = 4 - code_attribute.getCodeBufferPosition() % 4;
+            size += padding;
+            code_attribute.skip(padding);
+            defaultOffset = code_attribute.readu4();
+            npairs = code_attribute.readu4();
+            size +=8;
+            pairs = new int[]{npairs * 2};
+            for(int i = 0; i < npairs; i++){
+                pairs[i] = code_attribute.readu4();
+                pairs[i + 1] = code_attribute.readu4();
+                size += 8;
+            }
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lookupswitch;
+        }
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.tableswitch
+     */
+    public static class tableswitch implements Instruction{
+        int size = 1;
+        int defaultOffset;
+        int low;
+        int high;
+
+        public int getDefaultOffset() {
+            return defaultOffset;
+        }
+
+        public int getLow() {
+            return low;
+        }
+
+        public int getHigh() {
+            return high;
+        }
+
+        public int[] getOffsets() {
+            return offsets;
+        }
+
+        int[] offsets;
+        @Override
+        public String getOpMnemonic() {
+            return "taleswitch";
+        }
+        @Override
+        public void execute(Vm vm) {
+            int index = vm.popOpInt();
+            if(index < low || index > high){
+                vm.increasePc(defaultOffset);
+                return;
+            }
+            vm.increasePc(offsets[index - low]);
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            int padding = 4 - code_attribute.getCodeBufferPosition() % 4;
+            size += padding;
+            code_attribute.skip(padding);
+            defaultOffset = code_attribute.readu4();
+            low = code_attribute.readu4();
+            high = code_attribute.readu4();
+            size +=12;
+            int offsets_n = high - low + 1;
+            for(int i = 0; i < offsets_n; i++){
+                offsets[i] = code_attribute.readu4();
+                size += 4;
+            }
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.tableswitch;
+        }
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+    }
+
+    public static class checkcast implements Instruction{
+        private int index;
+        @Override
+        public String getOpMnemonic() {
+            return "checkcast";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+            throw new RuntimeException("Not implemented");
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.index = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.checkcast;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return  getOpMnemonic() + " #" + index;
+        }
+    }
+
     public static class goto_ implements Instruction{
         private static final String mnemonic = "goto";
 

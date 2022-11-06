@@ -408,6 +408,10 @@ public class Vm {
         getCurrentFrame().increasePc(offset);
     }
 
+    public void setPc(int pc){
+        getCurrentFrame().setPc(pc);
+    }
+
     public long getLocalLong(int index) {
         return getCurrentFrame().getLocals().getLong(index);
     }

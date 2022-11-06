@@ -1236,6 +1236,10 @@ public class ClassImage {
             super(classImage, attribute_name_index, attribute_length);
         }
 
+        public int getCodeBufferPosition(){
+            return codeBuffer.position();
+        }
+
         public int getMaxStack() {
             return max_stack;
         }
@@ -1291,6 +1295,10 @@ public class ClassImage {
             return Byte.toUnsignedInt(codeBuffer.get());
         }
 
+        public void skip(int bytes){
+            codeBuffer.position(codeBuffer.position() + bytes);
+        }
+
         public byte readByte(){
             return codeBuffer.get();
         }
@@ -1331,6 +1339,10 @@ public class ClassImage {
 
         public int readu2() {
             return Short.toUnsignedInt(codeBuffer.getShort());
+        }
+
+        public int readu4() {
+            return codeBuffer.getInt();
         }
 
         public short readShort() {

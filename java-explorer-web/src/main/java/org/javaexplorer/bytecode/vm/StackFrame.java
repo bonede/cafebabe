@@ -34,6 +34,9 @@ public class StackFrame {
     public void increasePc(int offset){
         pc += offset;
     }
+    public void setPc(int pc){
+        this.pc = pc;
+    }
     public StackFrame(int ci, int mi){
         this.ci = ci;
         this.mi = mi;
