@@ -5193,6 +5193,596 @@ public class Op {
         }
     }
 
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.aaload
+     */
+    public static class aaload implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "aaload";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int ref = vm.popOpRef();
+            int index = vm.popOpInt();
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.aaload;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.aastore
+     */
+    public static class aastore implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "aastore";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int ref = vm.popOpRef();
+            int index = vm.popOpInt();
+            int valueRef = vm.popOpRef();
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.aastore;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.anewarray
+     */
+    public static class anewarray implements Instruction{
+        public int getIndex() {
+            return index;
+        }
+
+        private int index;
+
+        @Override
+        public String getOpMnemonic() {
+            return "anewarray";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            index = code_attribute.readu2();
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int count = vm.popOpInt();
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.anewarray;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.arraylength
+     */
+    public static class arraylength implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "arraylength";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int ref = vm.popOpRef();
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.arraylength;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.baload
+     */
+    public static class baload implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "baload";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.baload;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.bastore
+     */
+    public static class bastore implements Instruction{
+
+
+        @Override
+        public String getOpMnemonic() {
+            return "baload";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.bastore;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.caload
+     */
+    public static class caload implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "caload";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.caload;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.castore
+     */
+    public static class castore implements Instruction{
+
+
+        @Override
+        public String getOpMnemonic() {
+            return "castore";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.castore;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.daload
+     */
+    public static class daload implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "daload";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.daload;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.dastore
+     */
+    public static class dastore implements Instruction{
+
+
+        @Override
+        public String getOpMnemonic() {
+            return "dastore";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dastore;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.faload
+     */
+    public static class faload implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "faload";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.faload;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.fastore
+     */
+    public static class fastore implements Instruction{
+
+
+        @Override
+        public String getOpMnemonic() {
+            return "fastore";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.fastore;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.iaload
+     */
+    public static class iaload implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "iaload";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iaload;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.iastore
+     */
+    public static class iastore implements Instruction{
+
+
+        @Override
+        public String getOpMnemonic() {
+            return "iastore";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.iastore;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.laload
+     */
+    public static class laload implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "laload";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.laload;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.lastore
+     */
+    public static class lastore implements Instruction{
+
+
+        @Override
+        public String getOpMnemonic() {
+            return "lastore";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lastore;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.multianewarray
+     */
+    public static class multianewarray implements Instruction{
+
+
+        @Override
+        public String getOpMnemonic() {
+            return "multianewarray";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.multianewarray;
+        }
+
+        @Override
+        public int getSize() {
+            return 4;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.newarray
+     */
+    public static class newarray implements Instruction{
+
+
+        @Override
+        public String getOpMnemonic() {
+            return "newarray";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.newarray;
+        }
+
+        @Override
+        public int getSize() {
+            return 2;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.saload
+     */
+    public static class saload implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "saload";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.saload;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.sastore
+     */
+    public static class sastore implements Instruction{
+
+        @Override
+        public String getOpMnemonic() {
+            return "sastore";
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.sastore;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+    }
+
     public static class getstatic implements Instruction{
         private static final String mnemonic = "getstatic";
 
@@ -5272,6 +5862,116 @@ public class Op {
         @Override
         public String toString() {
             return mnemonic + " #" + index;
+        }
+    }
+
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.instanceof
+     */
+    public static class instanceof_ implements Instruction{
+        public int getIndex() {
+            return index;
+        }
+
+        private int index;
+        @Override
+        public String getOpMnemonic() {
+            return "instanceof";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            int ref = vm.popOpRef();
+            // TODO implement
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.index = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.instanceof_;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return  getOpMnemonic() + " #" + index;
+        }
+    }
+
+    /**
+     *  Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokedynamic
+      */
+    public static class invokedynamic implements Instruction{
+        private int index;
+        @Override
+        public String getOpMnemonic() {
+            return "invokedynamic";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.invokedynamic;
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            index = code_attribute.readu2();
+            // read 2 zero byte
+            code_attribute.readu2();
+        }
+
+        @Override
+        public int getSize() {
+            return 5;
+        }
+    }
+
+    /**
+     * https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.invokedynamic
+     */
+    public static class invokeinterface implements Instruction{
+        private int index;
+        private int count;
+        @Override
+        public String getOpMnemonic() {
+            return "invokeinterface";
+        }
+
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.invokeinterface;
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            index = code_attribute.readu2();
+            count = code_attribute.readu1();
+            // read 1 zero byte
+            code_attribute.readu2();
+        }
+
+        @Override
+        public int getSize() {
+            return 5;
         }
     }
 
