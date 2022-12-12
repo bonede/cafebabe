@@ -1,3 +1,1 @@
-import {JavaExplorerApp} from "./comp/app";
-
-new JavaExplorerApp()
+// new JavaExplorerApp()
