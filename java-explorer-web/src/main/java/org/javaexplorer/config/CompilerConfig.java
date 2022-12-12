@@ -17,5 +17,6 @@ public class CompilerConfig {
     public static class Compiler{
         private String name;
         private String cmd;
+        private String example;
     }
 }

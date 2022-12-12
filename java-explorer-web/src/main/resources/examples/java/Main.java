@@ -1,3 +1,4 @@
+import java.lang.System;
 /**
  * Example java source file.
  * You may edit it and click Build button.

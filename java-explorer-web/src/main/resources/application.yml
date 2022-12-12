@@ -7,6 +7,11 @@ compiler:
   compilers:
     - name: openjdk8
       cmd: javac -d build {OPTS} {SRC_FILES}
+      example: examples/java/Main.java
     - name: openjdk11
       cmd: javac -d build {OPTS} {SRC_FILES}
+      example: examples/java/Main.java
+    - name: kotlin1.7.20
+      cmd: kotlinc -d build {OPTS} {SRC_FILES}
+      example: examples/kotlin/Main.kt
 
