@@ -5,6 +5,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class WebAppInfo {
+public class AppInfo {
     private List<CompilerInfo> compilers;
 }

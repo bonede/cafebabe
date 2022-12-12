@@ -8,7 +8,6 @@ import org.javaexplorer.bytecode.vm.HeapObject;
 import org.javaexplorer.bytecode.vm.Vm;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -457,9 +456,9 @@ public class Op {
             case OpCode.monitorexit: return new monitorexit();
             case OpCode.nop: return new nop();
             case OpCode.wide: return new wide();
-            case OpCode.breakpoint: return new breakpoint();
-            case OpCode.impdep1: return new impdep1();
-            case OpCode.impdep2: return new impdep2();
+            case OpCode.breakpoint: return new reserved();
+            case OpCode.impdep1: return new reserved();
+            case OpCode.impdep2: return new reserved();
 
         }
         throw new RuntimeException("Invalid opcode: " + opCode);
@@ -3653,6 +3652,122 @@ public class Op {
         }
     }
 
+    public static class goto_w implements Instruction{
+        private static final String mnemonic = "goto_w";
+
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+        public int getOffset(){
+            return offset;
+        }
+        private int offset;
+
+        @Override
+        public void execute(Vm vm) {
+            vm.increasePc(offset);
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readu4();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.goto_w;
+        }
+
+        @Override
+        public int getSize() {
+            return 5;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic + " " + offset;
+        }
+    }
+
+    public static class jsr implements Instruction{
+        private static final String mnemonic = "jsr";
+
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+        public int getOffset(){
+            return offset;
+        }
+        private int offset;
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpShort((short) offset);
+            vm.increasePc(offset);
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.jsr;
+        }
+
+        @Override
+        public int getSize() {
+            return 3;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic + " " + offset;
+        }
+    }
+
+    public static class jsr_w implements Instruction{
+        private static final String mnemonic = "jsr_w";
+
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+        public int getOffset(){
+            return offset;
+        }
+        private int offset;
+
+        @Override
+        public void execute(Vm vm) {
+            vm.pushOpInt(offset);
+            vm.increasePc(offset);
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            this.offset = code_attribute.readu4();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.jsr_w;
+        }
+
+        @Override
+        public int getSize() {
+            return 5;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic + " " + offset;
+        }
+    }
+
     public static class fconst_1 implements Instruction{
         private static final String mnemonic = "fconst_1";
 
@@ -6113,6 +6228,39 @@ public class Op {
         }
     }
 
+    public static class ret implements Instruction{
+        private static final String mnemonic = "ret";
+        private int index;
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            index = code_attribute.readShort();
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.ret;
+        }
+
+        @Override
+        public int getSize() {
+            return 2;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic;
+        }
+    }
+
     public static class ireturn implements Instruction{
         private static final String mnemonic = "ireturn";
 
@@ -6148,6 +6296,107 @@ public class Op {
         }
     }
 
+    public static class lreturn implements Instruction{
+        private static final String mnemonic = "lreturn";
+
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+        @Override
+        public void execute(Vm vm) {
+            long result = vm.popOpLong();
+            vm.popFrame();
+            vm.pushOpLong(result);
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.lreturn;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic;
+        }
+    }
+
+    public static class dreturn implements Instruction{
+        @Override
+        public String getOpMnemonic() {
+            return "dreturn";
+        }
+        @Override
+        public void execute(Vm vm) {
+            double result = vm.popOpDouble();
+            vm.popFrame();
+            vm.pushOpDouble(result);
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.dreturn;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic();
+        }
+    }
+
+    public static class freturn implements Instruction{
+        @Override
+        public String getOpMnemonic() {
+            return "freturn";
+        }
+        @Override
+        public void execute(Vm vm) {
+            float result = vm.popOpFloat();
+            vm.popFrame();
+            vm.pushOpFloat(result);
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.freturn;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+        @Override
+        public String toString() {
+            return getOpMnemonic();
+        }
+    }
+
     public static class areturn implements Instruction{
         private static final String mnemonic = "areturn";
 
@@ -6170,6 +6419,42 @@ public class Op {
         @Override
         public int getOpCode() {
             return OpCode.areturn;
+        }
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
+        @Override
+        public String toString() {
+            return mnemonic;
+        }
+    }
+
+    /**
+     * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html#jvms-6.5.athrow
+     */
+    public static class athrow implements Instruction{
+        private static final String mnemonic = "athrow";
+
+        @Override
+        public String getOpMnemonic() {
+            return mnemonic;
+        }
+        @Override
+        public void execute(Vm vm) {
+            // TODO implement
+        }
+
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return OpCode.athrow;
         }
 
         @Override
@@ -6301,29 +6586,44 @@ public class Op {
 
         @Override
         public void execute(Vm vm) {
-
+            if(opCode == OpCode.iinc){
+                vm.setLocalInt(index, vm.getLocalInt(index) + value);
+                size = 6;
+            }else if(opCode == OpCode.iload){
+                vm.pushOpInt(vm.getLocalInt(index));
+            }else if(opCode == OpCode.fload){
+                vm.pushOpFloat(vm.getLocalFloat(index));
+            }else if(opCode == OpCode.aload){
+                vm.pushOpRef(vm.getLocalInt(index));
+            }else if(opCode == OpCode.lload){
+                vm.pushOpLong(vm.getLocalLong(index));
+            }else if(opCode == OpCode.dload){
+                vm.pushOpDouble(vm.getLocalDouble(index));
+            }else if(opCode == OpCode.istore){
+                vm.setLocalInt(index, vm.popOpInt());
+            }else if(opCode == OpCode.fstore){
+                vm.setLocalFloat(index, vm.popOpFloat());
+            }else if(opCode == OpCode.astore){
+                vm.setLocalRef(index, vm.popOpRef());
+            }else if(opCode == OpCode.lstore){
+                vm.setLocalLong(index, vm.popOpLong());
+            }else if(opCode == OpCode.dstore){
+                vm.setLocalDouble(index, vm.popOpDouble());
+            } else if(opCode == OpCode.ret){
+               // TODO implement
+            }
+            vm.increasePc(getSize());
         }
 
         @Override
         public void parse(ClassImage.Code_attribute code_attribute) {
             opCode = code_attribute.readu1();
             index = code_attribute.readu2();
-            int[] ops = new int[]{
-                    OpCode.iload,
-                    OpCode.fload,
-                    OpCode.aload,
-                    OpCode.lload,
-                    OpCode.dload,
-                    OpCode.fstore,
-                    OpCode.astore,
-                    OpCode.lstore,
-                    OpCode.dstore,
-                    OpCode.ret,
-            };
+            value = code_attribute.readu2();
             if(opCode == OpCode.iinc){
                 value = code_attribute.readu2();
                 size = 6;
-            }else if(Arrays.asList(ops).contains(opCode)) {
+            }else {
                 size = 4;
             }
         }
@@ -6335,7 +6635,7 @@ public class Op {
 
         @Override
         public int getSize() {
-            return 0;
+            return size;
         }
     }
 
@@ -6903,6 +7203,33 @@ public class Op {
             return 1;
         }
     }
+    public static class reserved implements Instruction{
+        @Override
+        public void parse(ClassImage.Code_attribute code_attribute) {
+            throw new RuntimeException("Reserved opcode should not appear in class file");
+        }
+
+        @Override
+        public String getOpMnemonic() {
+            return null;
+        }
+
+        @Override
+        public void execute(Vm vm) {
+
+        }
+
+        @Override
+        public int getOpCode() {
+            return 0;
+        }
+
+        @Override
+        public int getSize() {
+            return 0;
+        }
+    }
+
 
 }
 

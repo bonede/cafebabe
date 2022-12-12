@@ -6,50 +6,6 @@ import org.javaexplorer.bytecode.op.Instruction;
 import java.io.IOException;
 import java.util.Stack;
 
-/*
-x86 call exmaple:
-0000000000000000 <caller>:
-   0:   55                      push   rbp
-   1:   48 89 e5                mov    rbp,rsp
-   4:   48 83 ec 10             sub    rsp,0x10 ; point to stack top
-   8:   c7 45 f8 03 00 00 00    mov    DWORD PTR [rbp-0x8],0x3
-   f:   c7 45 fc 05 00 00 00    mov    DWORD PTR [rbp-0x4],0x5
-  16:   8b 55 fc                mov    edx,DWORD PTR [rbp-0x4]
-  19:   8b 45 f8                mov    eax,DWORD PTR [rbp-0x8]
-  1c:   89 d6                   mov    esi,edx
-  1e:   89 c7                   mov    edi,eax
-  20:   e8 00 00 00 00          call   25 <caller+0x25>
-  25:   c9                      leave
-  26:   c3                      ret
-
-0000000000000027 <callee>:
-  27:   55                      push   rbp
-  28:   48 89 e5                mov    rbp,rsp ; skip setup stack, since not calling any function
-  2b:   89 7d ec                mov    DWORD PTR [rbp-0x14],edi
-  2e:   89 75 e8                mov    DWORD PTR [rbp-0x18],esi
-  31:   8b 45 ec                mov    eax,DWORD PTR [rbp-0x14]
-  34:   0f af 45 e8             imul   eax,DWORD PTR [rbp-0x18]
-  38:   89 45 fc                mov    DWORD PTR [rbp-0x4],eax
-  3b:   8b 45 fc                mov    eax,DWORD PTR [rbp-0x4]
-  3e:   5d                      pop    rbp
-  3f:   c3                      ret
-
-
-
-The CALL instruction performs two operations:
-1. It pushes the return address (address immediately after the CALL instruction)
-    on the stack.
-2. It changes EIP to the call destination. This effectively transfers control to
-    the call target and begins execution there.
-
-
-The RTN instruction:
-1. pop EIP value from stack to EIP register.
-2. JMP to instruction EIP points to.
- */
-
-
-
 public class Vm {
     /*
         Stack format:

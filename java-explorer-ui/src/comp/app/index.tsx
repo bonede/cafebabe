@@ -2,6 +2,7 @@ import './index.css'
 import {Direction, Panel, PanelContent, PanelGroup} from "../panel";
 import * as monaco from "monaco-editor";
 import {Logger} from "../logger";
+import {ApiClient} from "../../api/ApiClient";
 
 export class JavaExplorerApp{
     editor
@@ -128,6 +129,12 @@ export class JavaExplorerApp{
             this.logger.appendLog("error", "Note: the background must be transparent for the border to show up at all. So, alternatively, you can also set the main background color as the highlight background color to make the border disappear.\n" +
                 "\n" +
                 "Play with the code in the Monaco Editor playground to see the various effects.")
+        })
+
+        window.addEventListener("load", async () => {
+            console.log("12312")
+            const apiClient = new ApiClient();
+            await apiClient.getAppInfo()
         })
     }
 }

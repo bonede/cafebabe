@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
 import {PanelNode, PanelRoot} from "./comp/panel/root";
 import {Panel} from "./comp/panel/panel";
 
 
 function App() {
+    useEffect(() => {
+        console.log("123")
+    }, [])
     let header = <div>JavaExplorer</div>
     let footer = <div>&copy; 2022</div>
     let leftNode: PanelNode = {

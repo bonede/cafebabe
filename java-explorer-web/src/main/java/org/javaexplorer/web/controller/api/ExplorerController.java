@@ -1,4 +1,4 @@
-package org.javaexplorer.web.controller;
+package org.javaexplorer.web.controller.api;
 
 import org.javaexplorer.model.vo.ApiResp;
 import org.javaexplorer.model.vo.ExplorerReq;
@@ -15,7 +15,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/explorer")
+@RequestMapping("/api/explorer")
 @Validated
 public class ExplorerController {
     @Autowired
