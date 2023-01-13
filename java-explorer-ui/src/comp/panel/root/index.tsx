@@ -36,22 +36,22 @@ function panelHeader(props: PanelRootProp){
     return <div className="pl-header">{props.header}</div>
 }
 
-interface PanelGroupProp{
+interface PanelGroupProps{
     nodes: PanelNode[]
     orientation: orientation
 }
 
-function PanelGroup(prop: PanelGroupProp){
+function PanelGroup(props: PanelGroupProps){
     let onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         let target = e.target
     }
     return <div
         onMouseMove={onMouseMove}
-        className={`pl-panel-group ${prop.orientation}`} style={{
+        className={`pl-panel-group ${props.orientation}`} style={{
         gridTemplateColumns: "1fr 1fr 1fr"
     }
     }>
-        {prop.nodes.map((n,i) => <Panel index={i} node={n} />)}
+        {props.nodes.map((n,i) => <Panel index={i} node={n} />)}
     </div>
 }
 

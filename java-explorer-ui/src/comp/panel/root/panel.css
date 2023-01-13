@@ -12,7 +12,7 @@
     border-bottom: 1px solid #3c4043;
 }
 .pl-panel-group{
-    display: grid;
+    height: 100%;
     flex: 1;
 }
 .pl-panel{

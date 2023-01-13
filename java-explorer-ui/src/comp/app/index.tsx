@@ -1,140 +1,155 @@
 import './index.css'
-import {Direction, Panel, PanelContent, PanelGroup} from "../panel";
+import {Direction, Panel, PanelGroup, PanelTab} from "../panel";
 import * as monaco from "monaco-editor";
-import {Logger} from "../logger";
-import {ApiClient} from "../../api/ApiClient";
+import React, {useEffect} from "react";
+import {getPanelElement, isMouseOnHandleBar} from "../rect";
+import {addClass, removeClass} from "../Utils";
 
-export class JavaExplorerApp{
-    editor
-    editorDiv: HTMLDivElement
-    loggerDiv: HTMLDivElement
-    logger: Logger
-    rootPanel: Panel
-    onResize(){
-        this.rootPanel.layout()
-        this.resizeEditor()
+
+export function JavaExplorerApp(){
+    // editor
+    // editorDiv: HTMLDivElement
+    // loggerDiv: HTMLDivElement
+    // logger: Logger
+    // rootPanel: Panel
+    const onResize = () => {
+
+    }
+    var resizing = false
+    var startX = 0
+    var startY = 0
+    var startFlex = 0
+    var panelEle = null as HTMLElement | null
+
+    const resize = (ele: HTMLElement, x: number, y: number) =>{
+        const sibling = ele.nextElementSibling as HTMLDivElement
+        console.log("resizing")
+        const panelGroupEle = ele.parentElement!
+        const panelGroupWidth = panelGroupEle.offsetWidth
+        const direction = panelGroupEle.className.includes("vertical") ? Direction.Vertical : Direction.Horizontal;
+        const deltaX = x - startX
+        const deltaY = y - startY
+        const delta  = direction == Direction.Horizontal ? deltaX : deltaY
+        const deltaFlex = 2 * delta/panelGroupWidth
+
+        ele.style.flexBasis = "0";
+        ele.style.flexShrink = "0";
+        const flex = startFlex + deltaFlex
+        ele.style.flexGrow = ( startFlex + deltaFlex).toString();
+
+        sibling.style.flexBasis = "0";
+        sibling.style.flexShrink = "0";
+        sibling.style.flexGrow = ( 2 - flex).toString();
+        console.log(flex)
     }
 
-    resizeEditor(){
-        let rect = this.editorDiv.parentElement!.getBoundingClientRect()
-        this.editor.layout({
-            width: rect.width,
-            height: rect.height
-        })
+    const handleWindowMouseMove = (e: MouseEvent) => {
+        if(resizing){
+            resize(panelEle!, e.clientX, e.clientY)
+            return
+        }
+        const showHandleBar = isMouseOnHandleBar(e);
+        const thisPanelEle = getPanelElement(e)
+        if(showHandleBar){
+            addClass(thisPanelEle!, "hover")
+        }else {
+            removeClass(thisPanelEle!, "hover")
+        }
+
     }
 
-    public constructor() {
-        this.editorDiv = document.createElement("div")
-        this.editorDiv.className = "editor"
-        monaco.editor.defineTheme('vs-dark-enhanced', {
-            base: 'vs-dark',
-            inherit: true,
-            rules: [],
-            colors: {
-                'editor.foreground': "#bdc1c6",
-                'editor.lineHighlightBackground': '#303134',
-                'editor.lineHighlightBorder': '#303134',
-                "editor.overviewRulerBorder": "false"
-            }
-        });
-        this.editor = monaco.editor.create(this.editorDiv, {
-            theme: "vs-dark-enhanced",
-            value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-            language: 'java',
-            fontSize: 18,
-            automaticLayout: false,
-            minimap: {enabled: false},
-            smoothScrolling: true,
-            scrollbar: {
-                vertical: 'visible',
-                horizontal: 'visible',
-                useShadows: false
-            }
-        })
-        const versionSelect = document.createElement("select")
-        const option = document.createElement("option")
-        option.innerText = "java11"
-        versionSelect.appendChild(option)
-        let codeContent =  new PanelContent(
-            "Main.java",
-            this.editorDiv,
-            undefined,
-            versionSelect,
-            [
-                {
-                    icon: "upload.svg",
-                    tip: "Upload"
-                },
-                {
-                    icon: "share.svg",
-                    tip: "Share"
-                }
-            ]
-        )
-
-        let codePanel = new Panel([codeContent], 1, true, false)
-        this.loggerDiv = document.createElement("div")
-        this.logger = new Logger(this.loggerDiv)
-        let outputContent =  new PanelContent(
-            "Output",
-            this.loggerDiv,
-            "Output Footer",
-        )
-        let outputPanel = new Panel([outputContent], 1, true, false)
-
-        let leftPanelGroup = new PanelGroup([codePanel, outputPanel], Direction.Vertical, this.onResize.bind(this))
-
-        let leftPanelContent = new PanelContent(
-            "Left",
-            leftPanelGroup,
-            "Left footer"
-        )
-        let rightA = document.createElement("div")
-        rightA.innerText = "Right A"
-        let rightB = document.createElement("div")
-        rightB.innerText = "Right B"
-        let rightPanelContentA = new PanelContent(
-            "Main.class",
-            rightA,
-            "Right footer"
-        )
-        let rightPanelContentB = new PanelContent(
-            "Right B",
-            rightB,
-            "Right footer"
-        )
-        let leftPanel = new Panel([leftPanelContent], 1, false, false)
-        let rightPanel = new Panel([rightPanelContentA, rightPanelContentB], 1, true, false)
-        let mainContentPanelGroup = new PanelGroup(
-            [leftPanel, rightPanel],
-            Direction.Horizontal,
-            this.onResize.bind(this)
-        )
-
-        let rootPanelContent = new PanelContent(
-            "JavaExplorer",
-            mainContentPanelGroup,
-            "@copy 2022"
-        )
-        this.rootPanel = new Panel([rootPanelContent], 1)
-        let rootDiv = this.rootPanel.render()
-        document.body.appendChild(rootDiv)
-        this.rootPanel.layout()
-        this.resizeEditor()
-        window.addEventListener("resize", this.onResize.bind(this))
-        this.loggerDiv.addEventListener("click", () => {
-            this.logger.appendLog("info", "Note: the background must be transparent for the border to show up at all. So, alternatively, you can also set the main background color as the highlight background color to make the border disappear.\n" +
-                "\n" +
-                "Play with the code in the Monaco Editor playground to see the various effects.")
-            this.logger.appendLog("error", "Note: the background must be transparent for the border to show up at all. So, alternatively, you can also set the main background color as the highlight background color to make the border disappear.\n" +
-                "\n" +
-                "Play with the code in the Monaco Editor playground to see the various effects.")
-        })
-
-        window.addEventListener("load", async () => {
-            console.log("12312")
-            const apiClient = new ApiClient();
-            await apiClient.getAppInfo()
-        })
+    const handleWindowMouseDown = (e: MouseEvent) => {
+        if(isMouseOnHandleBar(e)){
+            resizing = true;
+            panelEle = getPanelElement(e)!
+            startX = e.clientX
+            startY = e.clientY
+            console.warn("BEGIN")
+            startFlex = parseFloat(getComputedStyle(getPanelElement(e)!).flexGrow)
+        }
     }
+
+    const handleWindowMouseUp = (e: MouseEvent) => {
+        resizing = false;
+        panelEle = null
+        startX = 0
+        startY = 0
+        startFlex = 0
+    }
+    useEffect(()=> {
+        window.addEventListener("mousemove", handleWindowMouseMove)
+        window.addEventListener("mousedown", handleWindowMouseDown)
+        window.addEventListener("mouseup", handleWindowMouseUp)
+    }, [])
+    //
+    // resizeEditor(){
+    //     let rect = this.editorDiv.parentElement!.getBoundingClientRect()
+    //     this.editor.layout({
+    //         width: rect.width,
+    //         height: rect.height
+    //     })
+    // }
+
+
+    const editorDiv = document.createElement("div")
+    editorDiv.className = "editor"
+    monaco.editor.defineTheme('vs-dark-enhanced', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [],
+        colors: {
+            'editor.foreground': "#bdc1c6",
+            'editor.lineHighlightBackground': '#303134',
+            'editor.lineHighlightBorder': '#303134',
+            "editor.overviewRulerBorder": "false"
+        }
+    });
+    const editor = monaco.editor.create(editorDiv, {
+        theme: "vs-dark-enhanced",
+        value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+        language: 'java',
+        fontSize: 18,
+        automaticLayout: false,
+        minimap: {enabled: false},
+        smoothScrolling: true,
+        scrollbar: {
+            vertical: 'visible',
+            horizontal: 'visible',
+            useShadows: false
+        }
+    })
+
+
+    const left = <Panel right={<select><option>Java11</option> </select>}
+                  rightIcons={
+                      [
+                          {
+                              tip: "Upload",
+                              icon: "upload.svg"
+                          },
+                          {
+                              tip: "Share",
+                              icon: "share.svg"
+                          }
+                      ]
+                  } showTitle={true} showFooter={true} size={1}>
+        <PanelTab
+
+                  footer="12kb" title="Main.java"><div>1122</div></PanelTab>
+        <PanelTab footer="12kb" title="Foo.java"><div>1124442</div></PanelTab>
+    </Panel>
+
+    const right = <PanelGroup direction={Direction.Vertical} sizes={[1]}>
+        <Panel showTitle={true} showFooter={true} size={1}>
+            <PanelTab title={"12"}>12</PanelTab>
+        </Panel>
+        <Panel showTitle={true} showFooter={true} size={1}>
+            <PanelTab title={"12"}>12</PanelTab>
+        </Panel>
+    </PanelGroup>
+    return <PanelGroup direction={Direction.Horizontal} sizes={[1]}>
+        {left}
+        {right}
+    </PanelGroup>
+
 }

@@ -40,3 +40,6 @@ code {
 ::-webkit-scrollbar-corner{
   display: none;
 }
+#root{
+  height: 100%;
+}
