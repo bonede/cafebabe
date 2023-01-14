@@ -15,6 +15,8 @@ export function isInRect(x: number, y: number, rect: Rect){
     return result
 }
 const RESIZE_HANDLE_BAR_SIZE = 10
+const MIN_PANEL_HEIGHT = 100
+const MIN_PANEL_WIDTH = 100
 
 export function getPanelElement(e: MouseEvent): HTMLElement | null{
     let ele = e.target as HTMLElement | null;
@@ -57,4 +59,26 @@ export function isMouseOnHandleBar(e: MouseEvent): boolean{
     };
     console.warn(thisPanelDiv.offsetHeight)
     return isInRect(x, y , handleBarRect);
+}
+
+
+export function resize(ele: HTMLElement, x: number, y: number, startX: number, startY: number, lastX: number, lastY: number, startFlex: number){
+    const sibling = ele.nextElementSibling as HTMLDivElement
+    const panelGroupEle = ele.parentElement!
+    const panelGroupWidth = panelGroupEle.offsetWidth
+    const direction = panelGroupEle.className.includes("vertical") ? Direction.Vertical : Direction.Horizontal;
+    const deltaX = x - startX
+    const deltaY = y - startY
+
+    const delta  = direction == Direction.Horizontal ? deltaX : deltaY
+    const deltaFlex = 2 * delta / panelGroupWidth
+
+    ele.style.flexBasis = "0";
+    ele.style.flexShrink = "0";
+    const flex = startFlex + deltaFlex
+    ele.style.flexGrow = ( startFlex + deltaFlex).toString();
+
+    sibling.style.flexBasis = "0";
+    sibling.style.flexShrink = "0";
+    sibling.style.flexGrow = ( 2 - flex).toString();
 }

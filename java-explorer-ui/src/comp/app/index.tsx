@@ -2,7 +2,7 @@ import './index.css'
 import {Direction, Panel, PanelGroup, PanelTab} from "../panel";
 import * as monaco from "monaco-editor";
 import React, {useEffect} from "react";
-import {getPanelElement, isMouseOnHandleBar} from "../rect";
+import {getPanelElement, isMouseOnHandleBar, resize} from "../rect";
 import {addClass, removeClass} from "../Utils";
 
 
@@ -15,37 +15,24 @@ export function JavaExplorerApp(){
     const onResize = () => {
 
     }
-    var resizing = false
-    var startX = 0
-    var startY = 0
-    var startFlex = 0
-    var panelEle = null as HTMLElement | null
+    let resizing = false
+    let startX = 0
+    let startY = 0
+    let lastX = 0
+    let lastY = 0
+    let startFlex = 0
+    let lastWidth = 0
+    let lastHeight = 0
+    let panelEle = null as HTMLElement | null
 
-    const resize = (ele: HTMLElement, x: number, y: number) =>{
-        const sibling = ele.nextElementSibling as HTMLDivElement
-        console.log("resizing")
-        const panelGroupEle = ele.parentElement!
-        const panelGroupWidth = panelGroupEle.offsetWidth
-        const direction = panelGroupEle.className.includes("vertical") ? Direction.Vertical : Direction.Horizontal;
-        const deltaX = x - startX
-        const deltaY = y - startY
-        const delta  = direction == Direction.Horizontal ? deltaX : deltaY
-        const deltaFlex = 2 * delta/panelGroupWidth
 
-        ele.style.flexBasis = "0";
-        ele.style.flexShrink = "0";
-        const flex = startFlex + deltaFlex
-        ele.style.flexGrow = ( startFlex + deltaFlex).toString();
 
-        sibling.style.flexBasis = "0";
-        sibling.style.flexShrink = "0";
-        sibling.style.flexGrow = ( 2 - flex).toString();
-        console.log(flex)
-    }
 
     const handleWindowMouseMove = (e: MouseEvent) => {
         if(resizing){
-            resize(panelEle!, e.clientX, e.clientY)
+            resize(panelEle!, e.clientX, e.clientY, startX, startY, lastX, lastY, startFlex)
+            lastX = e.clientX
+            lastY = e.clientY
             return
         }
         const showHandleBar = isMouseOnHandleBar(e);
@@ -64,6 +51,8 @@ export function JavaExplorerApp(){
             panelEle = getPanelElement(e)!
             startX = e.clientX
             startY = e.clientY
+            lastWidth = panelEle.offsetWidth
+            lastHeight = panelEle.offsetHeight
             console.warn("BEGIN")
             startFlex = parseFloat(getComputedStyle(getPanelElement(e)!).flexGrow)
         }
@@ -120,7 +109,7 @@ export function JavaExplorerApp(){
     })
 
 
-    const left = <Panel right={<select><option>Java11</option> </select>}
+    const left = <Panel minWidth={400} right={<select><option>Java11</option> </select>}
                   rightIcons={
                       [
                           {
@@ -133,10 +122,8 @@ export function JavaExplorerApp(){
                           }
                       ]
                   } showTitle={true} showFooter={true} size={1}>
-        <PanelTab
-
-                  footer="12kb" title="Main.java"><div>1122</div></PanelTab>
-        <PanelTab footer="12kb" title="Foo.java"><div>1124442</div></PanelTab>
+        <PanelTab footer="12kb" title="Main.java"><div>1122</div></PanelTab>
+        <PanelTab footer="36kb" title="Foo.java"><div>1124442</div></PanelTab>
     </Panel>
 
     const right = <PanelGroup direction={Direction.Vertical} sizes={[1]}>

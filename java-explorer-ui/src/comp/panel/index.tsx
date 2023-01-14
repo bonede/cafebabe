@@ -8,6 +8,8 @@ export interface PanelProp{
     size: number
     right?: ReactNode
     rightIcons?: RightIcon[]
+    minWidth?: number
+    minHeight?: number
 }
 
 
@@ -35,7 +37,10 @@ export const Panel = (props: PanelProp) => {
     }
 
 
-    return <div  className="pl-panel">
+    return <div className="pl-panel" style={{
+        minWidth: props.minWidth ? props.minWidth + "px" : "auto",
+        minHeight: props.minHeight ? props.minHeight + "px" : "auto"
+    }}>
         {
             props.showTitle ? <div className="pl-panel-title">
                 {tabView()}
