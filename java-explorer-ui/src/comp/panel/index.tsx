@@ -29,7 +29,7 @@ export const Panel = (props: PanelProp) => {
             {
                 children.map((t, i) => {
                     return <div onClick={() => onTabClick(i)} className={(tabIndex == i ? "current " : "") + "pl-tab-item"}>
-                        {t.props.children}
+                        {t.props.title}
                     </div>
                 })
             }
@@ -80,7 +80,7 @@ export interface PanelTabProps{
 }
 
 export const PanelTab: React.FC<PanelTabProps> = (props) => {
-    return <>123</>
+    return <>12121221</>
 }
 
 export enum Direction{
@@ -134,19 +134,6 @@ export function PanelGroup(props: PanelGroupProps){
     var dw = 0
     var isResizing = false
 
-
-    const getNewSizes = () : number[] => {
-        let dw = 0
-        return props.sizes.map((p, i) => {
-            if(i == resizingPanelIndex){
-                return p - dw
-            }else if(i == resizingPanelIndex - 1){
-                return p + dw
-            }else {
-                return p
-            }
-        })
-    }
 
     const getResizePanelIndex = () : number => {
         let panelDivs = panelGroupDiv.current.getElementsByClassName("panel")
@@ -229,28 +216,6 @@ export function PanelGroup(props: PanelGroupProps){
         }
     }
 
-    // layout(){
-    //     if(!this.rootDiv.parentElement){
-    //         return
-    //     }
-    //     let rect = this.rootDiv.parentElement!.getBoundingClientRect();
-    //     let parentWidth = rect.width
-    //     let parentHeight = rect.height
-    //     let newSizes = this.getNewSize();
-    //     for(let i = 0; i < this.panelDivs.length; i++){
-    //         let div = this.panelDivs[i];
-    //         if(this.direction == Direction.Vertical){
-    //             setWidth(div, parentWidth)
-    //             setHeight(div, Math.max(parentHeight * newSizes[i]/this.totalSize, this.minSize))
-    //         }else if(this.direction == Direction.Horizontal){
-    //             setWidth(div, Math.max(parentWidth * newSizes[i]/this.totalSize, this.minSize))
-    //             setHeight(div, parentHeight)
-    //         }
-    //     }
-    //     for(let i = 0; i < this.panels.length; i++){
-    //         this.panels[i].layout()
-    //     }
-    // }
 
     return <div onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove} ref={panelGroupDiv} className={(props.direction == Direction.Vertical ?  "vertical" : "horizontal") + " pl-panel-group"}>
         {props.children}

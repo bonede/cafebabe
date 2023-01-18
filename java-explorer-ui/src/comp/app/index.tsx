@@ -1,9 +1,9 @@
 import './index.css'
 import {Direction, Panel, PanelGroup, PanelTab} from "../panel";
-import * as monaco from "monaco-editor";
 import React, {useEffect} from "react";
 import {getPanelElement, isMouseOnHandleBar, resize} from "../rect";
 import {addClass, removeClass} from "../Utils";
+import {Editor} from "../editor";
 
 
 export function JavaExplorerApp(){
@@ -65,48 +65,24 @@ export function JavaExplorerApp(){
         startY = 0
         startFlex = 0
     }
+
     useEffect(()=> {
         window.addEventListener("mousemove", handleWindowMouseMove)
         window.addEventListener("mousedown", handleWindowMouseDown)
         window.addEventListener("mouseup", handleWindowMouseUp)
     }, [])
-    //
-    // resizeEditor(){
-    //     let rect = this.editorDiv.parentElement!.getBoundingClientRect()
+
+
+
+
+    // const resizeEditor = (ele: HTMLElement) => {
+    //     let rect = ele.getBoundingClientRect()
     //     this.editor.layout({
     //         width: rect.width,
     //         height: rect.height
     //     })
     // }
 
-
-    const editorDiv = document.createElement("div")
-    editorDiv.className = "editor"
-    monaco.editor.defineTheme('vs-dark-enhanced', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [],
-        colors: {
-            'editor.foreground': "#bdc1c6",
-            'editor.lineHighlightBackground': '#303134',
-            'editor.lineHighlightBorder': '#303134',
-            "editor.overviewRulerBorder": "false"
-        }
-    });
-    const editor = monaco.editor.create(editorDiv, {
-        theme: "vs-dark-enhanced",
-        value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
-        language: 'java',
-        fontSize: 18,
-        automaticLayout: false,
-        minimap: {enabled: false},
-        smoothScrolling: true,
-        scrollbar: {
-            vertical: 'visible',
-            horizontal: 'visible',
-            useShadows: false
-        }
-    })
 
 
     const left = <Panel minWidth={400} right={<select><option>Java11</option> </select>}
@@ -122,8 +98,8 @@ export function JavaExplorerApp(){
                           }
                       ]
                   } showTitle={true} showFooter={true} size={1}>
-        <PanelTab footer="12kb" title="Main.java"><div>1122</div></PanelTab>
-        <PanelTab footer="36kb" title="Foo.java"><div>1124442</div></PanelTab>
+        <PanelTab footer="12kb" title="Main.java"><Editor lang={'java'} content={'444'} /></PanelTab>
+        <PanelTab footer="36kb" title="Foo.java"><div>2</div></PanelTab>
     </Panel>
 
     const right = <PanelGroup direction={Direction.Vertical} sizes={[1]}>
