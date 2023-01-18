@@ -85,7 +85,7 @@ export function JavaExplorerApp(){
 
 
 
-    const left = <Panel minWidth={400} right={<select><option>Java11</option> </select>}
+    const editorPanel = <Panel minWidth={400} right={<select><option>Java11</option> </select>}
                   rightIcons={
                       [
                           {
@@ -98,20 +98,20 @@ export function JavaExplorerApp(){
                           }
                       ]
                   } showTitle={true} showFooter={true} size={1}>
-        <PanelTab footer="12kb" title="Main.java"><Editor lang={'java'} content={'444'} /></PanelTab>
-        <PanelTab footer="36kb" title="Foo.java"><div>2</div></PanelTab>
-    </Panel>
+                    <PanelTab footer="12kb" title="Main.java"><Editor lang={'java'} content={'444'} /></PanelTab>
+                    <PanelTab footer="36kb" title="Foo.java"><div>2</div></PanelTab>
+                </Panel>
 
     const right = <PanelGroup direction={Direction.Vertical} sizes={[1]}>
         <Panel showTitle={true} showFooter={true} size={1}>
-            <PanelTab title={"12"}>12</PanelTab>
+            <PanelTab title={"Main.class"}>12</PanelTab>
         </Panel>
         <Panel showTitle={true} showFooter={true} size={1}>
-            <PanelTab title={"12"}>12</PanelTab>
+            <PanelTab title={"Output"}>12</PanelTab>
         </Panel>
     </PanelGroup>
     return <PanelGroup direction={Direction.Horizontal} sizes={[1]}>
-        {left}
+        {editorPanel}
         {right}
     </PanelGroup>
 

@@ -80,7 +80,7 @@ export interface PanelTabProps{
 }
 
 export const PanelTab: React.FC<PanelTabProps> = (props) => {
-    return <>12121221</>
+    return <></>
 }
 
 export enum Direction{
