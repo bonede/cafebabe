@@ -1,6 +1,8 @@
 export interface CompilerInfo{
     name: string
     example: string
+    lang: string
+    fileName: string
 }
 
 export interface ApiResp<T>{
@@ -16,8 +18,15 @@ export interface AppInfo{
 type HttpMethod = "get" | "post"
 
 export class ApiClient{
+    private static API_CLIENT = new ApiClient();
+
+    public static getClient(): ApiClient{
+        return ApiClient.API_CLIENT;
+    }
+
     public getApiUrl(): string{
-        if(window.location.href.includes("")){
+        const href = window.location.href;
+        if(href.includes("localhost") || href.includes("127.0.0.1")){
             return "http://localhost:8080/api"
         }else {
             // TODO return production url
@@ -42,7 +51,11 @@ export class ApiClient{
         return fetch(url, init).then(r => r.json())
     }
 
-    public getAppInfo(): Promise<ApiResp<AppInfo>>{
-        return this.request("/app/info", "get")
+    public async getAppInfo(): Promise<AppInfo> {
+        let resp = await this.request<AppInfo>("/app/info", "get")
+        if("ok" == resp.code){
+            return resp.data;
+        }
+        throw new Error(resp.msg);
     }
 }

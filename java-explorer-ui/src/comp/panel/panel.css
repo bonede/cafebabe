@@ -126,3 +126,11 @@ body{
 .pl-panel-right-icons div:hover{
     background-color: #555555;
 }
+.pl-body-container{
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+.pl-body-container.current{
+    display: block;
+}

@@ -55,7 +55,7 @@ export const Panel = (props: PanelProp) => {
             </div> : null
         }
         <div className={"pl-body"}>{
-            children[tabIndex].props?.children
+            children.map((c, i) => <div className={(tabIndex == i ? "current " : "") + "pl-body-container"}>{c.props.children}</div>)
         }
         </div>
         {

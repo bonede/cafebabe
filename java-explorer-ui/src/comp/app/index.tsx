@@ -1,20 +1,14 @@
 import './index.css'
 import {Direction, Panel, PanelGroup, PanelTab} from "../panel";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {getPanelElement, isMouseOnHandleBar, resize} from "../rect";
 import {addClass, removeClass} from "../Utils";
 import {Editor} from "../editor";
+import {ApiClient, AppInfo, CompilerInfo} from "../../api/ApiClient";
 
 
 export function JavaExplorerApp(){
-    // editor
-    // editorDiv: HTMLDivElement
-    // loggerDiv: HTMLDivElement
-    // logger: Logger
-    // rootPanel: Panel
-    const onResize = () => {
 
-    }
     let resizing = false
     let startX = 0
     let startY = 0
@@ -24,10 +18,9 @@ export function JavaExplorerApp(){
     let lastWidth = 0
     let lastHeight = 0
     let panelEle = null as HTMLElement | null
-
-
-
-
+    let [appInfo, setAppInfo] = useState<AppInfo>()
+    let [currentCompiler, setCurrentCompiler] = useState<CompilerInfo>()
+    
     const handleWindowMouseMove = (e: MouseEvent) => {
         if(resizing){
             resize(panelEle!, e.clientX, e.clientY, startX, startY, lastX, lastY, startFlex)
@@ -66,40 +59,38 @@ export function JavaExplorerApp(){
         startFlex = 0
     }
 
+
+
+
+
     useEffect(()=> {
         window.addEventListener("mousemove", handleWindowMouseMove)
         window.addEventListener("mousedown", handleWindowMouseDown)
         window.addEventListener("mouseup", handleWindowMouseUp)
+        ApiClient.getClient().getAppInfo().then(r => {
+            setAppInfo(r)
+            setCurrentCompiler(r.compilers[0])
+        })
     }, [])
 
 
 
-
-    // const resizeEditor = (ele: HTMLElement) => {
-    //     let rect = ele.getBoundingClientRect()
-    //     this.editor.layout({
-    //         width: rect.width,
-    //         height: rect.height
-    //     })
-    // }
-
-
-
-    const editorPanel = <Panel minWidth={400} right={<select><option>Java11</option> </select>}
-                  rightIcons={
-                      [
-                          {
-                              tip: "Upload",
-                              icon: "upload.svg"
-                          },
-                          {
-                              tip: "Share",
-                              icon: "share.svg"
-                          }
-                      ]
-                  } showTitle={true} showFooter={true} size={1}>
-                    <PanelTab footer="12kb" title="Main.java"><Editor lang={'java'} content={'444'} /></PanelTab>
-                    <PanelTab footer="36kb" title="Foo.java"><div>2</div></PanelTab>
+    const editorPanel = <Panel
+                    minWidth={400}
+                    right={<select>{appInfo && appInfo.compilers.map(c => <option>{c.name}</option> )}</select>}
+                    rightIcons={
+                    [
+                        {
+                          tip: "Upload",
+                          icon: "upload.svg"
+                        },
+                        {
+                          tip: "Share",
+                          icon: "share.svg"
+                        }
+                    ]
+                    } showTitle={true} showFooter={true} size={1}>
+                        <PanelTab footer="" title={currentCompiler && currentCompiler.fileName}><Editor lang={currentCompiler && currentCompiler.lang || "java"} content={currentCompiler && currentCompiler.example || ""} /></PanelTab>
                 </Panel>
 
     const right = <PanelGroup direction={Direction.Vertical} sizes={[1]}>

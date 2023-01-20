@@ -6,4 +6,6 @@ import lombok.Data;
 public class CompilerInfo {
     private String name;
     private String example;
+    private String lang;
+    private String fileName;
 }

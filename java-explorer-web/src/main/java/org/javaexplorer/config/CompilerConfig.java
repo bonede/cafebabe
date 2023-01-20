@@ -16,6 +16,7 @@ public class CompilerConfig {
     @Data
     public static class Compiler{
         private String name;
+        private String lang;
         private String cmd;
         private String example;
     }

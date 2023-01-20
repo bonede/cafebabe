@@ -1,6 +1,8 @@
 import './editor.css'
 import * as monaco from 'monaco-editor';
-import {useEffect, useRef} from "react";
+import {editor} from 'monaco-editor';
+import {useEffect, useRef, useState} from "react";
+import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 
 monaco.editor.defineTheme('vs-dark-enhanced', {
     base: 'vs-dark',
@@ -19,10 +21,10 @@ export interface EditorProps{
     content: string
 }
 export function Editor(props: EditorProps){
-
-    const editorElement = useRef(null);
+    let [editor, setEditor] = useState<IStandaloneCodeEditor>()
+    const editorElement = useRef(null)
     useEffect(() => {
-        monaco.editor.create(editorElement.current!, {
+        editor = monaco.editor.create(editorElement.current!, {
             theme: "vs-dark-enhanced",
             value: props.content,
             language: props.lang,
@@ -34,9 +36,20 @@ export function Editor(props: EditorProps){
                 vertical: 'visible',
                 horizontal: 'visible',
                 useShadows: false
-            }
+            },
         })
+        setEditor(editor)
     }, []);
+    const handleContentChange = () => {
+        console.log(props.content,editor)
+        if(props.content && editor){
+            editor.setValue(props.content)
+            console.log("value", editor.getValue());
+            console.log("full");
+        }
 
-    return <div style={{width: "100%"}} ref={editorElement} className="code-editor"></div>
+
+    }
+    useEffect(handleContentChange, [props.content])
+    return <div style={{width: "100%", height: "100%"}} ref={editorElement} className="code-editor"></div>
 }

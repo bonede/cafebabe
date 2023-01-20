@@ -1,6 +1,7 @@
 package org.javaexplorer.web.service;
 
 
+import org.apache.commons.io.FilenameUtils;
 import org.javaexplorer.config.CompilerConfig;
 import org.javaexplorer.model.vo.AppInfo;
 import org.javaexplorer.model.vo.CompilerInfo;
@@ -29,6 +30,8 @@ public class AppService {
         appInfo.setCompilers(compilerConfig.getCompilers().stream().map( c -> {
             CompilerInfo compilerInfo = new CompilerInfo();
             compilerInfo.setName(c.getName());
+            compilerInfo.setLang(c.getLang());
+            compilerInfo.setFileName(FilenameUtils.getName(c.getExample()));
             try {
                 compilerInfo.setExample(ResourcesUtils.readResourceToString(this.getClass(), c.getExample()));
             } catch (IOException e) {
