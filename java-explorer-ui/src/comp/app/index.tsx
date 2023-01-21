@@ -60,9 +60,6 @@ export function JavaExplorerApp(){
     }
 
 
-
-
-
     useEffect(()=> {
         window.addEventListener("mousemove", handleWindowMouseMove)
         window.addEventListener("mousedown", handleWindowMouseDown)
@@ -74,10 +71,12 @@ export function JavaExplorerApp(){
     }, [])
 
 
-
+    const  handleLangSelect: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+        setCurrentCompiler(appInfo?.compilers.filter(c => c.name == e.target.value)[0])
+    }
     const editorPanel = <Panel
                     minWidth={400}
-                    right={<select>{appInfo && appInfo.compilers.map(c => <option>{c.name}</option> )}</select>}
+                    right={<select onChange={handleLangSelect}>{appInfo && appInfo.compilers.map(c => <option>{c.name}</option> )}</select>}
                     rightIcons={
                     [
                         {
