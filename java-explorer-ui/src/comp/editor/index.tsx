@@ -19,6 +19,7 @@ monaco.editor.defineTheme('vs-dark-enhanced', {
 export interface EditorProps{
     lang: string
     content: string
+    onContentChange?: (content: string) => void
 }
 export function Editor(props: EditorProps){
     let [editor, setEditor] = useState<IStandaloneCodeEditor>()
@@ -38,17 +39,16 @@ export function Editor(props: EditorProps){
                 useShadows: false
             },
         })
+        editor.getModel()?.onDidChangeContent(e => {
+            props.onContentChange?.(editor?.getValue() || "")
+        })
         setEditor(editor)
     }, []);
     const handleContentChange = () => {
-        console.log(props.content,editor)
         if(props.content && editor){
             editor.setValue(props.content)
-            console.log("value", editor.getValue());
-            console.log("full");
+            props.onContentChange?.(props.content)
         }
-
-
     }
     useEffect(handleContentChange, [props.content])
     return <div style={{width: "100%", height: "100%"}} ref={editorElement} className="code-editor"></div>

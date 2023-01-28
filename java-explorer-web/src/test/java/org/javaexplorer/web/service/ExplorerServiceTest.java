@@ -2,8 +2,8 @@ package org.javaexplorer.web.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.javaexplorer.model.SrcFile;
-import org.javaexplorer.model.vo.ExplorerReq;
-import org.javaexplorer.model.vo.ExplorerResult;
+import org.javaexplorer.model.vo.CompileReq;
+import org.javaexplorer.model.vo.CompileResult;
 import org.javaexplorer.utils.JsonUtils;
 import org.javaexplorer.utils.ResourcesUtils;
 import org.junit.jupiter.api.Test;
@@ -26,11 +26,11 @@ class ExplorerServiceTest {
         srcFile.setPath("Main.java");
         srcFile.setSize(javaFileBytes.length);
         srcFile.setContent(new String(javaFileBytes));
-        ExplorerReq explorerReq = new ExplorerReq();
-        explorerReq.setCompilerName("openjdk8");
-        explorerReq.setSave(false);
-        explorerReq.setSrcFiles(Arrays.asList(srcFile));
-        ExplorerResult result = explorerService.explore(explorerReq);
+        CompileReq compileReq = new CompileReq();
+        compileReq.setCompilerName("openjdk8");
+        compileReq.setSave(false);
+        compileReq.setSrcFiles(Arrays.asList(srcFile));
+        CompileResult result = explorerService.explore(compileReq);
         log.info("result {}", JsonUtils.toJson(result));
     }
 }

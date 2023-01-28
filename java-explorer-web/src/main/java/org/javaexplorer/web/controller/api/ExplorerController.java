@@ -1,8 +1,8 @@
 package org.javaexplorer.web.controller.api;
 
 import org.javaexplorer.model.vo.ApiResp;
-import org.javaexplorer.model.vo.ExplorerReq;
-import org.javaexplorer.model.vo.ExplorerResult;
+import org.javaexplorer.model.vo.CompileReq;
+import org.javaexplorer.model.vo.CompileResult;
 import org.javaexplorer.web.service.ExplorerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -22,10 +22,10 @@ public class ExplorerController {
     private ExplorerService explorerService;
 
     @PostMapping
-    public ApiResp<ExplorerResult> explorer(
-            @RequestBody @Valid ExplorerReq explorerReq) throws IOException {
+    public ApiResp<CompileResult> explorer(
+            @RequestBody @Valid CompileReq compileReq) throws IOException {
         return ApiResp.ok(
-                explorerService.explore(explorerReq)
+                explorerService.explore(compileReq)
         );
     }
 

@@ -3,6 +3,7 @@ package org.javaexplorer.bytecode.vm;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
 import org.javaexplorer.bytecode.op.DescriptorParser;
 import org.javaexplorer.bytecode.op.Instruction;
 import org.javaexplorer.bytecode.op.Op;
@@ -1172,6 +1173,9 @@ public class ClassImage {
         public abstract void read();
     }
 
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.2">ref</a></a>
+     */
     public static class ConstantValue_attribute extends attribute_info{
         private short constantvalue_index;
 
@@ -1179,7 +1183,7 @@ public class ClassImage {
             super(classImage, attribute_name_index, attribute_length);
         }
 
-        public short getConstantvalue_index() {
+        public short getConstantValueIndex() {
             return constantvalue_index;
         }
 
@@ -1373,6 +1377,9 @@ public class ClassImage {
     }
 
     public static class LineNumberTable_attribute extends attribute_info{
+        public int getLineNumberTableLength() {
+            return line_number_table_length;
+        }
         private int line_number_table_length;
         private line_number_table_item[] line_number_table;
         public LineNumberTable_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
@@ -1434,6 +1441,13 @@ public class ClassImage {
             signature_index = classImage.readu2();
         }
 
+        public int getSignatureIndex(){
+            return signature_index;
+        }
+
+        public String getSignature(){
+            return classImage.getUtf8At(signature_index);
+        }
     }
 
     /**
@@ -1455,16 +1469,25 @@ public class ClassImage {
             }
         }
 
+        public int getNumberOfExceptions() {
+            return number_of_exceptions;
+        }
+
+        public int[] getExceptionIndexTable() {
+            return exception_index_table;
+        }
     }
 
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.2">ref</a></a>
+     */
     public static class Deprecated_attribute  extends attribute_info{
         public Deprecated_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
             super(classImage, attribute_name_index, attribute_length);
         }
         @Override
         public void read() {
-            // TODO implement
-            classImage.readBytes(attribute_length);
+            // Do nothing
         }
 
     }
@@ -1472,7 +1495,6 @@ public class ClassImage {
     @Slf4j
     public static class Unknown_attribute extends attribute_info{
         private byte[] value;
-        private short sourceFileNameIndex;
         public Unknown_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
             super(classImage, attribute_name_index, attribute_length);
             log.info("Unknown attributes: " + getAttributeName());
@@ -1483,8 +1505,8 @@ public class ClassImage {
             value = classImage.readBytes(attribute_length);
         }
 
-        public byte[] getValue(){
-            return value;
+        public String getValue(){
+            return Hex.encodeHexString(value);
         }
 
     }
@@ -1502,6 +1524,9 @@ public class ClassImage {
 
         public String getSourceFileName(){
             return classImage.getUtf8At(sourceFileNameIndex);
+        }
+        public short getSourceFileNameIndex(){
+            return sourceFileNameIndex;
         }
 
     }

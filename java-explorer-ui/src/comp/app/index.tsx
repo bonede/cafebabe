@@ -20,6 +20,7 @@ export function JavaExplorerApp(){
     let panelEle = null as HTMLElement | null
     let [appInfo, setAppInfo] = useState<AppInfo>()
     let [currentCompiler, setCurrentCompiler] = useState<CompilerInfo>()
+    let [editorContent, setEditorContent] = useState<string>("")
     
     const handleWindowMouseMove = (e: MouseEvent) => {
         if(resizing){
@@ -71,8 +72,11 @@ export function JavaExplorerApp(){
     }, [])
 
 
-    const  handleLangSelect: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+    const handleLangSelect: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
         setCurrentCompiler(appInfo?.compilers.filter(c => c.name == e.target.value)[0])
+    }
+    const handleEditorContentChange = (content: string) => {
+        setEditorContent(content);
     }
     const editorPanel = <Panel
                     minWidth={400}
@@ -80,16 +84,22 @@ export function JavaExplorerApp(){
                     rightIcons={
                     [
                         {
+                            tip: "Build",
+                            icon: "hammer.svg"
+                        },
+                        {
                           tip: "Upload",
-                          icon: "upload.svg"
+                          icon: "cloud_upload.svg"
                         },
                         {
                           tip: "Share",
-                          icon: "share.svg"
+                          icon: "link.svg"
                         }
                     ]
                     } showTitle={true} showFooter={true} size={1}>
-                        <PanelTab footer="" title={currentCompiler && currentCompiler.fileName}><Editor lang={currentCompiler && currentCompiler.lang || "java"} content={currentCompiler && currentCompiler.example || ""} /></PanelTab>
+                        <PanelTab footer="" title={currentCompiler && currentCompiler.fileName}>
+                            <Editor onContentChange={handleEditorContentChange} lang={currentCompiler && currentCompiler.lang || "java"} content={currentCompiler && currentCompiler.example || ""} />
+                        </PanelTab>
                 </Panel>
 
     const right = <PanelGroup direction={Direction.Vertical} sizes={[1]}>

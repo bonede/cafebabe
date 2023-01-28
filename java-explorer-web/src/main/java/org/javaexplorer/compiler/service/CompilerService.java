@@ -8,7 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.javaexplorer.config.CompilerConfig;
 import org.javaexplorer.model.ClassFile;
 import org.javaexplorer.model.SrcFile;
-import org.javaexplorer.model.vo.CompileResult;
+import org.javaexplorer.model.vo.CompileOutput;
 import org.javaexplorer.utils.CommandUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -105,7 +105,7 @@ public class CompilerService {
     }
 
 
-    public CompileResult compile(
+    public CompileOutput compile(
             String compilerName,
             String compilerOptions,
             List<SrcFile> srcFiles
@@ -118,14 +118,25 @@ public class CompilerService {
         Path workingDir = saveFile(srcFiles);
         String cmd = formatCmd(compiler.getCmd(), workingDir.toString(), compilerOptions, srcFiles);
         CommandUtils.CommandResult result = CommandUtils.run(workingDir.toFile(), cmd.split(" "));
-
         if(result.getCode() == 0){
-            CompileResult compileResult = CompileResult.success(collectClassFile(workingDir), result.getOutput(), compilerName, compilerOptions);
+            CompileOutput compileOutput = CompileOutput.success(
+                    collectClassFile(workingDir),
+                    result.getStdout(),
+                    result.getStderr(),
+                    compilerName,
+                    compilerOptions
+            );
             FileUtils.deleteDirectory(workingDir.toFile());
-            return compileResult;
+            return compileOutput;
         }else {
             FileUtils.deleteDirectory(workingDir.toFile());
-            return CompileResult.fail(result.getCode(), result.getOutput(), compilerName, compilerOptions);
+            return CompileOutput.fail(
+                    result.getCode(),
+                    result.getStdout(),
+                    result.getStderr(),
+                    compilerName,
+                    compilerOptions
+            );
         }
 
     }

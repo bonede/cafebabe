@@ -10,8 +10,10 @@ import java.util.List;
 @Data
 public class CompileReq {
     @NotNull
-    private String compilerNickname;
+    private String compilerName;
     private String compilerOptions;
     @NotEmpty
     private List<SrcFile> srcFiles;
+    @NotNull
+    private boolean save;
 }

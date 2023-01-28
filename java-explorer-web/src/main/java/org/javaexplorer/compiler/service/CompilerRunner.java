@@ -1,7 +1,7 @@
 package org.javaexplorer.compiler.service;
 
 import org.javaexplorer.model.SrcFile;
-import org.javaexplorer.model.vo.CompileResult;
+import org.javaexplorer.model.vo.CompileOutput;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,7 +36,7 @@ public abstract class CompilerRunner {
      * @return
      * @throws IOException
      */
-    abstract CompileResult compileWithRawCompilerOptions(List<SrcFile> srcFiles, String compilerOptions) throws IOException;
+    abstract CompileOutput compileWithRawCompilerOptions(List<SrcFile> srcFiles, String compilerOptions) throws IOException;
 
     /**
      * Compile with sanitized options.
@@ -45,7 +45,7 @@ public abstract class CompilerRunner {
      * @return
      * @throws IOException
      */
-    public CompileResult compile(List<SrcFile> srcFiles, String compilerOptions) throws IOException {
+    public CompileOutput compile(List<SrcFile> srcFiles, String compilerOptions) throws IOException {
         return compileWithRawCompilerOptions(srcFiles, sanitizeCompilerOptions(compilerOptions));
     }
 

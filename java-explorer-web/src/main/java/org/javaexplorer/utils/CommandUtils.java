@@ -10,10 +10,14 @@ import java.util.stream.Collectors;
 
 public abstract class CommandUtils {
 
+    /**
+     * 运行命令结果
+     */
     @Data
     public static class CommandResult{
         private int code;
-        private String output;
+        private String stdout;
+        private String stderr;
         public boolean success(){
             return code == 0;
         }
@@ -26,14 +30,15 @@ public abstract class CommandUtils {
                 .collect(Collectors.toList()).toArray(new String[]{});
         ProcessBuilder pb = new ProcessBuilder(sanitizedArgs);
         pb.directory(workingDir);
-        pb.redirectErrorStream(true);
         try {
             Process process = pb.start();
-            String output = IOUtils.toString(process.getInputStream(), "utf-8");
+            String stdout = IOUtils.toString(process.getInputStream(), "utf-8");
+            String stderr = IOUtils.toString(process.getErrorStream(), "utf-8");
             int code = process.waitFor();
             CommandResult commandResult = new CommandResult();
             commandResult.setCode(code);
-            commandResult.setOutput(output);
+            commandResult.setStdout(stdout);
+            commandResult.setStdout(stderr);
             return commandResult;
         }catch (Exception e){
             throw new RuntimeException(e);

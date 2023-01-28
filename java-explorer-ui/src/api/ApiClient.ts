@@ -15,6 +15,52 @@ export interface AppInfo{
     compilers: CompilerInfo[]
 }
 
+export interface CompileResult{
+    classImages: ClassImage[]
+    returnCode: number
+    stdout: string
+    stderr: string
+}
+type class_access_flag = "ACC_PUBLIC" |
+    "ACC_FINAL" |
+    "ACC_SUPER" |
+    "ACC_INTERFACE" |
+    "ACC_ABSTRACT" |
+    "ACC_SYNTHETIC" |
+    "ACC_ANNOTATION" |
+    "ACC_ENUM";
+
+export interface line_number_table_item{
+    startPc: number;
+    lineNumber: number;
+}
+export interface attribute_info{
+    attributeNameIndex: number
+    attributeName: string
+    // SourceFile
+    sourceFileName: string
+    sourceFileNameIndex: number
+
+    // Signature
+    signatureIndex: number
+    signature: string
+    // ConstantValue
+    constantValueIndex: number
+    // Exceptions
+    numberOfExceptions: number
+    exceptionIndexTable: number
+    // LineNumberTable
+    lineNumberTableLength: number
+    LineNumberTable: line_number_table_item[]
+    // unhanded, hex string
+    value: string
+}
+export interface ClassImage{
+    accessFlags: class_access_flag[]
+    attributeCount: number
+    attributes: attribute_info[]
+}
+
 type HttpMethod = "get" | "post"
 
 export class ApiClient{
@@ -58,4 +104,6 @@ export class ApiClient{
         }
         throw new Error(resp.msg);
     }
+
+
 }
