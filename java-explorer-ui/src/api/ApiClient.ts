@@ -34,6 +34,35 @@ export interface line_number_table_item{
     startPc: number;
     lineNumber: number;
 }
+
+export interface annotation{
+    type_index: number
+    num_element_value_pairs: number
+    element_value_pairs: element_value_pair[]
+}
+
+export interface element_value_pair{
+    element_name_index: number
+    value: element_value
+}
+
+export interface enum_const_value{
+    type_name_index: number
+    const_name_index: number
+}
+export interface array_value{
+    num_values: number
+    values: element_value[]
+}
+
+export interface element_value{
+    tag: string
+    const_value_index: number
+    enum_const_value: enum_const_value
+    class_info_index: number
+    annotation_value: annotation
+    array_value: array_value
+}
 export interface attribute_info{
     attributeNameIndex: number
     attributeName: string
@@ -52,6 +81,10 @@ export interface attribute_info{
     // LineNumberTable
     lineNumberTableLength: number
     LineNumberTable: line_number_table_item[]
+    // RuntimeVisibleAnnotations
+    numAnnotations: number
+    annotations: annotation[]
+
     // unhanded, hex string
     value: string
 }

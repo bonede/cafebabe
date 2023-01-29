@@ -2,6 +2,7 @@ package org.javaexplorer.bytecode.vm;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.javaexplorer.bytecode.op.DescriptorParser;
@@ -320,12 +321,12 @@ public class ClassImage {
                 case "ConstantValue": attribute_info = new ConstantValue_attribute(this, name_index, length); break;
                 case "Code": attribute_info = new Code_attribute(this, name_index, length); break;
                 case "LineNumberTable": attribute_info = new LineNumberTable_attribute(this, name_index, length); break;
-                case "StackMapTable": attribute_info = new StackMapTable_attribute(this, name_index, length); break;
                 case "Signature": attribute_info = new Signature_attribute(this, name_index, length); break;
                 case "Exceptions": attribute_info = new Exceptions_attribute(this, name_index, length); break;
                 case "Deprecated": attribute_info = new Deprecated_attribute(this, name_index, length); break;
                 case "SourceFile": attribute_info = new SourceFile_attribute(this, name_index, length); break;
                 case "RuntimeVisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
+                // TODO add more attributes
                 default: attribute_info = new Unknown_attribute(this, name_index, length); break;
             }
             attribute_info.read();
@@ -1411,23 +1412,6 @@ public class ClassImage {
     }
 
     /**
-     * <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.4">Ref</a>
-     */
-    public static class StackMapTable_attribute extends attribute_info{
-        private int number_of_entries;
-        public StackMapTable_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
-            super(classImage, attribute_name_index, attribute_length);
-        }
-
-        @Override
-        public void read() {
-            // TODO implement. Now we just ignore all the bytes
-            classImage.readBytes(attribute_length);
-        }
-
-    }
-
-    /**
      * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.9">Ref</a>
      */
     public static class Signature_attribute extends attribute_info{
@@ -1531,44 +1515,61 @@ public class ClassImage {
 
     }
 
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.16">ref</a>
+     */
     public static class RuntimeVisibleAnnotations_attribute  extends attribute_info{
         private int num_annotations;
         private annotation annotations[];
         public RuntimeVisibleAnnotations_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
             super(classImage, attribute_name_index, attribute_length);
         }
+
+        public int getNumAnnotations() {
+            return num_annotations;
+        }
+
+        public annotation[] getAnnotations() {
+            return annotations;
+        }
+
         @Override
         public void read() {
             // TODO implement
             classImage.readBytes(attribute_length);
         }
     }
+    @Data
     public static class annotation{
         private int type_index;
         private int num_element_value_pairs;
         private element_value_pair element_value_pairs[];
 
     }
-
+    @Data
     public static class element_value_pair{
         private int element_name_index;
         private element_value value;
     }
 
-    public static class  element_value{
-        private byte tag;
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.16.1>ref</a>
+     */
+    @Data
+    public static class element_value{
+        private char tag;
         private int const_value_index;
         private enum_const_value enum_const_value;
         private int class_info_index;
         private annotation annotation_value;
         private array_value array_value;
     }
-
+    @Data
     public static class array_value{
         private int num_values;
         private element_value values[];
     }
-
+    @Data
     public static class enum_const_value{
         private int type_name_index;
         private int const_name_index;
