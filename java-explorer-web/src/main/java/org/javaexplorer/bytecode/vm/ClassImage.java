@@ -716,6 +716,10 @@ public class ClassImage {
 
         private short name_index;
 
+        public short getNameIndex() {
+            return name_index;
+        }
+
         public String getName(){
             return classImage.getUtf8At(name_index);
         }
@@ -737,7 +741,9 @@ public class ClassImage {
             );
         }
     }
-
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.2>ref</a>
+     */
     public static class CONSTANT_Fieldref_info implements cp_info {
         private ClassImage classImage;
 
@@ -748,22 +754,26 @@ public class ClassImage {
         private short class_index;
         private short name_and_type_index;
 
+
+
+        @JsonIgnore
+        public DescriptorParser.FieldType getFieldType(){
+            return (DescriptorParser.FieldType) DescriptorParser.parse(getFieldDescriptor());
+        }
+        public String getFieldDescriptor(){
+            return classImage.getNameAndTypeInfo(name_and_type_index).getDescriptor();
+        }
         public String getClassName(){
             return classImage.getClassInfoAt(class_index).getName();
         }
-        public String getFieldName(ClassImage classImage){
+        public String getFieldName(){
             return classImage.getNameAndTypeInfo(name_and_type_index).getName();
         }
-
-        public DescriptorParser.FieldType getFileType(ClassImage classImage){
-            return (DescriptorParser.FieldType) DescriptorParser.parse(classImage.getNameAndTypeInfo(name_and_type_index).getDescriptor());
-        }
-
-        public short class_index() {
+        public short getClassIndex() {
             return class_index;
         }
 
-        public short name_and_type_index() {
+        public short getNameAndTypeIndex() {
             return name_and_type_index;
         }
 
@@ -786,7 +796,9 @@ public class ClassImage {
             );
         }
     }
-
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.2>ref</a>
+     */
     public static class CONSTANT_Methodref_info implements cp_info {
         private ClassImage classImage;
 
@@ -799,6 +811,20 @@ public class ClassImage {
 
         public String getClassName(){
             return classImage.getClassInfoAt(class_index).getName();
+        }
+
+        public String getMethodName(){
+            return classImage.getNameAndTypeInfo(name_and_type_index).getName();
+        }
+        public String getMethodDescriptor(){
+            return classImage.getNameAndTypeInfo(name_and_type_index).getDescriptor();
+        }
+        public short getClassIndex() {
+            return class_index;
+        }
+
+        public short getNameAndTypeIndex() {
+            return name_and_type_index;
         }
 
         public CONSTANT_NameAndType_info getNameAndType(){
@@ -825,6 +851,9 @@ public class ClassImage {
         }
     }
 
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.2>ref</a>
+     */
     public static class CONSTANT_InterfaceMethodref_info implements cp_info {
         private ClassImage classImage;
 
@@ -851,6 +880,20 @@ public class ClassImage {
                     class_index,
                     name_and_type_index
             );
+        }
+
+        public String getMethodName(){
+            return classImage.getNameAndTypeInfo(name_and_type_index).getName();
+        }
+        public String getMethodDescriptor(){
+            return classImage.getNameAndTypeInfo(name_and_type_index).getDescriptor();
+        }
+        public short getClassIndex() {
+            return class_index;
+        }
+
+        public short getNameAndTypeIndex() {
+            return name_and_type_index;
         }
     }
 
@@ -1120,6 +1163,9 @@ public class ClassImage {
         }
     }
 
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.10">ref</a>
+     */
     public static class CONSTANT_InvokeDynamic_info implements cp_info {
         private ClassImage classImage;
 
@@ -1129,6 +1175,15 @@ public class ClassImage {
 
         private short bootstrap_method_attr_index;
         private short name_and_type_index;
+
+        public short getBootstrapMethodAttrIndex() {
+            return bootstrap_method_attr_index;
+        }
+
+        public short getNameAndTypeIndex() {
+            return name_and_type_index;
+        }
+
         @Override
         public tag getTag() {
             return tag.CONSTANT_InvokeDynamic;

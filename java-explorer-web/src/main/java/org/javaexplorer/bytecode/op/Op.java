@@ -5248,8 +5248,8 @@ public class Op {
                 throw new RuntimeException("Not a field ref: @" + index);
             }
             ClassImage.CONSTANT_Fieldref_info field_ref = (ClassImage.CONSTANT_Fieldref_info) c;
-            String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.class_index()).getName();
-            ClassImage.CONSTANT_NameAndType_info nameAndType = (ClassImage.CONSTANT_NameAndType_info) vm.getConstant(field_ref.name_and_type_index());
+            String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.getClassIndex()).getName();
+            ClassImage.CONSTANT_NameAndType_info nameAndType = (ClassImage.CONSTANT_NameAndType_info) vm.getConstant(field_ref.getNameAndTypeIndex());
             String fieldName = nameAndType.getName();
             String fieldDescriptor = nameAndType.getDescriptor();
             FieldType fieldType = (DescriptorParser.FieldType) DescriptorParser.parse(fieldDescriptor);
@@ -5918,8 +5918,8 @@ public class Op {
                 throw new RuntimeException("Not a field ref: @" + index);
             }
             ClassImage.CONSTANT_Fieldref_info field_ref = (ClassImage.CONSTANT_Fieldref_info) c;
-            String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.class_index()).getName();
-            ClassImage.CONSTANT_NameAndType_info nameAndType = (ClassImage.CONSTANT_NameAndType_info) vm.getConstant(field_ref.name_and_type_index());
+            String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.getClassIndex()).getName();
+            ClassImage.CONSTANT_NameAndType_info nameAndType = (ClassImage.CONSTANT_NameAndType_info) vm.getConstant(field_ref.getNameAndTypeIndex());
             String fieldName = nameAndType.getName();
             String fieldDescriptor = nameAndType.getDescriptor();
             FieldType fieldType = (DescriptorParser.FieldType) DescriptorParser.parse(fieldDescriptor);
@@ -6153,8 +6153,8 @@ public class Op {
             HeapObject heapObject = vm.getHeap().get(ref);
             ClassImage.CONSTANT_Fieldref_info fieldRef = vm.getCurrentClassImage().getFieldrefAt(index);
             String className = fieldRef.getClassName();
-            String fieldName = fieldRef.getFieldName(vm.getCurrentClassImage());
-            FieldType fieldType = fieldRef.getFileType(vm.getCurrentClassImage());
+            String fieldName = fieldRef.getFieldName();
+            FieldType fieldType = fieldRef.getFieldType();
             if(heapObject == null){
                 throw new RuntimeException("Invalid objectref: " + ref);
             }

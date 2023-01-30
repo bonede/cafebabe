@@ -88,10 +88,45 @@ export interface attribute_info{
     // unhanded, hex string
     value: string
 }
+type cp_info_tag = "CONSTANT_Class" |
+    "CONSTANT_Fieldref" |
+    "CONSTANT_Methodref" |
+    "CONSTANT_InterfaceMethodref" |
+    "CONSTANT_String" |
+    "CONSTANT_Integer" |
+    "CONSTANT_Float" |
+    "CONSTANT_Long" |
+    "CONSTANT_Double" |
+    "CONSTANT_NameAndType" |
+    "CONSTANT_Utf8" |
+    "CONSTANT_MethodHandle" |
+    "CONSTANT_MethodType" |
+    "CONSTANT_InvokeDynamic"
+export interface cp_info{
+    tag: cp_info_tag
+    // primitive cp
+    name: string
+    nameIndex: number
+    value: number
+
+    // method/field ref cp
+    className: string
+    classIndex: number
+    nameAndTypeIndex: number
+    fieldName: string
+    fieldDescriptor: string
+    methodName: string
+    methodDescriptor: string
+    // invoke dynamic
+    bootstrapMethodAttrIndex: number
+}
 export interface ClassImage{
     accessFlags: class_access_flag[]
     attributeCount: number
     attributes: attribute_info[]
+    className: string
+    classNameIndex: string
+    constantPool: cp_info[]
 }
 
 type HttpMethod = "get" | "post"
