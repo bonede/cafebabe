@@ -102,13 +102,24 @@ type cp_info_tag = "CONSTANT_Class" |
     "CONSTANT_MethodHandle" |
     "CONSTANT_MethodType" |
     "CONSTANT_InvokeDynamic"
+
+type method_handle_kind = "REF_getField" |
+    "REF_getStatic" |
+    "REF_putField" |
+    "REF_putStatic" |
+    "REF_invokeVirtual" |
+    "REF_invokeStatic" |
+    "REF_invokeSpecial" |
+    "REF_newInvokeSpecial"
+    "REF_invokeInterface"
+
 export interface cp_info{
     tag: cp_info_tag
-    // primitive cp
+    // Class
     name: string
     nameIndex: number
-    value: number
-
+    // double, float, integer, long, utf8
+    value: number | string
     // method/field ref cp
     className: string
     classIndex: number
@@ -119,6 +130,18 @@ export interface cp_info{
     methodDescriptor: string
     // invoke dynamic
     bootstrapMethodAttrIndex: number
+    // MethodHandle
+    kind: method_handle_kind
+    referenceIndex: number
+    // MethodType
+    descriptorIndex: number
+    descriptor: number
+    // NameAndType(name, descriptor)
+    // String
+    stringIndex: number
+    string: string
+    // utf8
+    length: number
 }
 export interface ClassImage{
     accessFlags: class_access_flag[]

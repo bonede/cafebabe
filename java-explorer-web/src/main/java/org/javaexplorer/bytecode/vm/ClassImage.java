@@ -897,6 +897,9 @@ public class ClassImage {
         }
     }
 
+    /**
+     * <a herf="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.3">ref</a>
+     */
     public static class CONSTANT_String_info implements cp_info {
         private ClassImage classImage;
 
@@ -905,7 +908,15 @@ public class ClassImage {
         }
 
         private int string_index;
-        private String value;
+
+        public int getStringIndex() {
+            return string_index;
+        }
+
+        public String getString(){
+            return classImage.getUtf8At(string_index);
+        }
+
         @Override
         public tag getTag() {
             return tag.CONSTANT_String;
@@ -1039,6 +1050,9 @@ public class ClassImage {
         }
     }
 
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.6">ref</a>
+     */
     public static class CONSTANT_NameAndType_info implements cp_info {
         private ClassImage classImage;
         private int name_index;
@@ -1049,6 +1063,13 @@ public class ClassImage {
 
         private int descriptor_index;
 
+        public int getNameIndex() {
+            return name_index;
+        }
+
+        public int getDescriptorIndex() {
+            return descriptor_index;
+        }
 
         public String getName(){
             return classImage.getUtf8At(name_index);
@@ -1109,6 +1130,9 @@ public class ClassImage {
         }
     }
 
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.8">ref</a>
+     */
     public static class CONSTANT_MethodHandle_info implements cp_info {
         private ClassImage classImage;
 
@@ -1118,6 +1142,15 @@ public class ClassImage {
 
         private Kind kind;
         private short reference_index;
+
+        public Kind getKind() {
+            return kind;
+        }
+
+        public short getReferenceIndex() {
+            return reference_index;
+        }
+
         @Override
         public tag getTag() {
             return tag.CONSTANT_MethodHandle;
@@ -1137,6 +1170,9 @@ public class ClassImage {
         }
     }
 
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.9">ref</a>
+     */
     public static class CONSTANT_MethodType_info implements cp_info {
         private ClassImage classImage;
 
@@ -1145,6 +1181,15 @@ public class ClassImage {
         }
 
         private short descriptor_index;
+
+        public short getDescriptorIndex() {
+            return descriptor_index;
+        }
+
+        public String getDescriptor(){
+            return classImage.getUtf8At(descriptor_index);
+        }
+
         @Override
         public tag getTag() {
             return tag.CONSTANT_MethodType;
