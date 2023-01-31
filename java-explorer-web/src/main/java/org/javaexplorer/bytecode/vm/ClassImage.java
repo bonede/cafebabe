@@ -1305,6 +1305,22 @@ public class ClassImage {
         public final int handler_pc;
         public final int catch_type;
 
+        public int getStartPc() {
+            return start_pc;
+        }
+
+        public int getEndPc() {
+            return end_pc;
+        }
+
+        public int getHandlerPc() {
+            return handler_pc;
+        }
+
+        public int getCatchType() {
+            return catch_type;
+        }
+
         public exception_table_item(int start_pc, int end_pc, int handler_pc, int catch_type) {
             this.start_pc = start_pc;
             this.end_pc = end_pc;
@@ -1334,8 +1350,16 @@ public class ClassImage {
         private int exception_table_length;
         private exception_table_item[] exception_table;
         private int attributes_count;
+
+        public int getAttributesCount() {
+            return attributes_count;
+        }
+
         private ByteBuffer codeBuffer;
-        private byte[] code;
+
+        public byte[] getCode() {
+            return codeBuffer.array();
+        }
 
         public Code_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
             super(classImage, attribute_name_index, attribute_length);
@@ -1355,6 +1379,10 @@ public class ClassImage {
 
         public attribute_info[] getAttributes(){
             return attributes;
+        }
+
+        public int getExceptionTableLength() {
+            return exception_table_length;
         }
 
         @Override

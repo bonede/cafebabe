@@ -63,9 +63,24 @@ export interface element_value{
     annotation_value: annotation
     array_value: array_value
 }
+export interface exception_table_item{
+    startPc: number
+    endPc: number
+    handlerPc: number
+    catchType: number
+}
 export interface attribute_info{
     attributeNameIndex: number
     attributeName: string
+    // Code
+    code: number[]
+    maxStack: number
+    maxLocals: number
+    codeLength: number
+    attributesCount: number
+    attributes: attribute_info[]
+    exceptionTableLength: number
+    exception_table: exception_table_item[]
     // SourceFile
     sourceFileName: string
     sourceFileNameIndex: number
