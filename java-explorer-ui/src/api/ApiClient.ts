@@ -69,11 +69,16 @@ export interface exception_table_item{
     handlerPc: number
     catchType: number
 }
+export interface Instruction{
+    opMnemonic: string
+    opCode: number
+    size: number
+}
 export interface attribute_info{
     attributeNameIndex: number
     attributeName: string
     // Code
-    code: number[]
+    instructions: Instruction[]
     maxStack: number
     maxLocals: number
     codeLength: number

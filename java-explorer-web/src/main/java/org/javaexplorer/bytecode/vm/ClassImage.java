@@ -1342,6 +1342,7 @@ public class ClassImage {
         private int max_stack;
         private int max_locals;
         private int code_length;
+        private ByteBuffer codeBuffer;
 
         public int getCodeLength(){
             return code_length;
@@ -1355,16 +1356,11 @@ public class ClassImage {
             return attributes_count;
         }
 
-        private ByteBuffer codeBuffer;
-
-        public byte[] getCode() {
-            return codeBuffer.array();
-        }
-
         public Code_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
             super(classImage, attribute_name_index, attribute_length);
         }
 
+        @JsonIgnore
         public int getCodeBufferPosition(){
             return codeBuffer.position();
         }
