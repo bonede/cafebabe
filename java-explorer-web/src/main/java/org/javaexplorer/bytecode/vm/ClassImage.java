@@ -254,6 +254,8 @@ public class ClassImage {
     }
 
     public void parseConstantPool(){
+        // zero index means null
+        // skip zero index
         constant_pool = new cp_info[constant_pool_count];
         for(int i = 1; i < constant_pool_count; ){
             constant_pool[i] = readConstantInfo();
