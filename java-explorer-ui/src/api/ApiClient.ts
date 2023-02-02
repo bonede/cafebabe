@@ -163,13 +163,67 @@ export interface cp_info{
     // utf8
     length: number
 }
+type field_access_flag = "ACC_PUBLIC" |
+    "ACC_PRIVATE" |
+    "ACC_PROTECTED" |
+    "ACC_STATIC" |
+    "ACC_FINAL" |
+    "ACC_VOLATILE" |
+    "ACC_TRANSIENT" |
+    "ACC_SYNTHETIC" |
+    "ACC_ENUM"
+
+type method_access_flag = "ACC_PUBLIC" |
+    "ACC_PRIVATE" |
+    "ACC_PROTECTED" |
+    "ACC_STATIC" |
+    "ACC_FINAL" |
+    "ACC_SYNCHRONIZED" |
+    "ACC_BRIDGE" |
+    "ACC_VARARGS" |
+    "ACC_NATIVE" |
+    "ACC_ABSTRACT" |
+    "ACC_STRICT" |
+    "ACC_SYNTHETIC"
+
+export interface field_info{
+    name: string
+    nameIndex: number
+    descriptor: string
+    descriptorIndex: string
+    accessFlags: field_access_flag[]
+    attributesCount: number
+    attributes: attribute_info[]
+}
+
+export interface method_info{
+    nameIndex: number
+    name: string
+    descriptorIndex: number
+    descriptor: string
+    accessFlags: method_access_flag
+    attributesCount: number
+    attributes: attribute_info[]
+    maxLocals: number
+    maxStack: number
+}
+
 export interface ClassImage{
+    majorVersion: number
+    minorVersion: number
+    superClassIndex: number
+    superClassName: string
     accessFlags: class_access_flag[]
     attributeCount: number
     attributes: attribute_info[]
     className: string
     classNameIndex: string
     constantPool: cp_info[]
+    constantPoolCount: number
+    fields: field_info[]
+    fieldsCount: number
+    methodsCount: number
+    methods: method_info[]
 }
 
 type HttpMethod = "get" | "post"

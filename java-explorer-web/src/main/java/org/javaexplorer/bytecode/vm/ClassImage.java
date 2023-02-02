@@ -114,6 +114,10 @@ public class ClassImage {
         );
     }
 
+    public short getMethodsCount() {
+        return methods_count;
+    }
+
     public static String debugMethodAccessFlagString(List<method_access_flag> access_flags){
         return String.join(
                 " ",
@@ -645,7 +649,7 @@ public class ClassImage {
             return index;
         }
 
-        public boolean isConstruct(ClassImage classImage){
+        public boolean isConstructor(ClassImage classImage){
             return "<init>".equals(classImage.getUtf8At(name_index));
         }
 
@@ -684,6 +688,10 @@ public class ClassImage {
         }
         public attribute_info[] getAttributes() {
             return attributes;
+        }
+
+        public int getAttributesCount() {
+            return attributes_count;
         }
 
         @Override
@@ -1707,7 +1715,7 @@ public class ClassImage {
         public String getName(){
             return classImage.getUtf8At(name_index);
         }
-        public short descriptor_index(){
+        public short getDescriptorIndex(){
             return descriptor_index;
         }
         public String getDescriptor(){
@@ -1724,6 +1732,10 @@ public class ClassImage {
         private short name_index;
         private short descriptor_index;
         private short attributes_count;
+
+        public short getAttributesCount() {
+            return attributes_count;
+        }
 
         public field_info(ClassImage classImage, List<field_access_flag> access_flags,
                           short name_index,
