@@ -1,16 +1,17 @@
 package org.javaexplorer.model;
 
 import lombok.Data;
+import org.javaexplorer.bytecode.vm.ClassImage;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-
+/**
+ * Class file with its content and parsed class image
+ */
 @Data
 public class ClassFile {
-    @NotEmpty
     private String path;
-    @NotEmpty
-    private String content;
-    @Min(0)
-    private long size;
+    private byte[] content;
+    private ClassImage classImage;
+    public int getSize(){
+        return content == null ? 0 : content.length;
+    }
 }

@@ -80,6 +80,9 @@ export function JavaExplorerApp(){
         setEditorContent(content);
     }
     const handleBuildClick = () => {
+        if(currentCompiler == null){
+            return
+        }
         ApiClient.getClient().compile(
             currentCompiler!.name,
             compilerOption!,

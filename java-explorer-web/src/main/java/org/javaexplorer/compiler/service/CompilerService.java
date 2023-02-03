@@ -1,14 +1,15 @@
 package org.javaexplorer.compiler.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.javaexplorer.bytecode.vm.ClassImage;
 import org.javaexplorer.config.CompilerConfig;
 import org.javaexplorer.model.ClassFile;
 import org.javaexplorer.model.SrcFile;
 import org.javaexplorer.model.vo.CompileOutput;
+import org.javaexplorer.model.vo.CompileReq;
 import org.javaexplorer.utils.CommandUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,12 +82,12 @@ public class CompilerService {
         try(
             FileInputStream fileInputStream = new FileInputStream(classFilePath.toFile());
         ) {
-            byte[] classFileBytes = IOUtils.toByteArray(fileInputStream);
-            String classFileBase64 = Base64.encodeBase64String(classFileBytes);
             ClassFile classFile = new ClassFile();
-            classFile.setContent(classFileBase64);
-            classFile.setSize(Files.size(classFilePath));
-            classFile.setPath(workingDir.relativize(classFilePath).toString());
+            classFile.setContent(IOUtils.toByteArray(fileInputStream));
+            Path pathWithBuildDir = workingDir.relativize(classFilePath);
+            Path pathWithoutBuildDir = pathWithBuildDir.subpath(1, pathWithBuildDir.getNameCount());
+            classFile.setPath(pathWithoutBuildDir.toString());
+            classFile.setClassImage(new ClassImage(classFile.getContent()));
             return classFile;
         }
     }
@@ -105,26 +106,23 @@ public class CompilerService {
     }
 
 
-    public CompileOutput compile(
-            String compilerName,
-            String compilerOptions,
-            List<SrcFile> srcFiles
-    ) throws IOException {
+    public CompileOutput compile(CompileReq compileReq) throws IOException {
         CompilerConfig.Compiler compiler = compilerConfig.getCompilers().stream()
-                .filter(c -> c.getName().equals(compilerName))
+                .filter(c -> c.getName().equals(compileReq.getCompilerName()))
                 .findFirst()
                 .get();
 
-        Path workingDir = saveFile(srcFiles);
-        String cmd = formatCmd(compiler.getCmd(), workingDir.toString(), compilerOptions, srcFiles);
+        Path workingDir = saveFile(compileReq.getSrcFiles());
+        String cmd = formatCmd(compiler.getCmd(), workingDir.toString(), compileReq.getCompilerOptions(), compileReq.getSrcFiles());
         CommandUtils.CommandResult result = CommandUtils.run(workingDir.toFile(), cmd.split(" "));
         if(result.getCode() == 0){
+            List<ClassFile> classFiles = collectClassFile(workingDir);
             CompileOutput compileOutput = CompileOutput.success(
-                    collectClassFile(workingDir),
+                    classFiles,
                     result.getStdout(),
                     result.getStderr(),
-                    compilerName,
-                    compilerOptions
+                    compileReq.getCompilerName(),
+                    compileReq.getCompilerOptions()
             );
             FileUtils.deleteDirectory(workingDir.toFile());
             return compileOutput;
@@ -134,8 +132,8 @@ public class CompilerService {
                     result.getCode(),
                     result.getStdout(),
                     result.getStderr(),
-                    compilerName,
-                    compilerOptions
+                    compileReq.getCompilerName(),
+                    compileReq.getCompilerOptions()
             );
         }
 

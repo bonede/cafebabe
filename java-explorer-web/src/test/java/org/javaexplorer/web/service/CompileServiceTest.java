@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.util.Arrays;
 @SpringBootTest
 @Slf4j
-class ExplorerServiceTest {
+class CompileServiceTest {
     @Autowired
-    private ExplorerService explorerService;
+    private CompileService compileService;
 
 
     @Test
@@ -28,7 +28,7 @@ class ExplorerServiceTest {
         CompileReq compileReq = new CompileReq();
         compileReq.setCompilerName("openjdk8");
         compileReq.setSrcFiles(Arrays.asList(srcFile));
-        CompileResult result = explorerService.explore(compileReq);
+        CompileResult result = compileService.explore(compileReq);
         log.info("result {}", JsonUtils.toJson(result));
     }
 }
