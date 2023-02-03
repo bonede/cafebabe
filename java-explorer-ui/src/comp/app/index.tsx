@@ -20,6 +20,7 @@ export function JavaExplorerApp(){
     let panelEle = null as HTMLElement | null
     let [appInfo, setAppInfo] = useState<AppInfo>()
     let [currentCompiler, setCurrentCompiler] = useState<CompilerInfo>()
+    let [compilerOption, setCompilerOption] = useState<string>()
     let [editorContent, setEditorContent] = useState<string>("")
     
     const handleWindowMouseMove = (e: MouseEvent) => {
@@ -72,20 +73,33 @@ export function JavaExplorerApp(){
     }, [])
 
 
-    const handleLangSelect: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+    const handleCompilerSelect: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
         setCurrentCompiler(appInfo?.compilers.filter(c => c.name == e.target.value)[0])
     }
     const handleEditorContentChange = (content: string) => {
         setEditorContent(content);
     }
+    const handleBuildClick = () => {
+        ApiClient.getClient().compile(
+            currentCompiler!.name,
+            compilerOption!,
+            [
+                {
+                    path: currentCompiler!.fileName,
+                    content: editorContent
+                }
+            ]
+        )
+    }
     const editorPanel = <Panel
                     minWidth={400}
-                    right={<select onChange={handleLangSelect}>{appInfo && appInfo.compilers.map(c => <option>{c.name}</option> )}</select>}
+                    right={<select onChange={handleCompilerSelect}>{appInfo && appInfo.compilers.map(c => <option>{c.name}</option> )}</select>}
                     rightIcons={
                     [
                         {
                             tip: "Build",
-                            icon: "hammer.svg"
+                            icon: "hammer.svg",
+                            onClick: handleBuildClick
                         },
                         {
                           tip: "Upload",

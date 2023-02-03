@@ -24,11 +24,9 @@ class ExplorerServiceTest {
         byte[] javaFileBytes = ResourcesUtils.readResourceToBytes(this.getClass(), "source/Main.java");
         SrcFile srcFile = new SrcFile();
         srcFile.setPath("Main.java");
-        srcFile.setSize(javaFileBytes.length);
         srcFile.setContent(new String(javaFileBytes));
         CompileReq compileReq = new CompileReq();
         compileReq.setCompilerName("openjdk8");
-        compileReq.setSave(false);
         compileReq.setSrcFiles(Arrays.asList(srcFile));
         CompileResult result = explorerService.explore(compileReq);
         log.info("result {}", JsonUtils.toJson(result));

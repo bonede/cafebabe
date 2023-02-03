@@ -15,9 +15,9 @@ import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/explorer")
+@RequestMapping("/api/compile")
 @Validated
-public class ExplorerController {
+public class CompileController {
     @Autowired
     private ExplorerService explorerService;
 

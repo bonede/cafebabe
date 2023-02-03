@@ -14,7 +14,10 @@ export interface ApiResp<T>{
 export interface AppInfo{
     compilers: CompilerInfo[]
 }
-
+export interface SrcFile{
+    path: string
+    content: string
+}
 export interface CompileResult{
     classImages: ClassImage[]
     returnCode: number
@@ -214,7 +217,7 @@ export interface ClassImage{
     superClassIndex: number
     superClassName: string
     accessFlags: class_access_flag[]
-    attributeCount: number
+    attributeCount:  number
     attributes: attribute_info[]
     className: string
     classNameIndex: string
@@ -264,6 +267,18 @@ export class ApiClient{
 
     public async getAppInfo(): Promise<AppInfo> {
         let resp = await this.request<AppInfo>("/app/info", "get")
+        if("ok" == resp.code){
+            return resp.data;
+        }
+        throw new Error(resp.msg);
+    }
+
+    public async compile(compilerName: string, compilerOptions: string, srcFiles: SrcFile[]): Promise<CompileResult> {
+        let resp = await this.request<CompileResult>("/compile", "post", {
+            compilerName,
+            compilerOptions,
+            srcFiles
+        })
         if("ok" == resp.code){
             return resp.data;
         }

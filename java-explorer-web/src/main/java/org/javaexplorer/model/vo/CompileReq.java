@@ -14,6 +14,4 @@ public class CompileReq {
     private String compilerOptions;
     @NotEmpty
     private List<SrcFile> srcFiles;
-    @NotNull
-    private boolean save;
 }
