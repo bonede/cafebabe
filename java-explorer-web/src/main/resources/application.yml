@@ -1,6 +1,8 @@
 app:
   url: http://locahost:8080
-
+logging:
+  level:
+    root: debug
 compiler:
   working-dir: /data/java-explorer
   build-dir: build

@@ -1,7 +1,6 @@
 package org.javaexplorer.web.service;
 
 import org.javaexplorer.model.SrcFile;
-import org.javaexplorer.web.config.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +10,7 @@ import java.util.Map;
 @Service
 public class StorageService {
     @Autowired
-    private AppConfig appConfig;
+    private AppService.AppConfig appConfig;
 
     public String store(
             String compilerNickname,

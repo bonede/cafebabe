@@ -1,15 +1,20 @@
 package org.javaexplorer.web.service;
 
 
+import lombok.Data;
 import org.apache.commons.io.FilenameUtils;
-import org.javaexplorer.config.CompilerConfig;
+import org.hibernate.validator.constraints.URL;
+import org.javaexplorer.compiler.service.CompilerService;
 import org.javaexplorer.model.vo.AppInfo;
 import org.javaexplorer.model.vo.CompilerInfo;
 import org.javaexplorer.utils.ResourcesUtils;
-import org.javaexplorer.web.config.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
@@ -20,7 +25,7 @@ public class AppService {
     private AppConfig appConfig;
 
     @Autowired
-    private CompilerConfig compilerConfig;
+    private CompilerService.CompilerConfig compilerConfig;
 
     public AppInfo getAppInfo(){
         if(appInfo != null){
@@ -40,5 +45,19 @@ public class AppService {
             return compilerInfo;
         }).collect(Collectors.toList()));
         return appInfo;
+    }
+
+    @Component
+    @ConfigurationProperties(prefix = "app")
+    @Data
+    @Validated
+    public static class AppConfig {
+        /**
+         * Web url.
+         */
+        @URL
+        @NotNull
+        private String url;
+
     }
 }

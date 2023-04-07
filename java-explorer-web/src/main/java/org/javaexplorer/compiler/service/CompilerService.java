@@ -1,17 +1,19 @@
 package org.javaexplorer.compiler.service;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.javaexplorer.bytecode.vm.ClassImage;
-import org.javaexplorer.config.CompilerConfig;
 import org.javaexplorer.model.ClassFile;
 import org.javaexplorer.model.SrcFile;
 import org.javaexplorer.model.vo.CompileOutput;
 import org.javaexplorer.model.vo.CompileReq;
 import org.javaexplorer.utils.CommandUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -137,5 +139,21 @@ public class CompilerService {
             );
         }
 
+    }
+
+    @ConfigurationProperties("compiler")
+    @Component
+    @Data
+    public static class CompilerConfig {
+        private String workingDir;
+        private String buildDir;
+        private List<Compiler> compilers;
+        @Data
+        public static class Compiler{
+            private String name;
+            private String lang;
+            private String cmd;
+            private String example;
+        }
     }
 }
