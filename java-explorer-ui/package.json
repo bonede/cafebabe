@@ -9,9 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@blueprintjs/core": "^4.17.8",
+    "@blueprintjs/icons": "^4.14.5",
+    "@blueprintjs/select": "^4.9.12",
+    "monaco-editor": "0.32.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "monaco-editor": "0.32.1"
+    "react-mosaic-component": "^6.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
