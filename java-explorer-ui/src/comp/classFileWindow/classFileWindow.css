@@ -1,3 +1,38 @@
-.inspector{
-    background: burlywood;
+.class-image-view{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+.class-image-window-content{
+    background: #1e1e1e;
+    padding: 10px;
+    box-sizing: content-box;
+    height: 100%;
+}
+.class-image-item{
+    border:1px solid #ffffff55;
+    border-radius: 5px;
+}
+
+.class-image-item-title{
+    display: flex;
+    background: #ffffff22;
+    padding: 5px;
+}
+.class-image-item-groups{
+    font-family: Consolas, "Courier New", monospace;
+    background: #ffffff11;
+}
+.class-image-item-group-name{
+    padding: 3px;
+    text-transform: uppercase;
+}
+.class-image-item-group-row{
+    display: flex;
+    padding: 3px;
+    justify-content: space-between;
+}
+.class-image-item-group-row-key{
+    margin-right: 20px;
 }

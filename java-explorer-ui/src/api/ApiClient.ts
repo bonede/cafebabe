@@ -19,8 +19,10 @@ export interface SrcFile{
     content: string
 }
 export interface CompileResult{
-    classImages: ClassImage[]
+    classFiles: ClassFile[]
     returnCode: number
+    compiler: string
+    compilerOptions: string
     stdout: string
     stderr: string
 }
@@ -209,6 +211,12 @@ export interface method_info{
     attributes: attribute_info[]
     maxLocals: number
     maxStack: number
+}
+
+export interface ClassFile{
+    path: string
+    content: string
+    classImage: ClassImage
 }
 
 export interface ClassImage{

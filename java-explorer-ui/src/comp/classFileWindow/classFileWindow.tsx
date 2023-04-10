@@ -1,25 +1,41 @@
 import './classFileWindow.css'
 import {MosaicPath, MosaicWindow} from "react-mosaic-component";
-import React from "react";
-import {ClassImage} from "../../api/ApiClient";
+import React, {useState} from "react";
+import {ClassFile} from "../../api/ApiClient";
 import {Tab, Tabs} from "@blueprintjs/core";
+import {ClassImageView} from "./classImageView";
 
 export interface ClassFileWindowProps{
     mosaicPath: MosaicPath,
-    classImages: ClassImage[]
+    classFiles: ClassFile[]
 }
+
 export const ClassFileWindow = (props: ClassFileWindowProps) => {
+    const [classFileIndex, setClassFileIndex] = useState(0)
+    const handleTabChange = (i: number) => {
+        setClassFileIndex(i)
+    }
+
+
     return <MosaicWindow<string>
         path={props.mosaicPath}
         title="Output"
         renderToolbar={() => {
-            return <div style={{width: "100%"}}><Tabs id="class-file-tabs" selectedTabId="rx">
-                {props.classImages.map(i => <Tab id={i.className} title={i.className} />)}
-            </Tabs></div>
+            return <div style={{width: "100%"}}>
+                <Tabs id="class-file-tabs"
+                      onChange={handleTabChange}
+                      selectedTabId={classFileIndex}
+                >
+                    {props.classFiles && props.classFiles.map((classFile, i) => <Tab key={i + ""} id={i} title={classFile.path} />)}
+                </Tabs>
+            </div>
         }}
     >
-        <div className="class-image-window-content">
+        {
+            props.classFiles[classFileIndex] && <div className="class-image-window-content">
+                <ClassImageView classImage={props.classFiles[classFileIndex].classImage} />
+            </div>
+        }
 
-        </div>
     </MosaicWindow>
 }

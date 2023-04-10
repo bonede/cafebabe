@@ -2,18 +2,18 @@ app:
   url: http://locahost:8080
 logging:
   level:
-    root: debug
+    root: info
 compiler:
   working-dir: /data/java-explorer
   build-dir: build
   compilers:
     - name: openjdk8
       lang: java
-      cmd: javac -d build {OPTS} {SRC_FILES}
+      cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
     - name: openjdk11
       lang: java
-      cmd: javac -d build {OPTS} {SRC_FILES}
+      cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
     - name: kotlin1.7.20
       lang: kotlin

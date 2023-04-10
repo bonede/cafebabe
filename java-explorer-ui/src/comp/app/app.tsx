@@ -1,6 +1,6 @@
 import './app.css'
 import React, {useEffect, useState} from "react";
-import {ApiClient, AppInfo, ClassImage, CompileResult} from "../../api/ApiClient";
+import {ApiClient, AppInfo, ClassFile, CompileResult} from "../../api/ApiClient";
 
 
 import {Mosaic, MosaicPath} from 'react-mosaic-component';
@@ -16,7 +16,7 @@ type WindowType = 'editor' | 'output' | 'classFile'
 export const JavaExplorerApp = () => {
     const apiClient = ApiClient.getClient()
     const [outputMsgs, setOutputMsg] = useState([] as OutputMsg[])
-    const [classImages, setClassImages] = useState([] as ClassImage[])
+    const [classFiles, setClassFiles] = useState([] as ClassFile[])
     const [appInfo, setAppInfo] = useState(null as AppInfo | null)
 
     useEffect(() => {
@@ -24,8 +24,8 @@ export const JavaExplorerApp = () => {
     }, [])
 
     const handleCompile = (result: CompileResult) => {
-        if(result.classImages != null){
-            setClassImages(result.classImages)
+        if(result.classFiles != null){
+            setClassFiles(result.classFiles)
         }
         if(result.stdout){
             outputMsgs.push()
@@ -48,7 +48,7 @@ export const JavaExplorerApp = () => {
         switch (id){
             case "editor": return <EditorWindow onCompile={handleCompile} mosaicPath={path} compilers={appInfo!.compilers} />
             case "output": return <OutputWindow onClearMsg={handleClearMsg} mosaicPath={path} outputMsgs={outputMsgs}  />
-            case "classFile": return <ClassFileWindow mosaicPath={path} classImages={classImages}  />
+            case "classFile": return <ClassFileWindow mosaicPath={path} classFiles={classFiles}  />
         }
     }
     return <div id="app">
@@ -63,7 +63,7 @@ export const JavaExplorerApp = () => {
                         direction: 'column',
                         first: 'editor',
                         second: 'output',
-                        splitPercentage: 80,
+                        splitPercentage: 60,
                     },
                     second: 'classFile',
                     splitPercentage: 50,

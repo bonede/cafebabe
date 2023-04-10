@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -25,15 +26,14 @@ public abstract class CommandUtils {
 
 
     public static CommandResult run(File workingDir, String... args){
-        String[] sanitizedArgs = Arrays.asList(args)
-                .stream().filter(arg -> StringUtils.isNotBlank(arg))
+        String[] sanitizedArgs = Arrays.stream(args).filter(StringUtils::isNotBlank)
                 .collect(Collectors.toList()).toArray(new String[]{});
         ProcessBuilder pb = new ProcessBuilder(sanitizedArgs);
         pb.directory(workingDir);
         try {
             Process process = pb.start();
-            String stdout = IOUtils.toString(process.getInputStream(), "utf-8");
-            String stderr = IOUtils.toString(process.getErrorStream(), "utf-8");
+            String stdout = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);
+            String stderr = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
             int code = process.waitFor();
             CommandResult commandResult = new CommandResult();
             commandResult.setCode(code);

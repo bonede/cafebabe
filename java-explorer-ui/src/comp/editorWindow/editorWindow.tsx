@@ -1,5 +1,5 @@
 import {MosaicPath, MosaicWindow} from "react-mosaic-component"
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import {ApiClient, CompileResult, CompilerInfo} from "../../api/ApiClient"
 import {Editor} from './editor'
 import {Button, ButtonGroup, MenuItem} from "@blueprintjs/core"
@@ -11,7 +11,7 @@ export interface EditorWindowProps{
     compilers: CompilerInfo[]
     onCompile?: (result: CompileResult) => void
 }
-const renderFilm: ItemRenderer<CompilerInfo> = (compilerInfo, { handleClick, handleFocus, modifiers, query }) => {
+const selectMenuItem: ItemRenderer<CompilerInfo> = (compilerInfo, { handleClick, handleFocus, modifiers, query }) => {
     if (!modifiers.matchesPredicate) {
         return null;
     }
@@ -36,7 +36,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const handleEditorContentChange = (content: string) => {
         setContent(content)
     }
-    const handleCompileClick = async () => {
+    const compile = async () => {
         setCompiling(true)
         try{
             const result = await apiClient.compile(compilerInfo.name, "", [{
@@ -47,23 +47,34 @@ export const EditorWindow = (props: EditorWindowProps) => {
             setCompiling(false)
         }catch (e){
             props.onCompile && props.onCompile({
-                classImages: [],
+                classFiles: [],
+                compiler: "",
+                compilerOptions: "",
                 returnCode: -1,
                 stderr: e + "",
                 stdout: "",
             })
             setCompiling(false)
         }
-
     }
+    const handleCompileClick = async () => {
+        return compile()
+    }
+    const handleCompilerChange = (compilerInfo: CompilerInfo) => {
+        setCompilerInfo(compilerInfo)
+        compile()
+    }
+    useEffect(() => {
+        compile()
+    }, [])
     const toolbar = <div style={{width: "100%"}}>
         <TitleBar title={compilerInfo.fileName} actions={
             <div style={{display: "flex"}}>
                 <Select2<CompilerInfo>
                     filterable={false}
                     items={props.compilers}
-                    onItemSelect={(i) => setCompilerInfo(i)}
-                    itemRenderer={renderFilm}
+                    onItemSelect={handleCompilerChange}
+                    itemRenderer={selectMenuItem}
                 >
                     <Button minimal={true} text={compilerInfo.name} rightIcon="double-caret-vertical" placeholder="Select a compiler" />
                 </Select2>
