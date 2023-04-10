@@ -11,14 +11,14 @@ export interface ClassFileWindowProps{
 export const ClassFileWindow = (props: ClassFileWindowProps) => {
     return <MosaicWindow<string>
         path={props.mosaicPath}
-        title={`Output`}
+        title="Output"
         renderToolbar={() => {
             return <div style={{width: "100%"}}><Tabs id="class-file-tabs" selectedTabId="rx">
                 {props.classImages.map(i => <Tab id={i.className} title={i.className} />)}
             </Tabs></div>
         }}
     >
-        <div className="output-window-content">
+        <div className="class-image-window-content">
 
         </div>
     </MosaicWindow>

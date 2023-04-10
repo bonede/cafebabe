@@ -1,6 +1,6 @@
 import './app.css'
 import React, {useEffect, useState} from "react";
-import {ApiClient, AppInfo, ClassImage} from "../../api/ApiClient";
+import {ApiClient, AppInfo, ClassImage, CompileResult} from "../../api/ApiClient";
 
 
 import {Mosaic, MosaicPath} from 'react-mosaic-component';
@@ -18,14 +18,37 @@ export const JavaExplorerApp = () => {
     const [outputMsgs, setOutputMsg] = useState([] as OutputMsg[])
     const [classImages, setClassImages] = useState([] as ClassImage[])
     const [appInfo, setAppInfo] = useState(null as AppInfo | null)
+
     useEffect(() => {
         apiClient.getAppInfo().then(a => setAppInfo(a))
     }, [])
+
+    const handleCompile = (result: CompileResult) => {
+        if(result.classImages != null){
+            setClassImages(result.classImages)
+        }
+        if(result.stdout){
+            outputMsgs.push()
+            setOutputMsg([...outputMsgs, {
+                type: "stdout",
+                msg: result.stdout
+            }])
+        }
+        if(result.stderr){
+            setOutputMsg([...outputMsgs, {
+                type: "stderr",
+                msg: result.stderr
+            }])
+        }
+    }
+    const handleClearMsg = () => {
+        setOutputMsg([])
+    }
     const windowForId = (id: WindowType, path: MosaicPath) => {
         switch (id){
+            case "editor": return <EditorWindow onCompile={handleCompile} mosaicPath={path} compilers={appInfo!.compilers} />
+            case "output": return <OutputWindow onClearMsg={handleClearMsg} mosaicPath={path} outputMsgs={outputMsgs}  />
             case "classFile": return <ClassFileWindow mosaicPath={path} classImages={classImages}  />
-            case "output": return <OutputWindow mosaicPath={path} outputMsgs={outputMsgs}  />
-            case "editor": return <EditorWindow mosaicPath={path} compilers={appInfo!.compilers} />
         }
     }
     return <div id="app">

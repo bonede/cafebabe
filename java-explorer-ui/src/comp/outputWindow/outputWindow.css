@@ -1,17 +1,10 @@
-.pl-logger{
-    font-size: 16px;
-    flex: 1;
-    overflow-y: scroll;
+.output-window-content{
+    height: 100%;
     background: #1e1e1e;
-    font-family: Consolas, "Courier New", monospace;
-    user-select: text;
+    overflow-y: scroll;
+    color: #dcdcdc;
+    padding-left: 10px;
 }
-.pl-logger-item{
-    margin: 10px;
-}
-.pl-logger-item.info{
-    color: #608b4e;
-}
-.pl-logger-item.error{
-    color: #f14c4c;
+.output-window-content .output-msg-stderr{
+    color: #f75464;
 }
