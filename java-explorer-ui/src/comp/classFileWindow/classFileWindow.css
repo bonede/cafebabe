@@ -21,6 +21,12 @@
     background: #ffffff22;
     padding: 5px;
 }
+.class-image-item-group{
+    border-bottom: 1px solid #ffffff33;
+}
+.class-image-item-group:last-child{
+    border-bottom:none
+}
 .class-image-item-groups{
     font-family: Consolas, "Courier New", monospace;
     background: #ffffff11;

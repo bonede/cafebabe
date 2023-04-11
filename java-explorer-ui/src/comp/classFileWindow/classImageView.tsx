@@ -1,12 +1,85 @@
-import {attribute_info, ClassImage, cp_info, method_info} from "../../api/ApiClient";
-import {ClassImageItem, ClassImageItemGroup} from "./ClassImageItem";
+import {annotation, attribute_info, ClassImage, cp_info, element_value, method_info} from "../../api/ApiClient";
+import {ClassImageItem, ClassImageItemGroup, ClassImageItemGroupRow} from "./ClassImageItem";
 import {Icon} from "@blueprintjs/core";
 import React, {ReactElement, ReactNode} from "react";
 
+const annotationItemStringValue = (element_value: element_value): string | undefined =>{
+    switch (element_value.tag){
+        case 'B':
+        case 'C':
+        case 'D':
+        case 'F':
+        case 'I':
+        case 'J':
+        case 'S':
+        case 'Z':
+        case 's':
+            return "#" + element_value.const_value_index + "";
+        case 'c':
+            return "#" + element_value.class_info_index + "";
+        case 'e':
+            return "#" + element_value.enum_const_value.type_name_index + " " +  "#" + element_value.enum_const_value.const_name_index;
+        default:
+            return undefined
+    }
+}
 
+const annotationItemValue = (element_name: string, element_value: element_value): ClassImageItemGroupRow =>{
+    const stringValue = annotationItemStringValue(element_value)
+    if(stringValue){
+        return {
+            key: element_name,
+            value: stringValue
+        }
+    }else if(element_value.tag == 'e'){
+        return {
+            key: element_name,
+            value: "Detail",
+            more: {
+                rows: [
+                    {
+                        key: "Type name index",
+                        value: element_value.enum_const_value.type_name_index + ""
+                    },
+                    {
+                        key: "Const index",
+                        value: element_value.enum_const_value.const_name_index + ""
+                    }
+                ]
+            }
+        }
+    }else if(element_value.tag == '['){
+        return {
+            key: element_name,
+            value: "Detail",
+            more: {
+                rows: element_value.values.map((e, i) => {
+                    return annotationItemValue(element_name + "[" + i + "]", e)
+                })
+            }
+        }
+    }else{
+        throw new Error("unknown tag " + element_value.tag)
+    }
+}
+
+const annotationItemRow = (annotation: annotation): ClassImageItemGroupRow => {
+    let moreRows: ClassImageItemGroupRow[] = []
+    if(annotation.num_element_value_pairs > 0){
+        moreRows = annotation.element_value_pairs.map((e) => annotationItemValue(e.elementName, e.value))
+    }
+    return {
+        key: "Type",
+        value: annotation.typeName,
+        more: annotation.num_element_value_pairs == 0 ? undefined : {
+            groupName: "Annotation parameters",
+            rows: moreRows
+        }
+    }
+}
 const attributeInfoItem = (attributeInfo: attribute_info, i: number): ClassImageItemGroup => {
     const attributeName = attributeInfo.attributeName;
-    let rows = []
+    let rows: ClassImageItemGroupRow[] = [{key: "Name", value: attributeName }]
     switch (attributeName){
         case "SourceFile": rows.push({key: "Source file", value: attributeInfo.sourceFileName}); break;
         case "Signature": rows.push({key: "Source file", value: attributeInfo.signature}); break;
@@ -17,11 +90,16 @@ const attributeInfoItem = (attributeInfo: attribute_info, i: number): ClassImage
             attributeInfo.lineNumberTable.forEach( l => {
                 rows.push({key: "Line #" + l.lineNumber, value: "Pc " + l.startPc })
             }); break;
+        case "RuntimeVisibleAnnotations":
+            attributeInfo.annotations.map( a => rows.push(annotationItemRow(a))); break;
+        case "RuntimeInvisibleAnnotations":
+            attributeInfo.annotations.map( a => rows.push(annotationItemRow(a))); break;
+        case "Deprecated": break;
         default:
             rows.push({key: "Value", value: attributeInfo.value});
     }
     return {
-        groupName: "Attribute " + attributeInfo.attributeName,
+        groupName: "Attribute",
         rows: rows
     }
 }
@@ -112,8 +190,10 @@ const  methodInfo = (method: method_info, i: number) => {
                 {key: "Stack", value: method.maxStack + ""},
                 {key: "Locals", value: method.maxLocals + ""},
             ]
-        },
-        {
+        }
+    ]
+    if(codeAttribute){
+        itemGroups.push({
             groupName: "Code",
             rows: codeAttribute.instructions.map(i =>
                 {
@@ -123,9 +203,10 @@ const  methodInfo = (method: method_info, i: number) => {
                     return result
                 }
             )
-        }
-    ]
-    itemGroups = [...itemGroups, ...attributeInfoList(codeAttribute.attributes), ...attributeInfoList(nonCodeAttribute)]
+        })
+    }
+    const codeAttributes = codeAttribute ? attributeInfoList(codeAttribute.attributes) : []
+    itemGroups = [...itemGroups, ...codeAttributes, ...attributeInfoList(nonCodeAttribute)]
     return <ClassImageItem title={`Method #` + i} icon={<Icon icon="build" />} itemGroups={itemGroups} />
 }
 const methodInfoList = (classImage: ClassImage): ReactNode => {

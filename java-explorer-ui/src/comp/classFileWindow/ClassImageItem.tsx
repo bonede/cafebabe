@@ -1,11 +1,14 @@
 import {ReactNode} from "react";
+import {Icon} from "@blueprintjs/core";
+import {Popover2} from "@blueprintjs/popover2";
 
 export interface ClassImageItemGroupRow{
     key: string
     value: string
+    more?: ClassImageItemGroup
 }
 export interface ClassImageItemGroup{
-    groupName: string
+    groupName?: string
     rows: ClassImageItemGroupRow[]
 }
 export interface ClassImageItemProps{
@@ -13,18 +16,34 @@ export interface ClassImageItemProps{
     icon: ReactNode,
     itemGroups: ClassImageItemGroup[]
 }
-export const ClassImageItem = (props: ClassImageItemProps) => {
-    const rowView = (row: ClassImageItemGroupRow) => <div className="class-image-item-group-row">
+
+const RowView = (props: {row: ClassImageItemGroupRow}) => {
+    const popoverContent = <ClassImageItem title={"Annotation parameters"} icon={<Icon icon="build" />} itemGroups={
+        [
+            {
+                rows: props.row.more?.rows!
+            }
+        ]
+    } />
+    const popover = props.row.more ?
+        <Popover2  content={popoverContent}>
+            <Icon icon='info-sign' />
+        </Popover2> : null
+    return <div className="class-image-item-group-row">
+
         <div className="class-image-item-group-row-key">
-            {row.key}
+            {props.row.key}
         </div>
         <div className="class-image-item-group-row-value">
-            {row.value}
+            {props.row.value} {popover}
         </div>
     </div>
+}
 
+export const ClassImageItem = (props: ClassImageItemProps) => {
+    const rowView = (row: ClassImageItemGroupRow) => <RowView row={row} />
     const groupView = (group: ClassImageItemGroup) => <div className="class-image-item-group">
-        <div className="class-image-item-group-name">{group.groupName}</div>
+        {group.groupName && <div className="class-image-item-group-name">{group.groupName}</div>}
         <div className="class-image-item-group-rows">{group.rows.map(rowView)}</div>
     </div>
 

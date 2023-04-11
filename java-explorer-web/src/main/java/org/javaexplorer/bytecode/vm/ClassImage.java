@@ -332,6 +332,7 @@ public class ClassImage {
                 case "Deprecated": attribute_info = new Deprecated_attribute(this, name_index, length); break;
                 case "SourceFile": attribute_info = new SourceFile_attribute(this, name_index, length); break;
                 case "RuntimeVisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
+                case "RuntimeInvisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
                 // TODO add more attributes
                 default: attribute_info = new Unknown_attribute(this, name_index, length); break;
             }
@@ -660,11 +661,11 @@ public class ClassImage {
         }
 
         public int getMaxLocals(){
-            return code_attribute.getMaxLocals();
+            return code_attribute == null ? 0 : code_attribute.getMaxLocals();
         }
 
         public int getMaxStack(){
-            return code_attribute.getMaxStack();
+            return code_attribute == null ? 0 : code_attribute.getMaxStack();
         }
 
         public List<method_access_flag> access_flags() {
@@ -1648,13 +1649,63 @@ public class ClassImage {
         }
 
     }
-
+    public static element_value readAnnotationValue(ClassImage classImage){
+        element_value element_value = new element_value();
+        element_value.tag = (char) classImage.readByte();
+        switch (element_value.tag) {
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'F':
+            case 'I':
+            case 'J':
+            case 'S':
+            case 'Z':
+            case 's':
+                element_value.const_value_index = classImage.readu2();
+                break;
+            case 'c':
+                element_value.class_info_index = classImage.readu2();
+                break;
+            case 'e':
+                element_value.enum_const_value = new enum_const_value();
+                element_value.enum_const_value.type_name_index = classImage.readu2();
+                element_value.enum_const_value.const_name_index = classImage.readu2();
+                break;
+            case '@':
+                element_value.annotation_value = readAnnotation(classImage);
+            case '[':
+                element_value.num_values = classImage.readu2();
+                element_value.values = new element_value[element_value.num_values];
+                for(int i= 0; i < element_value.num_values; i++){
+                    element_value.values[i] = readAnnotationValue(classImage);
+                }
+                break;
+            default:
+                throw new RuntimeException("Unknown annotation tag: " + element_value.tag);
+        }
+        return element_value;
+    }
+    public static annotation readAnnotation(ClassImage classImage){
+        annotation annotation = new annotation();
+        annotation.type_index = classImage.readu2();
+        annotation.num_element_value_pairs = classImage.readu2();
+        annotation.typeName = classImage.getUtf8At(annotation.type_index);
+        annotation.element_value_pairs = new element_value_pair[annotation.num_element_value_pairs];
+        for(int i = 0; i < annotation.element_value_pairs.length; i++){
+            annotation.element_value_pairs[i] = new element_value_pair();
+            annotation.element_value_pairs[i].element_name_index = classImage.readu2();
+            annotation.element_value_pairs[i].elementName = classImage.getUtf8At(annotation.element_value_pairs[i].element_name_index);
+            annotation.element_value_pairs[i].value = readAnnotationValue(classImage);
+        }
+        return annotation;
+    }
     /**
      * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.16">ref</a>
      */
     public static class RuntimeVisibleAnnotations_attribute  extends attribute_info{
         private int num_annotations;
-        private annotation annotations[];
+        private annotation[] annotations;
         public RuntimeVisibleAnnotations_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
             super(classImage, attribute_name_index, attribute_length);
         }
@@ -1669,20 +1720,24 @@ public class ClassImage {
 
         @Override
         public void read() {
-            // TODO implement
-            classImage.readBytes(attribute_length);
+            num_annotations = classImage.readu2();
+            annotations = new annotation[num_annotations];
+            for(int i = 0; i < num_annotations; i++){
+                annotations[i] = readAnnotation(classImage);
+            }
         }
     }
     @Data
     public static class annotation{
         private int type_index;
+        private String typeName;
         private int num_element_value_pairs;
-        private element_value_pair element_value_pairs[];
-
+        private element_value_pair[] element_value_pairs;
     }
     @Data
     public static class element_value_pair{
         private int element_name_index;
+        private String elementName;
         private element_value value;
     }
 
@@ -1696,7 +1751,8 @@ public class ClassImage {
         private enum_const_value enum_const_value;
         private int class_info_index;
         private annotation annotation_value;
-        private array_value array_value;
+        private int num_values;
+        private element_value[] values;
     }
     @Data
     public static class array_value{

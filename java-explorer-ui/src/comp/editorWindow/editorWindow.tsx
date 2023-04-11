@@ -41,7 +41,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
         try{
             const result = await apiClient.compile(compilerInfo.name, "", [{
                 path: compilerInfo.fileName,
-                content: content
+                content: content || compilerInfo.example
             }])
             props.onCompile && props.onCompile(result)
             setCompiling(false)

@@ -11,6 +11,7 @@
   "dependencies": {
     "@blueprintjs/core": "^4.17.8",
     "@blueprintjs/icons": "^4.14.5",
+    "@blueprintjs/popover2": "^1.13.12",
     "@blueprintjs/select": "^4.9.12",
     "monaco-editor": "0.32.1",
     "react": "^18.2.0",

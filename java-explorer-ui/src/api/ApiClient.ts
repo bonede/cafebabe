@@ -44,20 +44,18 @@ export interface annotation{
     type_index: number
     num_element_value_pairs: number
     element_value_pairs: element_value_pair[]
+    typeName: string
 }
 
 export interface element_value_pair{
     element_name_index: number
+    elementName: string
     value: element_value
 }
 
 export interface enum_const_value{
     type_name_index: number
     const_name_index: number
-}
-export interface array_value{
-    num_values: number
-    values: element_value[]
 }
 
 export interface element_value{
@@ -66,7 +64,8 @@ export interface element_value{
     enum_const_value: enum_const_value
     class_info_index: number
     annotation_value: annotation
-    array_value: array_value
+    num_values: number
+    values: element_value[]
 }
 export interface exception_table_item{
     startPc: number
