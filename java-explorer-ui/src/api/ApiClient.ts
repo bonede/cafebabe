@@ -206,7 +206,7 @@ export interface method_info{
     name: string
     descriptorIndex: number
     descriptor: string
-    accessFlags: method_access_flag
+    accessFlags: method_access_flag[]
     attributesCount: number
     attributes: attribute_info[]
     maxLocals: number

@@ -1,9 +1,9 @@
-import {ClassImage, cp_info} from "../../api/ApiClient";
+import {ClassImage, cp_info, method_info} from "../../api/ApiClient";
 import {ClassImageItem, ClassImageItemGroup} from "./ClassImageItem";
 import {Icon} from "@blueprintjs/core";
-import React from "react";
+import React, {ReactElement, ReactNode} from "react";
 
-const classInfo = (classImage: ClassImage) => {
+const classInfo = (classImage: ClassImage): ReactElement => {
     let itemGroups: ClassImageItemGroup[] = [
         {
             groupName: "Basic",
@@ -39,7 +39,7 @@ const classInfo = (classImage: ClassImage) => {
     return <ClassImageItem title={"Class Info"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
 }
 
-const cpInfo = (classImage: ClassImage): string => {
+const cpInfo = (classImage: ClassImage): ReactElement => {
     const getValue = (cpInfo: cp_info) => {
         switch (cpInfo.tag){
             case "CONSTANT_Class": return cpInfo.name
@@ -81,6 +81,33 @@ const cpInfo = (classImage: ClassImage): string => {
 
     return <ClassImageItem title={"Constant Pool"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
 }
+
+const  methodInfo = (method: method_info, i: number) => {
+    let itemGroups: ClassImageItemGroup[] = [
+        {
+            groupName: "Basic",
+            rows: [
+                {key: "Name", value: method.name},
+                {key: "Descriptor", value: method.descriptor},
+                {key: "Flags", value: method.accessFlags.join("/")},
+                {key: "Stack", value: method.maxStack + ""},
+                {key: "Locals", value: method.maxLocals + ""},
+            ]
+        },
+        {
+            groupName: "Code",
+            rows: method.attributes.filter(a => a.attributeName == "Code")[0].instructions.map(i =>
+                {
+                    return {key: i.opMnemonic, value: i.opCode + ""}
+                }
+            )
+        }
+    ]
+    return <ClassImageItem title={`Method #` + i} icon={<Icon icon="build" />} itemGroups={itemGroups} />
+}
+const methodInfoList = (classImage: ClassImage): ReactNode => {
+    return <div className="class-image-view-method-list">{classImage.methods.map(methodInfo)}</div>
+}
 export interface ClassImageViewProps{
     classImage: ClassImage
 }
@@ -89,7 +116,8 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         return null
     }
     return <div className="class-image-view">
-        {classInfo(props.classImage)}
+        {methodInfoList(props.classImage)}
         {cpInfo(props.classImage)}
+        {classInfo(props.classImage)}
     </div>
 }

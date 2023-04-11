@@ -1,4 +1,4 @@
-import {ReactElement} from "react";
+import {ReactNode} from "react";
 
 export interface ClassImageItemGroupRow{
     key: string
@@ -10,7 +10,7 @@ export interface ClassImageItemGroup{
 }
 export interface ClassImageItemProps{
     title: string
-    icon: ReactElement,
+    icon: ReactNode,
     itemGroups: ClassImageItemGroup[]
 }
 export const ClassImageItem = (props: ClassImageItemProps) => {
