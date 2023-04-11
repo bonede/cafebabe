@@ -1,7 +1,33 @@
-import {ClassImage, cp_info, method_info} from "../../api/ApiClient";
+import {attribute_info, ClassImage, cp_info, method_info} from "../../api/ApiClient";
 import {ClassImageItem, ClassImageItemGroup} from "./ClassImageItem";
 import {Icon} from "@blueprintjs/core";
 import React, {ReactElement, ReactNode} from "react";
+
+
+const attributeInfoItem = (attributeInfo: attribute_info, i: number): ClassImageItemGroup => {
+    const attributeName = attributeInfo.attributeName;
+    let rows = []
+    switch (attributeName){
+        case "SourceFile": rows.push({key: "Source file", value: attributeInfo.sourceFileName}); break;
+        case "Signature": rows.push({key: "Source file", value: attributeInfo.signature}); break;
+        case "Exceptions":
+            rows.push({key: "Exceptions", value: attributeInfo.numberOfExceptions + ""});
+            rows.push({key: "Exception index table", value: attributeInfo.exceptionIndexTable + ""}); break;
+        case "LineNumberTable":
+            attributeInfo.lineNumberTable.forEach( l => {
+                rows.push({key: "Line #" + l.lineNumber, value: "Pc " + l.startPc })
+            }); break;
+        default:
+            rows.push({key: "Value", value: attributeInfo.value});
+    }
+    return {
+        groupName: "Attribute " + attributeInfo.attributeName,
+        rows: rows
+    }
+}
+const attributeInfoList = (attributeInfos: attribute_info[]): ClassImageItemGroup[] => {
+    return attributeInfos.map(attributeInfoItem)
+}
 
 const classInfo = (classImage: ClassImage): ReactElement => {
     let itemGroups: ClassImageItemGroup[] = [
@@ -25,17 +51,7 @@ const classInfo = (classImage: ClassImage): ReactElement => {
         ]
     }}))
 
-    itemGroups = itemGroups.concat(classImage.attributes.map((a, i): ClassImageItemGroup => {
-        const ao: any = a
-        return {
-        groupName: "Attribute #" + i,
-        rows: Object.keys(a).filter(k => !k.endsWith("Index")).map(k => {
-            return {
-                key: k,
-                value: ao[k]
-            }
-        })
-    }}))
+    itemGroups = itemGroups.concat(attributeInfoList(classImage.attributes))
     return <ClassImageItem title={"Class Info"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
 }
 
@@ -71,7 +87,7 @@ const cpInfo = (classImage: ClassImage): ReactElement => {
                 }else{
                     return {
                         key: i + " "  + c.tag.replace("CONSTANT_", ""),
-                        value: getValue(c)
+                        value: getValue(c) + ""
                     }
                 }
 
@@ -83,6 +99,9 @@ const cpInfo = (classImage: ClassImage): ReactElement => {
 }
 
 const  methodInfo = (method: method_info, i: number) => {
+    let codeOffset = 0
+    let codeAttribute = method.attributes.filter(a => a.attributeName == "Code")[0]
+    let nonCodeAttribute = method.attributes.filter(a => a.attributeName != "Code")
     let itemGroups: ClassImageItemGroup[] = [
         {
             groupName: "Basic",
@@ -96,13 +115,17 @@ const  methodInfo = (method: method_info, i: number) => {
         },
         {
             groupName: "Code",
-            rows: method.attributes.filter(a => a.attributeName == "Code")[0].instructions.map(i =>
+            rows: codeAttribute.instructions.map(i =>
                 {
-                    return {key: i.opMnemonic, value: i.opCode + ""}
+
+                    const result = {key: codeOffset + " " + i.opMnemonic + (i.index === undefined ? "" : " #" + i.index) + (i.value === undefined ? "" : " $" + i.value), value: i.opCode + ""}
+                    codeOffset += i.size
+                    return result
                 }
             )
         }
     ]
+    itemGroups = [...itemGroups, ...attributeInfoList(codeAttribute.attributes), ...attributeInfoList(nonCodeAttribute)]
     return <ClassImageItem title={`Method #` + i} icon={<Icon icon="build" />} itemGroups={itemGroups} />
 }
 const methodInfoList = (classImage: ClassImage): ReactNode => {

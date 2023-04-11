@@ -75,6 +75,8 @@ export interface exception_table_item{
     catchType: number
 }
 export interface Instruction{
+    index: number
+    value: number
     opMnemonic: string
     opCode: number
     size: number
@@ -105,7 +107,7 @@ export interface attribute_info{
     exceptionIndexTable: number
     // LineNumberTable
     lineNumberTableLength: number
-    LineNumberTable: line_number_table_item[]
+    lineNumberTable: line_number_table_item[]
     // RuntimeVisibleAnnotations
     numAnnotations: number
     annotations: annotation[]

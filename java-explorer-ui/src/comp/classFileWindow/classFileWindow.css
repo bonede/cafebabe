@@ -9,6 +9,7 @@
     padding: 10px;
     box-sizing: content-box;
     height: 100%;
+    overflow: auto;
 }
 .class-image-item{
     border:1px solid #ffffff55;
