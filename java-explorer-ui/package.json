@@ -13,7 +13,7 @@
     "@blueprintjs/icons": "^4.14.5",
     "@blueprintjs/popover2": "^1.13.12",
     "@blueprintjs/select": "^4.9.12",
-    "monaco-editor": "0.32.1",
+    "monaco-editor": "0.37.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-mosaic-component": "^6.0.0"

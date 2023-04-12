@@ -15,6 +15,8 @@ type WindowType = 'editor' | 'output' | 'classFile'
 
 export const JavaExplorerApp = () => {
     const apiClient = ApiClient.getClient()
+    const [selectedFile, setSelectedFile] = useState(undefined as string | undefined)
+    const [selectedLines, setSelectedLines] = useState([] as number[])
     const [outputMsgs, setOutputMsg] = useState([] as OutputMsg[])
     const [classFiles, setClassFiles] = useState([] as ClassFile[])
     const [appInfo, setAppInfo] = useState(null as AppInfo | null)
@@ -46,9 +48,9 @@ export const JavaExplorerApp = () => {
     }
     const windowForId = (id: WindowType, path: MosaicPath) => {
         switch (id){
-            case "editor": return <EditorWindow onCompile={handleCompile} mosaicPath={path} compilers={appInfo!.compilers} />
+            case "editor": return <EditorWindow onSelectLines={(lines) => setSelectedLines(lines) } onCompile={handleCompile} mosaicPath={path} compilers={appInfo!.compilers} />
             case "output": return <OutputWindow onClearMsg={handleClearMsg} mosaicPath={path} outputMsgs={outputMsgs}  />
-            case "classFile": return <ClassFileWindow mosaicPath={path} classFiles={classFiles}  />
+            case "classFile": return <ClassFileWindow selectedFile={selectedFile} selectedLines={selectedLines} mosaicPath={path} classFiles={classFiles}  />
         }
     }
     return <div id="app">

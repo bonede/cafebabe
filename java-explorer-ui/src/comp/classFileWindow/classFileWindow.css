@@ -36,9 +36,20 @@
     text-transform: uppercase;
 }
 .class-image-item-group-row{
+    color: #bec1c6;
     display: flex;
     padding: 3px;
     justify-content: space-between;
+}
+
+.class-image-item-group-row.flash{
+    color: #fff;
+    background: #ffffff33;
+}
+@keyframes blinkingBackground{
+    0%		{ background-color: #ffffff33;}
+    50%		{ background-color: #ffffff00;}
+    100%	{ background-color: #ffffff33;}
 }
 .class-image-item-group-row-key{
     margin-right: 20px;

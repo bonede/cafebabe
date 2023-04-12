@@ -79,6 +79,8 @@ export interface Instruction{
     opMnemonic: string
     opCode: number
     size: number
+    /** calculated in client side */
+    pc: number
 }
 export interface attribute_info{
     attributeNameIndex: number

@@ -4,6 +4,7 @@ import {
     ClassImage,
     cp_info,
     element_value,
+    Instruction,
     method_info,
     stack_map_frame
 } from "../../api/ApiClient";
@@ -227,10 +228,38 @@ const cpInfo = (classImage: ClassImage): ReactElement => {
 
     return <ClassImageItem title={"Constant Pool"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
 }
+const selectedInstructionPcs = (instructions: Instruction[], lineNumberTable: attribute_info, selectLines?: number[]): number[] => {
+    if(!lineNumberTable || !selectLines || selectLines.length == 0){
+        return []
+    }
+    const lineNumbers = lineNumberTable.lineNumberTable
+    const pcs: number[] = []
+    const startEndPcs: number[][] = []
+    for(let i = 0; i < lineNumbers.length; i++){
+        const line = lineNumbers[i]
+        if(!selectLines.includes(line.lineNumber)){
+            continue
+        }
+        const endLine = lineNumbers[i + 1]
+        startEndPcs.push( [line.startPc, endLine ? endLine.startPc : Infinity])
+    }
 
-const  methodInfo = (method: method_info, i: number) => {
-    let codeOffset = 0
+    console.log(startEndPcs)
+    for(let i = 0; i < instructions.length; i++){
+        const instruction = instructions[i]
+        startEndPcs.forEach(startEndPc => {
+            if(instruction.pc >= startEndPc[0] && instruction.pc < startEndPc[1]){
+                pcs.push(instruction.pc)
+            }
+        })
+    }
+    return pcs
+
+}
+const  methodInfo = (method: method_info, i: number, selectedLines?: number[]) => {
+
     let codeAttribute = method.attributes.filter(a => a.attributeName == "Code")[0]
+
     let nonCodeAttribute = method.attributes.filter(a => a.attributeName != "Code")
     let itemGroups: ClassImageItemGroup[] = [
         {
@@ -245,14 +274,25 @@ const  methodInfo = (method: method_info, i: number) => {
         }
     ]
     if(codeAttribute){
+        const instructions = codeAttribute.instructions
+        let pc = 0
+        // calculate pc
+        instructions.forEach(i => {
+            i.pc = pc
+            pc += i.size
+        })
+        let lineNumberTable = codeAttribute.attributes.filter(a => a.attributeName == "LineNumberTable")[0]
+        const selectedPcs = selectedInstructionPcs(instructions, lineNumberTable, selectedLines)
         itemGroups.push({
             groupName: "Code",
-            rows: codeAttribute.instructions.map(i =>
+            rows: instructions.map((instruction) =>
                 {
 
-                    const result = {key: codeOffset + " " + i.opMnemonic + (i.index === undefined ? "" : " #" + i.index) + (i.value === undefined ? "" : " $" + i.value), value: i.opCode + ""}
-                    codeOffset += i.size
-                    return result
+                    return {
+                        key: instruction.pc + " " + instruction.opMnemonic + (instruction.index === undefined ? "" : " #" + instruction.index) + (instruction.value === undefined ? "" : " $" + instruction.value),
+                        value: instruction.opCode + "",
+                        flash: selectedPcs.includes(instruction.pc)
+                    }
                 }
             )
         })
@@ -261,18 +301,19 @@ const  methodInfo = (method: method_info, i: number) => {
     itemGroups = [...itemGroups, ...codeAttributes, ...attributeInfoList(nonCodeAttribute)]
     return <ClassImageItem title={`Method #` + i} icon={<Icon icon="build" />} itemGroups={itemGroups} />
 }
-const methodInfoList = (classImage: ClassImage): ReactNode => {
-    return <div className="class-image-view-method-list">{classImage.methods.map(methodInfo)}</div>
+const methodInfoList = (classImage: ClassImage, selectedLines?: number[]): ReactNode => {
+    return <div className="class-image-view-method-list">{classImage.methods.map((m,i ) => methodInfo(m, i, selectedLines))}</div>
 }
 export interface ClassImageViewProps{
     classImage: ClassImage
+    selectedLines?: number[]
 }
 export const ClassImageView = (props: ClassImageViewProps) => {
     if(!props.classImage){
         return null
     }
     return <div className="class-image-view">
-        {methodInfoList(props.classImage)}
+        {methodInfoList(props.classImage, props.selectedLines)}
         {cpInfo(props.classImage)}
         {classInfo(props.classImage)}
     </div>

@@ -6,6 +6,7 @@ export interface ClassImageItemGroupRow{
     key: string
     value: string
     more?: ClassImageItemGroup
+    flash?: boolean
 }
 export interface ClassImageItemGroup{
     groupName?: string
@@ -29,7 +30,7 @@ const RowView = (props: {row: ClassImageItemGroupRow}) => {
         <Popover2  content={popoverContent}>
             <Icon icon='info-sign' />
         </Popover2> : null
-    return <div className="class-image-item-group-row">
+    return <div className={`class-image-item-group-row${props.row.flash ? " flash" : ""}`}>
 
         <div className="class-image-item-group-row-key">
             {props.row.key}

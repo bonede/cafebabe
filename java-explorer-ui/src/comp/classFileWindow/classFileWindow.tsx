@@ -8,6 +8,8 @@ import {ClassImageView} from "./classImageView";
 export interface ClassFileWindowProps{
     mosaicPath: MosaicPath,
     classFiles: ClassFile[]
+    selectedLines?: number[]
+    selectedFile?: string
 }
 
 export const ClassFileWindow = (props: ClassFileWindowProps) => {
@@ -33,7 +35,10 @@ export const ClassFileWindow = (props: ClassFileWindowProps) => {
     >
         {
             props.classFiles[classFileIndex] && <div className="class-image-window-content">
-                <ClassImageView classImage={props.classFiles[classFileIndex].classImage} />
+                {
+                    // TODO handle file name
+                }
+                <ClassImageView selectedLines={props.selectedLines} classImage={props.classFiles[classFileIndex].classImage} />
             </div>
         }
 

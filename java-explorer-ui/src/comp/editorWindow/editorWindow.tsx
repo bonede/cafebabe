@@ -10,6 +10,7 @@ export interface EditorWindowProps{
     mosaicPath: MosaicPath,
     compilers: CompilerInfo[]
     onCompile?: (result: CompileResult) => void
+    onSelectLines?: (lines: number[]) => void
 }
 const selectMenuItem: ItemRenderer<CompilerInfo> = (compilerInfo, { handleClick, handleFocus, modifiers, query }) => {
     if (!modifiers.matchesPredicate) {
@@ -91,6 +92,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
         renderToolbar={() => toolbar}
     >
             <Editor
+                onSelectLines={props.onSelectLines}
                 onContentChange={handleEditorContentChange}
                 lang={compilerInfo.lang}
                 content={compilerInfo.example}
