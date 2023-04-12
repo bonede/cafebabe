@@ -103,14 +103,14 @@ export interface attribute_info{
     constantValueIndex: number
     // Exceptions
     numberOfExceptions: number
-    exceptionIndexTable: number
+    exceptionIndexTable: number[]
     // LineNumberTable
     lineNumberTableLength: number
     lineNumberTable: line_number_table_item[]
     // RuntimeVisibleAnnotations
     numAnnotations: number
     annotations: annotation[]
-
+    entries: stack_map_frame[]
     // unhanded, hex string
     value: string
 }
@@ -236,6 +236,23 @@ export interface ClassImage{
     fieldsCount: number
     methodsCount: number
     methods: method_info[]
+}
+
+export interface stack_map_frame{
+    frame_type: number
+    offset_delta?: number
+    frameTypeName: string
+    stack?: verification_type_info[]
+    locals?: verification_type_info[]
+    number_of_locals?: number
+    number_of_stack_items?: number
+}
+
+export interface verification_type_info{
+    tag: number
+    tagName: string
+    offset?: number
+    cpool_index?: number
 }
 
 type HttpMethod = "get" | "post"

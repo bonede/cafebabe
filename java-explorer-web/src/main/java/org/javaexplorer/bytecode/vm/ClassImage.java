@@ -333,6 +333,7 @@ public class ClassImage {
                 case "SourceFile": attribute_info = new SourceFile_attribute(this, name_index, length); break;
                 case "RuntimeVisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
                 case "RuntimeInvisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
+                case "StackMapTable": attribute_info = new StackMapTable_attribute(this, name_index, length); break;
                 // TODO add more attributes
                 default: attribute_info = new Unknown_attribute(this, name_index, length); break;
             }
@@ -1542,8 +1543,53 @@ public class ClassImage {
             );
         }
     }
-    public static class stack_map_frame{
 
+    @Data
+    public static class verification_type_info{
+        private int tag;
+        private Integer cpool_index;
+        private Integer offset;
+        public String getTagName(){
+            switch (tag){
+                case 0: return "ITEM_Top";
+                case 1: return "ITEM_Integer";
+                case 2: return "ITEM_Float";
+                case 3: return "ITEM_Double";
+                case 4: return "ITEM_Long";
+                case 6: return "ITEM_UninitializedThis";
+                case 7: return "ITEM_Object";
+                case 8: return "ITEM_Uninitialized";
+                default: return "ITEM_Unknown";
+            }
+        }
+    }
+    @Data
+    public static class stack_map_frame{
+        private int frame_type;
+        public String getFrameTypeName(){
+            if(frame_type >= 0 && frame_type <= 63){
+                return "SAME";
+            }else if(frame_type >= 64 && frame_type <= 127){
+                return "SAME_LOCALS_1_STACK_ITEM";
+            }else if(frame_type == 247){
+                return "SAME_LOCALS_1_STACK_ITEM_EXTENDED";
+            }else if(frame_type >= 248 && frame_type <= 250){
+                return "CHOP";
+            }else if(frame_type == 251){
+                return "SAME_FRAME_EXTENDED";
+            }else if(frame_type >= 252 && frame_type <= 254){
+                return "APPEND";
+            }else if(frame_type == 255){
+                return "FULL_FRAME";
+            }else {
+                return "RESERVED";
+            }
+        }
+        private Integer offset_delta;
+        private Integer number_of_locals;
+        private Integer number_of_stack_items;
+        private verification_type_info[] stack;
+        private verification_type_info[] locals;
     }
 
     /**
@@ -1574,7 +1620,7 @@ public class ClassImage {
      */
     public static class Exceptions_attribute  extends attribute_info{
         private int number_of_exceptions;
-        private int exception_index_table[];
+        private int[] exception_index_table;
         public Exceptions_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
             super(classImage, attribute_name_index, attribute_length);
         }
@@ -1700,6 +1746,63 @@ public class ClassImage {
         }
         return annotation;
     }
+
+    public static verification_type_info readVerificationTypeInfo(ClassImage classImage){
+        verification_type_info verification_type_info = new verification_type_info();
+        verification_type_info.tag = classImage.readu1();
+        switch (verification_type_info.tag){
+            case 0:
+            case 6:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                break;
+            case 7: verification_type_info.cpool_index = classImage.readu2(); break;
+            case 8: verification_type_info.offset = classImage.readu2(); break;
+        }
+        return verification_type_info;
+    }
+    public static stack_map_frame readStackMapFrame(ClassImage classImage){
+        stack_map_frame stack_map_frame = new stack_map_frame();
+        stack_map_frame.frame_type = classImage.readu1();
+        int frame_type = stack_map_frame.frame_type;
+        if(frame_type >= 0 && frame_type <= 63){
+            // do nothing
+        }else if(frame_type >= 64 && frame_type <= 127){
+            stack_map_frame.stack = new verification_type_info[]{readVerificationTypeInfo(classImage)};
+        }else if(frame_type == 247){
+            stack_map_frame.offset_delta = classImage.readu2();
+            stack_map_frame.stack = new verification_type_info[]{readVerificationTypeInfo(classImage)};
+        }else if(frame_type >= 248 && frame_type <= 250){
+            stack_map_frame.offset_delta = classImage.readu2();
+        }else if(frame_type == 251){
+            stack_map_frame.offset_delta = classImage.readu2();
+        }else if(frame_type >= 252 && frame_type <= 254){
+            stack_map_frame.offset_delta = classImage.readu2();
+            stack_map_frame.locals = new verification_type_info[stack_map_frame.frame_type - 251];
+            for(int i = 0; i < stack_map_frame.locals.length; i++){
+                verification_type_info verification_type_info = readVerificationTypeInfo(classImage);
+                stack_map_frame.locals[i] = verification_type_info;
+            }
+        }else if(frame_type == 255){
+            stack_map_frame.offset_delta = classImage.readu2();
+            stack_map_frame.number_of_locals = classImage.readu2();
+            stack_map_frame.locals = new verification_type_info[stack_map_frame.number_of_locals];
+            for(int i = 0; i < stack_map_frame.locals.length; i++){
+                verification_type_info verification_type_info = readVerificationTypeInfo(classImage);
+                stack_map_frame.locals[i] = verification_type_info;
+            }
+            stack_map_frame.number_of_stack_items = classImage.readu2();
+            stack_map_frame.stack = new verification_type_info[stack_map_frame.number_of_stack_items];
+            for(int i = 0; i < stack_map_frame.stack.length; i++){
+                verification_type_info verification_type_info = readVerificationTypeInfo(classImage);
+                stack_map_frame.stack[i] = verification_type_info;
+            }
+        }
+        return stack_map_frame;
+    }
     /**
      * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.16">ref</a>
      */
@@ -1727,6 +1830,35 @@ public class ClassImage {
             }
         }
     }
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.4">ref</a>
+     */
+    public static class StackMapTable_attribute  extends attribute_info{
+        private int number_of_entries;
+        private stack_map_frame[] entries;
+        public StackMapTable_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+        public int getNumberOfEntries() {
+            return number_of_entries;
+        }
+
+        public stack_map_frame[] getEntries(){
+            return entries;
+        }
+
+
+        @Override
+        public void read() {
+            number_of_entries = classImage.readu2();
+            entries = new stack_map_frame[number_of_entries];
+            for(int i = 0; i < number_of_entries; i++){
+                entries[i] = readStackMapFrame(classImage);
+            }
+        }
+    }
+
     @Data
     public static class annotation{
         private int type_index;

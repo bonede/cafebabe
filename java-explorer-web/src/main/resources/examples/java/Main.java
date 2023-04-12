@@ -4,7 +4,16 @@ import java.lang.System;
  * You may edit it and click Build button.
  */
 class Main{
-    public static void main(String[] args) {
-        System.out.println("Hello world!");
+    @Deprecated(since = "1.0.0")
+    public static int fib(int n) throws IllegalArgumentException{
+        if (n <= 1){
+            throw new IllegalArgumentException("N must be greater than 1");
+        }
+        try {
+            return fib(n - 1) + fib(n - 2);
+        }catch (Exception e){
+            throw new RuntimeException("Should not throw");
+        }
+
     }
 }

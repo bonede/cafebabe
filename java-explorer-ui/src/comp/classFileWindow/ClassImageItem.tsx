@@ -18,7 +18,7 @@ export interface ClassImageItemProps{
 }
 
 const RowView = (props: {row: ClassImageItemGroupRow}) => {
-    const popoverContent = <ClassImageItem title={"Annotation parameters"} icon={<Icon icon="build" />} itemGroups={
+    const popoverContent = <ClassImageItem title={props.row.more?.groupName || ""} icon={<Icon icon="build" />} itemGroups={
         [
             {
                 rows: props.row.more?.rows!

@@ -1,4 +1,12 @@
-import {annotation, attribute_info, ClassImage, cp_info, element_value, method_info} from "../../api/ApiClient";
+import {
+    annotation,
+    attribute_info,
+    ClassImage,
+    cp_info,
+    element_value,
+    method_info,
+    stack_map_frame
+} from "../../api/ApiClient";
 import {ClassImageItem, ClassImageItemGroup, ClassImageItemGroupRow} from "./ClassImageItem";
 import {Icon} from "@blueprintjs/core";
 import React, {ReactElement, ReactNode} from "react";
@@ -69,10 +77,51 @@ const annotationItemRow = (annotation: annotation): ClassImageItemGroupRow => {
         moreRows = annotation.element_value_pairs.map((e) => annotationItemValue(e.elementName, e.value))
     }
     return {
-        key: "Type",
-        value: annotation.typeName,
+        key: annotation.typeName,
+        value: "",
         more: annotation.num_element_value_pairs == 0 ? undefined : {
             groupName: "Annotation parameters",
+            rows: moreRows
+        }
+    }
+}
+
+const stackFrameItemRow = (stack_map_frame: stack_map_frame): ClassImageItemGroupRow => {
+    let moreRows: ClassImageItemGroupRow[] = [
+        {
+            key: "Type",
+            value: stack_map_frame.frame_type + ""
+        }
+    ]
+    if(stack_map_frame.offset_delta !== null){
+        moreRows.push({
+            key: "Offset delta",
+            value: stack_map_frame.offset_delta + ""
+        })
+    }
+
+    if(stack_map_frame.stack && stack_map_frame.stack.length > 0){
+        moreRows.push({
+            key: "Stack",
+            value: "",
+            more: {
+                groupName: "Detail",
+                rows: stack_map_frame.stack.map(s => {
+                    const offsetValue = s.offset != null ? "Offset "  + s.offset : ""
+                    const indexValue = s.cpool_index != null ? "ConstPool #"  + s.cpool_index : ""
+                    return {
+                        key: s.tagName,
+                        value: offsetValue || indexValue
+                    }
+                })
+            }
+        })
+    }
+    return {
+        key: "Frame type",
+        value: stack_map_frame.frameTypeName,
+        more: {
+            groupName: "Frame detail",
             rows: moreRows
         }
     }
@@ -84,16 +133,19 @@ const attributeInfoItem = (attributeInfo: attribute_info, i: number): ClassImage
         case "SourceFile": rows.push({key: "Source file", value: attributeInfo.sourceFileName}); break;
         case "Signature": rows.push({key: "Source file", value: attributeInfo.signature}); break;
         case "Exceptions":
-            rows.push({key: "Exceptions", value: attributeInfo.numberOfExceptions + ""});
-            rows.push({key: "Exception index table", value: attributeInfo.exceptionIndexTable + ""}); break;
+            attributeInfo.exceptionIndexTable.forEach((index, i) => {
+                rows.push({key: "Exception " + i, value: "#" + index})
+            });break;
         case "LineNumberTable":
             attributeInfo.lineNumberTable.forEach( l => {
-                rows.push({key: "Line #" + l.lineNumber, value: "Pc " + l.startPc })
+                rows.push({key: "Line #" + l.lineNumber, value: "#" + l.startPc })
             }); break;
         case "RuntimeVisibleAnnotations":
-            attributeInfo.annotations.map( a => rows.push(annotationItemRow(a))); break;
+            attributeInfo.annotations.forEach( a => rows.push(annotationItemRow(a))); break;
         case "RuntimeInvisibleAnnotations":
-            attributeInfo.annotations.map( a => rows.push(annotationItemRow(a))); break;
+            attributeInfo.annotations.forEach( a => rows.push(annotationItemRow(a))); break;
+        case "StackMapTable":
+            attributeInfo.entries && attributeInfo.entries.forEach( s => rows.push(stackFrameItemRow(s))); break;
         case "Deprecated": break;
         default:
             rows.push({key: "Value", value: attributeInfo.value});
