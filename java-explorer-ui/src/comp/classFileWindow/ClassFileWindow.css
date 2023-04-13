@@ -41,10 +41,17 @@
     padding: 3px;
     justify-content: space-between;
 }
-
+.class-image-item-group-row:hover{
+    color: #fff;
+    background: #ffffff22;
+}
+.class-image-item-group-row.flash:hover{
+    color: #fff;
+    background: #ffffff11;
+}
 .class-image-item-group-row.flash{
     color: #fff;
-    background: #ffffff33;
+    background: #ffffff22;
 }
 @keyframes blinkingBackground{
     0%		{ background-color: #ffffff33;}

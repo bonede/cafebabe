@@ -1,15 +1,16 @@
-import './classFileWindow.css'
+import './ClassFileWindow.css'
 import {MosaicPath, MosaicWindow} from "react-mosaic-component";
 import React, {useState} from "react";
 import {ClassFile} from "../../api/ApiClient";
 import {Tab, Tabs} from "@blueprintjs/core";
-import {ClassImageView} from "./classImageView";
+import {ClassImageView} from "./ClassImageView";
 
 export interface ClassFileWindowProps{
     mosaicPath: MosaicPath,
     classFiles: ClassFile[]
     selectedLines?: number[]
     selectedFile?: string
+    onSelectLine?: (file: string, line?: number) => void
 }
 
 export const ClassFileWindow = (props: ClassFileWindowProps) => {
@@ -38,7 +39,7 @@ export const ClassFileWindow = (props: ClassFileWindowProps) => {
                 {
                     // TODO handle file name
                 }
-                <ClassImageView selectedLines={props.selectedLines} classImage={props.classFiles[classFileIndex].classImage} />
+                <ClassImageView onSelectLine={props.onSelectLine} file={props.classFiles[classFileIndex].path} selectedLines={props.selectedLines} classImage={props.classFiles[classFileIndex].classImage} />
             </div>
         }
 

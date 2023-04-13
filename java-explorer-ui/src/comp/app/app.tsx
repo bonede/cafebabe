@@ -4,7 +4,7 @@ import {ApiClient, AppInfo, ClassFile, CompileResult} from "../../api/ApiClient"
 
 
 import {Mosaic, MosaicPath} from 'react-mosaic-component';
-import {ClassFileWindow} from "../classFileWindow/classFileWindow";
+import {ClassFileWindow} from "../classFileWindow/ClassFileWindow";
 import {OutputMsg, OutputWindow} from "../outputWindow/outputWindow";
 import {EditorWindow} from "../editorWindow/editorWindow";
 
@@ -20,6 +20,9 @@ export const JavaExplorerApp = () => {
     const [outputMsgs, setOutputMsg] = useState([] as OutputMsg[])
     const [classFiles, setClassFiles] = useState([] as ClassFile[])
     const [appInfo, setAppInfo] = useState(null as AppInfo | null)
+
+    const [classFileName, setClassFileName] = useState(undefined as string | undefined)
+    const [classFileLine, setClassFileLine] = useState(undefined as number | undefined)
 
     useEffect(() => {
         apiClient.getAppInfo().then(a => setAppInfo(a))
@@ -48,9 +51,12 @@ export const JavaExplorerApp = () => {
     }
     const windowForId = (id: WindowType, path: MosaicPath) => {
         switch (id){
-            case "editor": return <EditorWindow onSelectLines={(lines) => setSelectedLines(lines) } onCompile={handleCompile} mosaicPath={path} compilers={appInfo!.compilers} />
+            case "editor": return <EditorWindow selectLine={classFileLine} onSelectLines={(lines) => setSelectedLines(lines) } onCompile={handleCompile} mosaicPath={path} compilers={appInfo!.compilers} />
             case "output": return <OutputWindow onClearMsg={handleClearMsg} mosaicPath={path} outputMsgs={outputMsgs}  />
-            case "classFile": return <ClassFileWindow selectedFile={selectedFile} selectedLines={selectedLines} mosaicPath={path} classFiles={classFiles}  />
+            case "classFile": return <ClassFileWindow onSelectLine={(file, line) => {
+                setClassFileLine(line)
+                setClassFileName(file)
+            }} selectedFile={selectedFile} selectedLines={selectedLines} mosaicPath={path} classFiles={classFiles}  />
         }
     }
     return <div id="app">

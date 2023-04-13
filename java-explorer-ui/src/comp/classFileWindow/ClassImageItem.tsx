@@ -7,6 +7,8 @@ export interface ClassImageItemGroupRow{
     value: string
     more?: ClassImageItemGroup
     flash?: boolean
+    onMouseOver?: () => void
+    onMouseLeave?: () => void
 }
 export interface ClassImageItemGroup{
     groupName?: string
@@ -16,6 +18,7 @@ export interface ClassImageItemProps{
     title: string
     icon: ReactNode,
     itemGroups: ClassImageItemGroup[]
+    onSelectLine?: (file: string, line: number) => void
 }
 
 const RowView = (props: {row: ClassImageItemGroupRow}) => {
@@ -30,7 +33,11 @@ const RowView = (props: {row: ClassImageItemGroupRow}) => {
         <Popover2  content={popoverContent}>
             <Icon icon='info-sign' />
         </Popover2> : null
-    return <div className={`class-image-item-group-row${props.row.flash ? " flash" : ""}`}>
+    return <div
+        className={`class-image-item-group-row${props.row.flash ? " flash" : ""}`}
+        onMouseOver={props.row.onMouseOver}
+        onMouseLeave={props.row.onMouseLeave}
+    >
 
         <div className="class-image-item-group-row-key">
             {props.row.key}

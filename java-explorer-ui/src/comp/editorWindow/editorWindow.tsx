@@ -9,6 +9,7 @@ import {ItemRenderer, Select2} from "@blueprintjs/select";
 export interface EditorWindowProps{
     mosaicPath: MosaicPath,
     compilers: CompilerInfo[]
+    selectLine?: number
     onCompile?: (result: CompileResult) => void
     onSelectLines?: (lines: number[]) => void
 }
@@ -92,6 +93,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
         renderToolbar={() => toolbar}
     >
             <Editor
+                selectLine={props.selectLine}
                 onSelectLines={props.onSelectLines}
                 onContentChange={handleEditorContentChange}
                 lang={compilerInfo.lang}
