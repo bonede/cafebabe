@@ -92,7 +92,7 @@ export function Editor(props: EditorProps){
             range: new monaco.Range(props.selectLine!, 0, props.selectLine!, 0),
             options: {
                 isWholeLine: true,
-                linesDecorationsClassName: "line-decoration",
+                className: "line-decoration",
             },
         }])
         setLineDecoration(decoration)

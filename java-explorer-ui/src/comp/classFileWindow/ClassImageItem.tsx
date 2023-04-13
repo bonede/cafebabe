@@ -10,6 +10,7 @@ export interface ClassImageItemGroupRow{
     onMouseOver?: () => void
     onMouseLeave?: () => void,
     color?: string,
+    cpIndices?: number[]
 }
 export interface ClassImageItemGroup{
     groupName?: string
@@ -20,12 +21,11 @@ export interface ClassImageItemProps{
     icon: ReactNode,
     itemGroups: ClassImageItemGroup[]
     onSelectLine?: (file: string, line: number) => void
-    cpIndex?: number
-    onSelectCpInfo?: (cpIndex?: number) => void
+    onSelectCpInfo?: (cpIndices?: number[]) => void
 }
 
-const RowView = (props: {row: ClassImageItemGroupRow}) => {
-    const popoverContent = <ClassImageItem title={props.row.more?.groupName || ""} icon={<Icon icon="build" />} itemGroups={
+const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndices?: number[]) => void}) => {
+    const popoverContent = <ClassImageItem onSelectCpInfo={props.onSelectCpInfo} title={props.row.more?.groupName || ""} icon={<Icon icon="build" />} itemGroups={
         [
             {
                 rows: props.row.more?.rows!
@@ -38,8 +38,18 @@ const RowView = (props: {row: ClassImageItemGroupRow}) => {
         </Popover2> : null
     return <div
         className={`class-image-item-group-row${props.row.flash ? " flash" : ""}`}
-        onMouseOver={props.row.onMouseOver}
-        onMouseLeave={props.row.onMouseLeave}
+        onMouseOver={(e) => {
+            e.stopPropagation()
+            props.row.onMouseOver && props.row.onMouseOver()
+            if(props.row.cpIndices && props.onSelectCpInfo) {
+                props.onSelectCpInfo(props.row.cpIndices.filter(s => s !== undefined && s !== null))
+            }
+        }}
+        onMouseLeave={(e) => {
+            e.stopPropagation()
+            props.row.onMouseLeave && props.row.onMouseLeave()
+            props.onSelectCpInfo && props.onSelectCpInfo([])
+        }}
     >
 
         <div className="class-image-item-group-row-key">
@@ -52,7 +62,7 @@ const RowView = (props: {row: ClassImageItemGroupRow}) => {
 }
 
 export const ClassImageItem = (props: ClassImageItemProps) => {
-    const rowView = (row: ClassImageItemGroupRow) => <RowView row={row} />
+    const rowView = (row: ClassImageItemGroupRow) => <RowView onSelectCpInfo={props.onSelectCpInfo} row={row} />
     const groupView = (group: ClassImageItemGroup) => <div className="class-image-item-group">
         {group.groupName && <div className="class-image-item-group-name">{group.groupName}</div>}
         <div className="class-image-item-group-rows">{group.rows.map(rowView)}</div>

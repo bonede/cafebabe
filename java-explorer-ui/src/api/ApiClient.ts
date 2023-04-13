@@ -198,7 +198,7 @@ export interface field_info{
     name: string
     nameIndex: number
     descriptor: string
-    descriptorIndex: string
+    descriptorIndex: number
     accessFlags: field_access_flag[]
     attributesCount: number
     attributes: attribute_info[]
@@ -225,13 +225,13 @@ export interface ClassFile{
 export interface ClassImage{
     majorVersion: number
     minorVersion: number
-    superClassIndex: number
+    superClassNameIndex: number
     superClassName: string
     accessFlags: class_access_flag[]
     attributeCount:  number
     attributes: attribute_info[]
     className: string
-    classNameIndex: string
+    classNameIndex: number
     constantPool: cp_info[]
     constantPoolCount: number
     fields: field_info[]
