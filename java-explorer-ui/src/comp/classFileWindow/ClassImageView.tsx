@@ -10,7 +10,7 @@ import {
 } from "../../api/ApiClient";
 import {ClassImageItem, ClassImageItemGroup, ClassImageItemGroupRow} from "./ClassImageItem";
 import {Icon} from "@blueprintjs/core";
-import React, {ReactElement, ReactNode} from "react";
+import React, {ReactElement, ReactNode, useState} from "react";
 
 
 export interface ClassImageViewProps{
@@ -191,7 +191,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         }}))
 
         itemGroups = itemGroups.concat(attributeInfoList(classImage.attributes))
-        return <ClassImageItem title={"Class Info"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
+        return <ClassImageItem onSelectCpInfo={i => setCpIndex(i)} title={"Class Info"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
     }
 
     const cpInfo = (classImage: ClassImage): ReactElement => {
@@ -244,7 +244,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
             }
         ]
 
-        return <ClassImageItem title={"Constant Pool"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
+        return <ClassImageItem cpIndex={cpIndex} onSelectCpInfo={i => setCpIndex(i)} title={"Constant Pool"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
     }
     const selectedInstructionPcs = (instructions: Instruction[], lineNumberTable: attribute_info, selectLines?: number[]): number[] => {
         if(!lineNumberTable || !selectLines || selectLines.length == 0){
@@ -333,7 +333,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         }
         const codeAttributes = codeAttribute ? attributeInfoList(codeAttribute.attributes) : []
         itemGroups = [...itemGroups, ...codeAttributes, ...attributeInfoList(nonCodeAttribute)]
-        return <ClassImageItem title={`Method #` + i} icon={<Icon icon="build" />} itemGroups={itemGroups} />
+        return <ClassImageItem onSelectCpInfo={i => setCpIndex(i)} title={`Method #` + i} icon={<Icon icon="build" />} itemGroups={itemGroups} />
     }
     const methodInfoList = (classImage: ClassImage, selectedLines?: number[]): ReactNode => {
         return <div className="class-image-view-method-list">{classImage.methods.map((m,i ) => methodInfo(m, i, selectedLines))}</div>
@@ -341,6 +341,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
     if(!props.classImage){
         return null
     }
+    const [cpIndex, setCpIndex] = useState(undefined as number | undefined)
     return <div className="class-image-view">
         {methodInfoList(props.classImage, props.selectedLines)}
         {cpInfo(props.classImage)}

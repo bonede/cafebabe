@@ -9,7 +9,7 @@ export interface ClassImageItemGroupRow{
     flash?: boolean
     onMouseOver?: () => void
     onMouseLeave?: () => void,
-    color?: string
+    color?: string,
 }
 export interface ClassImageItemGroup{
     groupName?: string
@@ -20,6 +20,8 @@ export interface ClassImageItemProps{
     icon: ReactNode,
     itemGroups: ClassImageItemGroup[]
     onSelectLine?: (file: string, line: number) => void
+    cpIndex?: number
+    onSelectCpInfo?: (cpIndex?: number) => void
 }
 
 const RowView = (props: {row: ClassImageItemGroupRow}) => {
