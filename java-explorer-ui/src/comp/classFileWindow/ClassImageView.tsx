@@ -214,22 +214,32 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 default: return ""
             }
         }
+        const color = (c: cp_info): string | undefined => {
+            if(c == null){
+                return undefined
+            }
+            switch (c.tag){
+                case "CONSTANT_String":
+                case "CONSTANT_Utf8":
+                    return "#c2947a"
+                case "CONSTANT_Class":
+                case "CONSTANT_Methodref":
+                case "CONSTANT_Fieldref":
+                case "CONSTANT_NameAndType":
+                    return "#6c9ad3"
+
+            }
+            return undefined
+        }
         let itemGroups: ClassImageItemGroup[] = [
             {
                 groupName: "Pool Size: " + classImage.constantPool.length,
                 rows: classImage.constantPool.map((c, i) => {
-                    if(c == null){
-                        return {
-                            key: i + " " + "null",
-                            value: "null"
-                        }
-                    }else{
-                        return {
-                            key: i + " "  + c.tag.replace("CONSTANT_", ""),
-                            value: getValue(c) + ""
-                        }
+                    return {
+                        key: c == null ? i + " " + "null" : i + " "  + c.tag.replace("CONSTANT_", ""),
+                        value: c == null ? "null" : getValue(c) + "",
+                        color: color(c)
                     }
-
                 })
             }
         ]

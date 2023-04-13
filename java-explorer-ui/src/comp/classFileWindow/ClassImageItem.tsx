@@ -8,7 +8,8 @@ export interface ClassImageItemGroupRow{
     more?: ClassImageItemGroup
     flash?: boolean
     onMouseOver?: () => void
-    onMouseLeave?: () => void
+    onMouseLeave?: () => void,
+    color?: string
 }
 export interface ClassImageItemGroup{
     groupName?: string
@@ -42,7 +43,7 @@ const RowView = (props: {row: ClassImageItemGroupRow}) => {
         <div className="class-image-item-group-row-key">
             {props.row.key}
         </div>
-        <div className="class-image-item-group-row-value">
+        <div className="class-image-item-group-row-value" style={{color: props.row.color ? props.row.color : undefined}}>
             {props.row.value} {popover}
         </div>
     </div>

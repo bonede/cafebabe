@@ -74,7 +74,7 @@ export const JavaExplorerApp = () => {
                         splitPercentage: 60,
                     },
                     second: 'classFile',
-                    splitPercentage: 50,
+                    splitPercentage: 45,
                 }}
             /> : null
         }
