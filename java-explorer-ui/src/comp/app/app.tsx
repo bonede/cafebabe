@@ -5,8 +5,8 @@ import {ApiClient, AppInfo, ClassFile, CompileResult} from "../../api/ApiClient"
 
 import {Mosaic, MosaicPath} from 'react-mosaic-component';
 import {ClassFileWindow} from "../classFileWindow/ClassFileWindow";
-import {OutputMsg, OutputWindow} from "../outputWindow/outputWindow";
-import {EditorWindow} from "../editorWindow/editorWindow";
+import {OutputMsg, OutputWindow} from "../outputWindow/OutputWindow";
+import {EditorWindow} from "../editorWindow/EditorWindow";
 
 
 type WindowType = 'editor' | 'output' | 'classFile'

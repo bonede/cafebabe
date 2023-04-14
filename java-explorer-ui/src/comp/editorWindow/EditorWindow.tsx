@@ -1,9 +1,9 @@
 import {MosaicPath, MosaicWindow} from "react-mosaic-component"
 import React, {useEffect, useState} from "react"
 import {ApiClient, CompileResult, CompilerInfo} from "../../api/ApiClient"
-import {Editor} from './editor'
+import {Editor} from './Editor'
 import {Button, ButtonGroup, MenuItem} from "@blueprintjs/core"
-import {TitleBar} from "../titleBar/titleBar";
+import {TitleBar} from "../titleBar/TitleBar";
 import {ItemRenderer, Select2} from "@blueprintjs/select";
 
 export interface EditorWindowProps{
@@ -81,8 +81,8 @@ export const EditorWindow = (props: EditorWindowProps) => {
                     <Button minimal={true} text={compilerInfo.name} rightIcon="double-caret-vertical" placeholder="Select a compiler" />
                 </Select2>
                 <ButtonGroup minimal={true}>
-                    <Button onClick={handleCompileClick} icon="build" loading={compiling} />
-                    <Button icon="link" />
+                    <Button title={"Build"} onClick={handleCompileClick} icon="build" loading={compiling} />
+                    <Button title={"Share"}  icon="link" />
                 </ButtonGroup>
             </div>
         } />

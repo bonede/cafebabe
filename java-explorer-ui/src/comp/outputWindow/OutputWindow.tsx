@@ -1,8 +1,8 @@
-import './outputWindow.css'
+import './OutputWindow.css'
 import React from "react";
 import {MosaicPath, MosaicWindow} from "react-mosaic-component";
 import {Button, ButtonGroup} from "@blueprintjs/core";
-import {TitleBar} from "../titleBar/titleBar";
+import {TitleBar} from "../titleBar/TitleBar";
 
 export type OutputType = "stdout" | "stderr"
 

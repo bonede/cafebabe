@@ -8,8 +8,7 @@ import {
     method_info,
     stack_map_frame
 } from "../../api/ApiClient";
-import {ClassImageItem, ClassImageItemGroup, ClassImageItemGroupRow} from "./ClassImageItem";
-import {Icon} from "@blueprintjs/core";
+import {ClassImageItemGroup, ClassImageItemGroupRow, ClassImageSection} from "./ClassImageSection";
 import React, {ReactElement, ReactNode, useState} from "react";
 
 
@@ -237,7 +236,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         }}))
 
         itemGroups = itemGroups.concat(attributeInfoList(classImage.attributes))
-        return <ClassImageItem onSelectCpInfo={is => setCpIndices(is)} title={"Class Info"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
+        return <ClassImageSection onSelectCpInfo={is => setCpIndices(is)} title={"Class Info"} itemGroups={itemGroups} />
     }
 
     const cpInfo = (classImage: ClassImage): ReactElement => {
@@ -292,7 +291,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
             }
         ]
 
-        return <ClassImageItem onSelectCpInfo={is => setCpIndices(is)} title={"Constant Pool"} icon={<Icon icon="build" />} itemGroups={itemGroups} />
+        return <ClassImageSection onSelectCpInfo={is => setCpIndices(is)} title={"Constant Pool"} itemGroups={itemGroups} />
     }
     const selectedInstructionPcs = (instructions: Instruction[], lineNumberTable: attribute_info, selectLines?: number[]): number[] => {
         if(!lineNumberTable || !selectLines || selectLines.length == 0){
@@ -383,7 +382,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         }
         const codeAttributes = codeAttribute ? attributeInfoList(codeAttribute.attributes) : []
         itemGroups = [...itemGroups, ...codeAttributes, ...attributeInfoList(nonCodeAttribute)]
-        return <ClassImageItem onSelectCpInfo={is => setCpIndices(is)} title={`Method #` + i} icon={<Icon icon="build" />} itemGroups={itemGroups} />
+        return <ClassImageSection key={i} onSelectCpInfo={is => setCpIndices(is)} title={`Method #` + i} itemGroups={itemGroups} />
     }
     const methodInfoList = (classImage: ClassImage, selectedLines?: number[]): ReactNode => {
         return <div className="class-image-view-method-list">{classImage.methods.map((m,i ) => methodInfo(m, i, selectedLines))}</div>

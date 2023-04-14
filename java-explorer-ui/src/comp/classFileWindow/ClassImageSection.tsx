@@ -1,5 +1,5 @@
-import {ReactNode, useState} from "react";
-import {Button, Icon} from "@blueprintjs/core";
+import {useState} from "react";
+import {Button} from "@blueprintjs/core";
 import {Popover2} from "@blueprintjs/popover2";
 
 export interface ClassImageItemGroupRow{
@@ -16,16 +16,15 @@ export interface ClassImageItemGroup{
     groupName?: string
     rows: ClassImageItemGroupRow[]
 }
-export interface ClassImageItemProps{
+export interface ClassImageSectionProps {
     title: string
-    icon: ReactNode,
     itemGroups: ClassImageItemGroup[]
     onSelectLine?: (file: string, line: number) => void
     onSelectCpInfo?: (cpIndices?: number[]) => void
 }
 
 const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndices?: number[]) => void}) => {
-    const popoverContent = <ClassImageItem onSelectCpInfo={props.onSelectCpInfo} title={props.row.more?.groupName || ""} icon={<Icon icon="build" />} itemGroups={
+    const popoverContent = <ClassImageSection onSelectCpInfo={props.onSelectCpInfo} title={props.row.more?.groupName || ""} itemGroups={
         [
             {
                 rows: props.row.more?.rows!
@@ -34,7 +33,7 @@ const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndice
     } />
     const popover = props.row.more ?
         <Popover2  content={popoverContent}>
-            <Icon icon='info-sign' />
+            <Button style={{padding: 0}}  icon={"info-sign"} small={true} minimal={true} />
         </Popover2> : null
     return <div
         className={`class-image-item-group-row${props.row.flash ? " flash" : ""}`}
@@ -61,10 +60,10 @@ const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndice
     </div>
 }
 
-export const ClassImageItem = (props: ClassImageItemProps) => {
+export const ClassImageSection = (props: ClassImageSectionProps) => {
     const [folded, setFolded] = useState(false)
-    const rowView = (row: ClassImageItemGroupRow) => <RowView onSelectCpInfo={props.onSelectCpInfo} row={row} />
-    const groupView = (group: ClassImageItemGroup) => <div className="class-image-item-group">
+    const rowView = (row: ClassImageItemGroupRow, i: number) => <RowView key={i} onSelectCpInfo={props.onSelectCpInfo} row={row} />
+    const groupView = (group: ClassImageItemGroup, i: number) => <div key={i} className="class-image-item-group">
         {group.groupName && <div className="class-image-item-group-name">{group.groupName}</div>}
         <div className="class-image-item-group-rows">{group.rows.map(rowView)}</div>
     </div>

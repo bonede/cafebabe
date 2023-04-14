@@ -1,4 +1,4 @@
-import './editor.css'
+import './Editor.css'
 import * as monaco from 'monaco-editor';
 import {editor} from 'monaco-editor';
 import {useEffect, useRef, useState} from "react";

@@ -1,3 +1,8 @@
+.class-window-toolbar{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
 .class-image-view{
     display: flex;
     gap: 10px;
@@ -7,13 +12,14 @@
 .class-image-window-content{
     background: #1e1e1e;
     padding: 10px;
-    box-sizing: content-box;
+    box-sizing: border-box;
     height: 100%;
     overflow: auto;
 }
 .class-image-item{
-    border:1px solid #ffffff55;
+    border:1px solid #ffffff33;
     border-radius: 5px;
+    min-width: 200px;
 }
 
 .class-image-item-title{
@@ -39,7 +45,10 @@
 .class-image-item-group-row{
     color: #bec1c6;
     display: flex;
-    padding: 3px;
+    height: 25px;
+    align-items: center;
+    padding-left: 3px;
+    padding-right: 3px;
     justify-content: space-between;
 }
 .class-image-item-group-row:hover{

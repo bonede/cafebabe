@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import './titleBar.css'
+import './TitleBar.css'
 
 export interface TitleBarProps{
     title: ReactNode
