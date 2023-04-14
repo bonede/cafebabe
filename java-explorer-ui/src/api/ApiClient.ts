@@ -112,7 +112,15 @@ export interface attribute_info{
     // RuntimeVisibleAnnotations
     numAnnotations: number
     annotations: annotation[]
+    // Stack frame map
     entries: stack_map_frame[]
+    // Inner class
+    number_of_classes: number
+    classes: inner_class_info[]
+    // NestHost
+    host_class_index: number
+    // NestMembers
+    class_indices: number[]
     // unhanded, hex string
     value: string
 }
@@ -255,6 +263,13 @@ export interface verification_type_info{
     tagName: string
     offset?: number
     cpool_index?: number
+}
+
+export interface inner_class_info{
+    inner_class_info_index: number
+    outer_class_info_index: number
+    inner_name_index: number
+    inner_class_access_flags: class_access_flag[]
 }
 
 type HttpMethod = "get" | "post"

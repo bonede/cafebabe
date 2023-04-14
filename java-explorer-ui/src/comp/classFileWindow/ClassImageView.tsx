@@ -162,9 +162,38 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 attributeInfo.annotations.forEach( a => rows.push(annotationItemRow(a))); break;
             case "StackMapTable":
                 attributeInfo.entries && attributeInfo.entries.forEach( s => rows.push(stackFrameItemRow(s))); break;
+            case "InnerClasses":
+                attributeInfo.classes.forEach( (c, i) => {
+                    rows.push({
+                        key: "Class " + i,
+
+                        value: "#" + c.inner_class_info_index,
+                        cpIndices: [c.inner_class_info_index],
+                        color: COLOR_REF,
+                        more: {
+                            groupName: "Detail",
+                            rows: [
+                                {key: "Inner class", value: "#" + c.inner_class_info_index, color: COLOR_REF, cpIndices: [ c.inner_class_info_index]},
+                                {key: "Inner name", value: "#" + c.inner_name_index, color: COLOR_STRING, cpIndices: [c.inner_name_index]},
+                                {key: "Inner flags", value: c.inner_class_access_flags.join("/")},
+                                {key: "Outer class", value: "#" + c.outer_class_info_index, color: COLOR_REF, cpIndices: [c.outer_class_info_index]}
+                            ]
+                        }
+                    })
+                }); break;
+            case "NestHost": rows.push({key: "Host class", value: "#" + attributeInfo.host_class_index + "", color: COLOR_REF, cpIndices: [ attributeInfo.host_class_index]}); break;
+            case "NestMembers":
+                attributeInfo.class_indices.forEach( (c, i) => {
+                    rows.push({
+                        key: "Class " + i,
+                        value: "#" + c,
+                        cpIndices: [c],
+                        color: COLOR_REF,
+                    })
+                }); break;
             case "Deprecated": break;
             default:
-                rows.push({key: "Value", value: attributeInfo.value});
+                rows.push({key: "Value", value: "0x" + attributeInfo.value});
         }
         return {
             groupName: "Attribute",

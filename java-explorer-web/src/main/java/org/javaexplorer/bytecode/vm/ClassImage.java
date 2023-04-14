@@ -334,6 +334,9 @@ public class ClassImage {
                 case "RuntimeVisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
                 case "RuntimeInvisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
                 case "StackMapTable": attribute_info = new StackMapTable_attribute(this, name_index, length); break;
+                case "InnerClasses": attribute_info = new InnerClasses_attribute(this, name_index, length); break;
+                case "NestHost": attribute_info = new NestHost_attribute(this, name_index, length); break;
+                case "NestMembers": attribute_info = new NestMembers_attribute(this, name_index, length); break;
                 // TODO add more attributes
                 default: attribute_info = new Unknown_attribute(this, name_index, length); break;
             }
@@ -1855,6 +1858,92 @@ public class ClassImage {
             entries = new stack_map_frame[number_of_entries];
             for(int i = 0; i < number_of_entries; i++){
                 entries[i] = readStackMapFrame(classImage);
+            }
+        }
+    }
+    @Data
+    public static class inner_class_info{
+        private int inner_class_info_index;
+        private int outer_class_info_index;
+        private int inner_name_index;
+        private List<class_access_flag> inner_class_access_flags;
+    }
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.6">ref</a>
+     */
+    public static class InnerClasses_attribute  extends attribute_info{
+        private int number_of_classes;
+        private inner_class_info[] classes;
+        public InnerClasses_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+        public int getNumber_of_classes() {
+            return number_of_classes;
+        }
+
+        public inner_class_info[] getClasses(){
+            return classes;
+        }
+
+
+        @Override
+        public void read() {
+            number_of_classes = classImage.readu2();
+            classes = new inner_class_info[number_of_classes];
+            for(int i = 0; i < number_of_classes; i++){
+                classes[i] = new inner_class_info();
+                classes[i].inner_class_info_index = classImage.readu2();
+                classes[i].outer_class_info_index = classImage.readu2();
+                classes[i].inner_name_index = classImage.readu2();
+                classes[i].inner_class_access_flags = class_access_flag.fromBitField(classImage.readShort());
+            }
+        }
+    }
+
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.28">ref</a>
+     */
+    public static class NestHost_attribute  extends attribute_info{
+        private int host_class_index;
+        public NestHost_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+        public int getHost_class_index() {
+            return host_class_index;
+        }
+
+        @Override
+        public void read() {
+            host_class_index = classImage.readu2();
+        }
+    }
+
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.28">ref</a>
+     */
+    public static class NestMembers_attribute  extends attribute_info{
+        private int number_of_classes;
+        private int[] class_indices;
+        public NestMembers_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+        public int getNumber_of_classes() {
+            return number_of_classes;
+        }
+
+        public int[] getClass_indices(){
+            return class_indices;
+        }
+
+        @Override
+        public void read() {
+            number_of_classes = classImage.readu2();
+            class_indices = new int[number_of_classes];
+            for(int i = 0; i < number_of_classes; i++){
+                class_indices[i] = classImage.readu2();
             }
         }
     }
