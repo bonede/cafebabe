@@ -2731,6 +2731,10 @@ public class Op {
             vm.increasePc(getSize());
         }
 
+        public int getValue(){
+            return value;
+        }
+
         @Override
         public void parse(ClassImage.Code_attribute code_attribute) {
             value = code_attribute.readShort();

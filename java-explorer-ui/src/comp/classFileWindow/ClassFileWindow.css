@@ -18,7 +18,8 @@
 
 .class-image-item-title{
     display: flex;
-    background: #ffffff22;
+    align-items: center;
+    background: #ffffff11;
     padding: 5px;
 }
 .class-image-item-group{

@@ -1,5 +1,5 @@
-import {ReactNode} from "react";
-import {Icon} from "@blueprintjs/core";
+import {ReactNode, useState} from "react";
+import {Button, Icon} from "@blueprintjs/core";
 import {Popover2} from "@blueprintjs/popover2";
 
 export interface ClassImageItemGroupRow{
@@ -62,6 +62,7 @@ const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndice
 }
 
 export const ClassImageItem = (props: ClassImageItemProps) => {
+    const [folded, setFolded] = useState(false)
     const rowView = (row: ClassImageItemGroupRow) => <RowView onSelectCpInfo={props.onSelectCpInfo} row={row} />
     const groupView = (group: ClassImageItemGroup) => <div className="class-image-item-group">
         {group.groupName && <div className="class-image-item-group-name">{group.groupName}</div>}
@@ -70,10 +71,12 @@ export const ClassImageItem = (props: ClassImageItemProps) => {
 
     return <div className="class-image-item">
         <div className="class-image-item-title">
-            <div className="class-image-item-title-icon">{props.icon}</div>
+            <div className="class-image-item-title-icon">
+                <Button style={{padding: 0}} icon={folded ? "caret-right" : "caret-down"} minimal={true} small={true} onClick={() => setFolded(!folded)} />
+            </div>
             <div className="class-image-item-title-label">{props.title}</div>
         </div>
-        <div className="class-image-item-groups">
+        <div className="class-image-item-groups" style={{display: folded ? "none" : undefined}}>
             {props.itemGroups.map(groupView)}
         </div>
     </div>

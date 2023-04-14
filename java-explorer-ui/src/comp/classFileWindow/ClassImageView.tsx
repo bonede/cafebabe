@@ -19,6 +19,9 @@ export interface ClassImageViewProps{
     selectedLines?: number[]
     onSelectLine?: (file: string, line?: number) => void
 }
+
+const COLOR_STRING = "#c2947a";
+const COLOR_REF = "#6c9ad3";
 export const ClassImageView = (props: ClassImageViewProps) => {
     const annotationItemStringValue = (element_value: element_value): string | undefined =>{
         switch (element_value.tag){
@@ -87,8 +90,9 @@ export const ClassImageView = (props: ClassImageViewProps) => {
             moreRows = annotation.element_value_pairs.map((e) => annotationItemValue(e.elementName, e.value))
         }
         return {
-            key: annotation.typeName,
-            value: "",
+            key: "Type",
+            value: annotation.typeName,
+            color: COLOR_REF,
             cpIndices: [annotation.type_index],
             more: annotation.num_element_value_pairs == 0 ? undefined : {
                 groupName: "Annotation parameters",
@@ -140,9 +144,9 @@ export const ClassImageView = (props: ClassImageViewProps) => {
     }
     const attributeInfoItem = (attributeInfo: attribute_info, i: number): ClassImageItemGroup => {
         const attributeName = attributeInfo.attributeName;
-        let rows: ClassImageItemGroupRow[] = [{key: "Name", value: attributeName, cpIndices: [attributeInfo.attributeNameIndex]}]
+        let rows: ClassImageItemGroupRow[] = [{key: "Name", value: attributeName, cpIndices: [attributeInfo.attributeNameIndex], color: COLOR_STRING}]
         switch (attributeName){
-            case "SourceFile": rows.push({key: "Source file", value: attributeInfo.sourceFileName, cpIndices: [attributeInfo.sourceFileNameIndex]}); break;
+            case "SourceFile": rows.push({key: "Source file", value: attributeInfo.sourceFileName, cpIndices: [attributeInfo.sourceFileNameIndex], color: COLOR_STRING}); break;
             case "Signature": rows.push({key: "Source file", value: attributeInfo.signature}); break;
             case "Exceptions":
                 attributeInfo.exceptionIndexTable.forEach((index, i) => {
@@ -150,7 +154,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 });break;
             case "LineNumberTable":
                 attributeInfo.lineNumberTable.forEach( l => {
-                    rows.push({key: "Line #" + l.lineNumber, value: "#" + l.startPc })
+                    rows.push({key: "Line #" + l.lineNumber, value: "#" + l.startPc, color: COLOR_REF})
                 }); break;
             case "RuntimeVisibleAnnotations":
                 attributeInfo.annotations.forEach( a => rows.push(annotationItemRow(a))); break;
@@ -176,8 +180,8 @@ export const ClassImageView = (props: ClassImageViewProps) => {
             {
                 groupName: "Basic",
                 rows: [
-                    {key: "Name", value: classImage.className, cpIndices: [classImage.classNameIndex]},
-                    {key: "Super class", value: classImage.superClassName, cpIndices: [classImage.superClassNameIndex]},
+                    {key: "Name", value: classImage.className, cpIndices: [classImage.classNameIndex], color: COLOR_STRING},
+                    {key: "Super class", value: classImage.superClassName, cpIndices: [classImage.superClassNameIndex], color: COLOR_REF},
                     {key: "Major Version", value: classImage.majorVersion + ""},
                     {key: "Minor Version", value: classImage.minorVersion + ""},
                     {key: "Flags", value: classImage.accessFlags.join("/")},
@@ -187,8 +191,8 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         itemGroups = itemGroups.concat(classImage.fields.map((f, i): ClassImageItemGroup => {return {
             groupName: "Field #" + i,
             rows: [
-                {key: "FieldName", value: f.name, cpIndices: [f.nameIndex]},
-                {key: "Descriptor", value: f.descriptor, cpIndices: [f.descriptorIndex]},
+                {key: "FieldName", value: f.name, cpIndices: [f.nameIndex], color: COLOR_STRING},
+                {key: "Descriptor", value: f.descriptor, cpIndices: [f.descriptorIndex], color: COLOR_STRING},
                 {key: "Flags", value: f.accessFlags.join("/")},
             ]
         }}))
@@ -224,12 +228,12 @@ export const ClassImageView = (props: ClassImageViewProps) => {
             switch (c.tag){
                 case "CONSTANT_String":
                 case "CONSTANT_Utf8":
-                    return "#c2947a"
+                    return COLOR_STRING
                 case "CONSTANT_Class":
                 case "CONSTANT_Methodref":
                 case "CONSTANT_Fieldref":
                 case "CONSTANT_NameAndType":
-                    return "#6c9ad3"
+                    return COLOR_REF
 
             }
             return undefined
@@ -298,8 +302,8 @@ export const ClassImageView = (props: ClassImageViewProps) => {
             {
                 groupName: "Basic",
                 rows: [
-                    {key: "Name", value: method.name, cpIndices: [method.nameIndex]},
-                    {key: "Descriptor", value: method.descriptor, cpIndices: [method.descriptorIndex]},
+                    {key: "Name", value: method.name, cpIndices: [method.nameIndex], color: COLOR_STRING},
+                    {key: "Descriptor", value: method.descriptor, cpIndices: [method.descriptorIndex], color: COLOR_STRING},
                     {key: "Flags", value: method.accessFlags.join("/")},
                     {key: "Stack", value: method.maxStack + ""},
                     {key: "Locals", value: method.maxLocals + ""},
@@ -322,8 +326,8 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                     {
 
                         return {
-                            key: instruction.pc + " " + instruction.opMnemonic + (instruction.index === undefined ? "" : " #" + instruction.index) + (instruction.value === undefined ? "" : " $" + instruction.value),
-                            value: instruction.opCode + "",
+                            key: instruction.pc + " " + instruction.opMnemonic,
+                            value: (instruction.index === undefined ? "" : " #" + instruction.index) + (instruction.value === undefined ? "" : " $" + instruction.value),
                             flash: selectedPcs.includes(instruction.pc),
                             onMouseOver: () => {
                                 props.onSelectLine && props.onSelectLine!(props.file, selectedLine(instruction.pc, lineNumberTable))
@@ -331,6 +335,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                             onMouseLeave: () => {
                                 props.onSelectLine && props.onSelectLine!(props.file, undefined)
                             },
+                            color: instruction.index !== undefined ? COLOR_REF : COLOR_STRING,
                             cpIndices: [instruction.index]
                         }
                     }
