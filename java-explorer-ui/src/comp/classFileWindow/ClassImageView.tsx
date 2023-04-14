@@ -154,7 +154,17 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 });break;
             case "LineNumberTable":
                 attributeInfo.lineNumberTable.forEach( l => {
-                    rows.push({key: "Line #" + l.lineNumber, value: "#" + l.startPc, color: COLOR_REF})
+                    rows.push({
+                        key: "Line #" + l.lineNumber,
+                        value: "#" + l.startPc,
+                        color: COLOR_REF,
+                        onMouseLeave: () => {
+                            props.onSelectLine?.(props.file, undefined);
+                        },
+                        onMouseOver: () => {
+                            props.onSelectLine?.(props.file, l.lineNumber);
+                        }
+                    })
                 }); break;
             case "RuntimeVisibleAnnotations":
                 attributeInfo.annotations.forEach( a => rows.push(annotationItemRow(a))); break;
