@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,6 +78,7 @@ public class CompilerService {
                         throw new RuntimeException(e);
                     }
                 })
+                .sorted(Comparator.comparing(ClassFile::getPath).reversed())
                 .collect(Collectors.toList());
     }
 
