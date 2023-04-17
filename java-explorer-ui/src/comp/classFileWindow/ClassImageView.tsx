@@ -1,15 +1,18 @@
 import {
     annotation,
+    AppInfo,
     attribute_info,
     ClassImage,
     cp_info,
     element_value,
     Instruction,
+    JdkVersion,
     method_info,
     stack_map_frame
 } from "../../api/ApiClient";
 import {ClassImageItemGroup, ClassImageItemGroupRow, ClassImageSection} from "./ClassImageSection";
-import React, {ReactElement, ReactNode, useState} from "react";
+import React, {ReactElement, ReactNode, useContext, useState} from "react";
+import {AppInfoContext} from "../app/app";
 
 
 export interface ClassImageViewProps{
@@ -213,7 +216,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         return attributeInfos.map(attributeInfoItem)
     }
 
-    const classInfo = (classImage: ClassImage): ReactElement => {
+    const classInfo = (classImage: ClassImage, jdkVersion?: JdkVersion): ReactElement => {
         let itemGroups: ClassImageItemGroup[] = [
             {
                 groupName: "Basic",
@@ -222,6 +225,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                     {key: "Super class", value: classImage.superClassName, cpIndices: [classImage.superClassNameIndex], color: COLOR_REF},
                     {key: "Major Version", value: classImage.majorVersion + ""},
                     {key: "Minor Version", value: classImage.minorVersion + ""},
+                    {key: "Jdk Version", value: jdkVersion?.jdkVersion || ""},
                     {key: "Flags", value: classImage.accessFlags.join("/")},
                 ]
             }
@@ -332,7 +336,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         }
         return undefined
     }
-    const  methodInfo = (method: method_info, i: number, selectedLines?: number[]) => {
+    const  methodInfo = (method: method_info, i: number, selectedLines?: number[], appInfo?: AppInfo, jdkVersion?: JdkVersion) => {
         let codeAttribute = method.attributes.filter(a => a.attributeName == "Code")[0]
 
         let nonCodeAttribute = method.attributes.filter(a => a.attributeName != "Code")
@@ -362,9 +366,27 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 groupName: "Code",
                 rows: instructions.map((instruction) =>
                     {
-
+                        const doc = appInfo?.instructionDocs[instruction.opMnemonic]
                         return {
                             key: instruction.pc + " " + instruction.opMnemonic,
+                            help: {
+                                groupName: instruction.opMnemonic,
+                                rows: [
+                                    {
+                                        key: "Mnemonic",
+                                        value: instruction.opMnemonic,
+                                        link: doc?.specref && appInfo?.specUrl.replace("{version}", jdkVersion?.shortJdkVersion || "") + doc.specref
+                                    },
+                                    {
+                                        key: "Opcode",
+                                        value: instruction.opCode + "",
+                                    },
+                                    {
+                                        key: "Description",
+                                        value: doc?.shortdescr || ""
+                                    }
+                                ]
+                            },
                             value: (instruction.index === undefined ? "" : " #" + instruction.index) + (instruction.value === undefined ? "" : " $" + instruction.value),
                             flash: selectedPcs.includes(instruction.pc),
                             onMouseOver: () => {
@@ -384,16 +406,18 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         itemGroups = [...itemGroups, ...codeAttributes, ...attributeInfoList(nonCodeAttribute)]
         return <ClassImageSection key={i} onSelectCpInfo={is => setCpIndices(is)} title={`Method #` + i} itemGroups={itemGroups} />
     }
-    const methodInfoList = (classImage: ClassImage, selectedLines?: number[]): ReactNode => {
-        return <div className="class-image-view-method-list">{classImage.methods.map((m,i ) => methodInfo(m, i, selectedLines))}</div>
+    const methodInfoList = (classImage: ClassImage, selectedLines?: number[], appInfo?: AppInfo, jdkVersion?: JdkVersion): ReactNode => {
+        return <div className="class-image-view-method-list">{classImage.methods.map((m,i ) => methodInfo(m, i, selectedLines, appInfo, jdkVersion))}</div>
     }
     if(!props.classImage){
         return null
     }
     const [cpIndices, setCpIndices] = useState(undefined as number[] | undefined)
+    const appInfo = useContext(AppInfoContext)
+    const jdkVersion = appInfo?.versions[props.classImage.majorVersion + "." + props.classImage.minorVersion]
     return <div className="class-image-view">
-        {methodInfoList(props.classImage, props.selectedLines)}
+        {methodInfoList(props.classImage, props.selectedLines, appInfo, jdkVersion)}
         {cpInfo(props.classImage)}
-        {classInfo(props.classImage)}
+        {classInfo(props.classImage, jdkVersion)}
     </div>
 }

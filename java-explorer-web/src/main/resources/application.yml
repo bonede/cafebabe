@@ -20,6 +20,96 @@ compiler:
 
 app:
   url: http://locahost:8080
+  spec-url: https://docs.oracle.com/javase/specs/jvms/se{version}/html/
+  versions:
+    45.0:
+      short-jdk-version: 0
+      jdk-version: Java 1.0
+      bytecode-version: 45.0
+    45.3:
+      short-jdk-version: 2
+      jdk-version: Java 1.1
+      bytecode-version: 45.3
+    46.0:
+      short-jdk-version: 2
+      jdk-version: Java 1.2
+      bytecode-version: 46.0
+    47.0:
+      short-jdk-version: 3
+      jdk-version: Java 1.3
+      bytecode-version: 47.0
+    48.0:
+      short-jdk-version: 4
+      jdk-version: Java 1.4
+      bytecode-version: 48.0
+    49.0:
+      short-jdk-version: 5
+      jdk-version: Java 5
+      bytecode-version: 49.0
+    50.0:
+      short-jdk-version: 6
+      jdk-version: Java 6
+      bytecode-version: 50.0
+    51.0:
+      short-jdk-version: 7
+      jdk-version: Java 7
+      bytecode-version: 51.0
+    52.0:
+      short-jdk-version: 1.8
+      jdk-version: Java 8
+      bytecode-version: 52.0
+    53.0:
+      short-jdk-version: 9
+      jdk-version: Java 9
+      bytecode-version: 53.0
+    54.0:
+      short-jdk-version: 10
+      jdk-version: Java 10
+      bytecode-version: 54.0
+    55.0:
+      short-jdk-version: 11
+      jdk-version: Java 11
+      bytecode-version: 55.0
+    56.0:
+      short-jdk-version: 12
+      jdk-version: Java 12
+      bytecode-version: 56.0
+    57.0:
+      short-jdk-version: 13
+      jdk-version: Java 13
+      bytecode-version: 57.0
+    58.0:
+      short-jdk-version: 14
+      jdk-version: Java 14
+      bytecode-version: 58.0
+    59.0:
+      short-jdk-version: 15
+      jdk-version: Java 15
+      bytecode-version: 59.0
+    60.0:
+      short-jdk-version: 16
+      jdk-version: Java 16
+      bytecode-version: 60.0
+    61.0:
+      short-jdk-version: 17
+      jdk-version: Java 17
+      bytecode-version: 61.0
+    62.0:
+      short-jdk-version: 18
+      jdk-version: Java 18
+      bytecode-version: 62.0
+    63.0:
+      short-jdk-version: 19
+      jdk-version: Java 19
+      bytecode-version: 63.0
+    64.0:
+      short-jdk-version: 20
+      jdk-version: Java 20
+      bytecode-version: 64.0
+    65.0:
+      short-jdk-version: 21
+      jdk-version: Java 21
+      bytecode-version: 65.0
   instruction-docs:
     aaload:
       mnemonic: aaload

@@ -5,6 +5,7 @@ import lombok.Data;
 import org.apache.commons.io.FilenameUtils;
 import org.hibernate.validator.constraints.URL;
 import org.javaexplorer.bytecode.op.InstructionDoc;
+import org.javaexplorer.bytecode.op.JdkVersion;
 import org.javaexplorer.compiler.service.CompilerService;
 import org.javaexplorer.model.vo.AppInfo;
 import org.javaexplorer.model.vo.CompilerInfo;
@@ -47,6 +48,8 @@ public class AppService {
             return compilerInfo;
         }).collect(Collectors.toList()));
         appInfo.setInstructionDocs(appConfig.getInstructionDocs());
+        appInfo.setVersions(appConfig.getVersions());
+        appInfo.setSpecUrl(appConfig.getSpecUrl());
         return appInfo;
     }
 
@@ -62,7 +65,10 @@ public class AppService {
         @NotNull
         private String url;
         @NotNull
+        private String specUrl;
+        @NotNull
         private Map<String, InstructionDoc> instructionDocs;
-
+        @NotNull
+        private Map<String, JdkVersion> versions;
     }
 }

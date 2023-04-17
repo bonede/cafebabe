@@ -1,5 +1,5 @@
-import {useState} from "react";
-import {Button} from "@blueprintjs/core";
+import React, {useState} from "react";
+import {AnchorButton, Button} from "@blueprintjs/core";
 import {Popover2} from "@blueprintjs/popover2";
 
 export interface ClassImageItemGroupRow{
@@ -11,6 +11,8 @@ export interface ClassImageItemGroupRow{
     onMouseLeave?: () => void,
     color?: string,
     cpIndices?: number[]
+    help?: ClassImageItemGroup,
+    link?: string
 }
 export interface ClassImageItemGroup{
     groupName?: string
@@ -24,21 +26,37 @@ export interface ClassImageSectionProps {
 }
 
 const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndices?: number[]) => void}) => {
-    const popoverContent = <ClassImageSection onSelectCpInfo={props.onSelectCpInfo} title={props.row.more?.groupName || ""} itemGroups={
+    const [helpIcon, setHelpIcon] = useState(false)
+    const morePopOverContent = <ClassImageSection onSelectCpInfo={props.onSelectCpInfo} title={props.row.more?.groupName || ""} itemGroups={
         [
             {
-                rows: props.row.more?.rows!
+                rows: props.row.more?.rows!,
             }
         ]
     } />
-    const popover = props.row.more ?
-        <Popover2  content={popoverContent}>
+    const helpPopOverContent = <ClassImageSection onSelectCpInfo={props.onSelectCpInfo} title={props.row.help?.groupName || ""} itemGroups={
+        [
+            {
+                rows: props.row.help?.rows!,
+            }
+        ]
+    } />
+    const morePopover = props.row.more ?
+        <Popover2  content={morePopOverContent}>
             <Button style={{padding: 0}}  icon={"info-sign"} small={true} minimal={true} />
         </Popover2> : null
+
+    const helpPopover = props.row.help ?
+        <Popover2  content={helpPopOverContent}>
+            <Button style={{padding: 0}}  icon={"help"} small={true} minimal={true} />
+        </Popover2> : null
+
+    const helpLink = props.row.link ? <AnchorButton target="_blank" style={{padding: 0}} small={true} minimal={true} icon="link" href={props.row.link} /> : undefined
     return <div
         className={`class-image-item-group-row${props.row.flash ? " flash" : ""}`}
         onMouseOver={(e) => {
             e.stopPropagation()
+            setHelpIcon(true)
             props.row.onMouseOver && props.row.onMouseOver()
             if(props.row.cpIndices && props.onSelectCpInfo) {
                 props.onSelectCpInfo(props.row.cpIndices.filter(s => s !== undefined && s !== null))
@@ -46,16 +64,17 @@ const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndice
         }}
         onMouseLeave={(e) => {
             e.stopPropagation()
+            setHelpIcon(false)
             props.row.onMouseLeave && props.row.onMouseLeave()
             props.onSelectCpInfo && props.onSelectCpInfo([])
         }}
     >
 
         <div className="class-image-item-group-row-key">
-            {props.row.key}
+            {props.row.key} {helpIcon && helpPopover}
         </div>
         <div className="class-image-item-group-row-value" style={{color: props.row.color ? props.row.color : undefined}}>
-            {props.row.value} {popover}
+            {props.row.value} {morePopover} {helpLink}
         </div>
     </div>
 }

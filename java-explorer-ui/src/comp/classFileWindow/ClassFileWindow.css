@@ -46,6 +46,7 @@
     color: #bec1c6;
     display: flex;
     height: 25px;
+    overflow: hidden;
     align-items: center;
     padding-left: 3px;
     padding-right: 3px;

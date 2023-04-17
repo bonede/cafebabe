@@ -11,8 +11,22 @@ export interface ApiResp<T>{
     data: T
 }
 
+export interface InstructionDoc{
+    mnemonic: string
+    category: string
+    shortdescr: string
+    specref: string
+}
+export interface JdkVersion{
+    jdkVersion: string
+    shortJdkVersion: string
+    bytecodeVersion: string
+}
 export interface AppInfo{
+    instructionDocs: Record<string, InstructionDoc>
+    versions: Record<string, JdkVersion>
     compilers: CompilerInfo[]
+    specUrl: string
 }
 export interface SrcFile{
     path: string

@@ -1,5 +1,5 @@
 import './app.css'
-import React, {useEffect, useState} from "react";
+import React, {createContext, useEffect, useState} from "react";
 import {ApiClient, AppInfo, ClassFile, CompileResult} from "../../api/ApiClient";
 
 
@@ -11,7 +11,7 @@ import {EditorWindow} from "../editorWindow/EditorWindow";
 
 type WindowType = 'editor' | 'output' | 'classFile'
 
-
+export const AppInfoContext = createContext(undefined as AppInfo | undefined)
 
 export const JavaExplorerApp = () => {
     const apiClient = ApiClient.getClient()
@@ -19,11 +19,10 @@ export const JavaExplorerApp = () => {
     const [selectedLines, setSelectedLines] = useState([] as number[])
     const [outputMsgs, setOutputMsg] = useState([] as OutputMsg[])
     const [classFiles, setClassFiles] = useState([] as ClassFile[])
-    const [appInfo, setAppInfo] = useState(null as AppInfo | null)
+    const [appInfo, setAppInfo] = useState(undefined as AppInfo | undefined)
 
     const [classFileName, setClassFileName] = useState(undefined as string | undefined)
     const [classFileLine, setClassFileLine] = useState(undefined as number | undefined)
-
     useEffect(() => {
         apiClient.getAppInfo().then(a => setAppInfo(a))
     }, [])
@@ -59,7 +58,8 @@ export const JavaExplorerApp = () => {
             }} selectedFile={selectedFile} selectedLines={selectedLines} mosaicPath={path} classFiles={classFiles}  />
         }
     }
-    return <div id="app">
+    return <AppInfoContext.Provider value={appInfo}>
+     <div id="app">
         {
             appInfo ? <Mosaic<WindowType>
                 className="mosaic-blueprint-theme bp4-dark"
@@ -79,4 +79,5 @@ export const JavaExplorerApp = () => {
             /> : null
         }
     </div>
+    </AppInfoContext.Provider>
 }
