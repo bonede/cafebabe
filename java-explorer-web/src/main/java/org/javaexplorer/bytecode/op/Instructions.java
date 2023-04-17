@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Ref https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-6.html
  */
-public class Op {
+public class Instructions {
     /*
         Actual  type	Computational type	Category
         boolean	      int	1

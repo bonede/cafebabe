@@ -4,6 +4,7 @@ package org.javaexplorer.web.service;
 import lombok.Data;
 import org.apache.commons.io.FilenameUtils;
 import org.hibernate.validator.constraints.URL;
+import org.javaexplorer.bytecode.op.InstructionDoc;
 import org.javaexplorer.compiler.service.CompilerService;
 import org.javaexplorer.model.vo.AppInfo;
 import org.javaexplorer.model.vo.CompilerInfo;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +46,7 @@ public class AppService {
             }
             return compilerInfo;
         }).collect(Collectors.toList()));
+        appInfo.setInstructionDocs(appConfig.getInstructionDocs());
         return appInfo;
     }
 
@@ -58,6 +61,8 @@ public class AppService {
         @URL
         @NotNull
         private String url;
+        @NotNull
+        private Map<String, InstructionDoc> instructionDocs;
 
     }
 }

@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.javaexplorer.bytecode.op.DescriptorParser;
 import org.javaexplorer.bytecode.op.Instruction;
-import org.javaexplorer.bytecode.op.Op;
+import org.javaexplorer.bytecode.op.Instructions;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -1428,7 +1428,7 @@ public class ClassImage {
 
         public Instruction getInstructionAt(int offset){
             int opCode = readu1(codeBuffer, offset);
-            Instruction instruction = Op.instructionOf(opCode);
+            Instruction instruction = Instructions.instructionOf(opCode);
             codeBuffer.position(offset + 1);
             instruction.parse(this);
             codeBuffer.clear();
@@ -1452,7 +1452,7 @@ public class ClassImage {
             List<Instruction> instructions = new ArrayList<>();
             while (codeBuffer.hasRemaining()){
                 int opCode = Byte.toUnsignedInt(codeBuffer.get());
-                Instruction instruction = Op.instructionOf(opCode);
+                Instruction instruction = Instructions.instructionOf(opCode);
                 instruction.parse(this);
                 instructions.add(instruction);
             }
