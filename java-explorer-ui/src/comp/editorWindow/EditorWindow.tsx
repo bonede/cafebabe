@@ -1,13 +1,12 @@
-import {MosaicPath, MosaicWindow} from "react-mosaic-component"
 import React, {useEffect, useState} from "react"
 import {ApiClient, CompileResult, CompilerInfo} from "../../api/ApiClient"
 import {Editor} from './Editor'
 import {Button, ButtonGroup, MenuItem} from "@blueprintjs/core"
 import {TitleBar} from "../titleBar/TitleBar";
 import {ItemRenderer, Select2} from "@blueprintjs/select";
+import {AppWindow} from "../window/AppWindow";
 
 export interface EditorWindowProps{
-    mosaicPath: MosaicPath,
     compilers: CompilerInfo[]
     selectLine?: number
     onCompile?: (result: CompileResult) => void
@@ -87,17 +86,14 @@ export const EditorWindow = (props: EditorWindowProps) => {
             </div>
         } />
     </div>
-    return <MosaicWindow<string>
-        path={props.mosaicPath}
-        title={`Editor`}
-        renderToolbar={() => toolbar}
-    >
-            <Editor
-                selectLine={props.selectLine}
-                onSelectLines={props.onSelectLines}
-                onContentChange={handleEditorContentChange}
-                lang={compilerInfo.lang}
-                content={compilerInfo.example}
-            />
-    </MosaicWindow>
+    return <AppWindow title={'Editor'} actions={toolbar}>
+        <Editor
+            selectLine={props.selectLine}
+            onSelectLines={props.onSelectLines}
+            onContentChange={handleEditorContentChange}
+            lang={compilerInfo.lang}
+            content={compilerInfo.example}
+        />
+    </AppWindow>
+
 }

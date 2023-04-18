@@ -1,12 +1,10 @@
 import './app.css'
 import React, {createContext, useEffect, useState} from "react";
 import {ApiClient, AppInfo, ClassFile, CompileResult} from "../../api/ApiClient";
-
-
-import {Mosaic, MosaicPath} from 'react-mosaic-component';
 import {ClassFileWindow} from "../classFileWindow/ClassFileWindow";
 import {OutputMsg, OutputWindow} from "../outputWindow/OutputWindow";
 import {EditorWindow} from "../editorWindow/EditorWindow";
+import {Panel, PanelGroup, PanelResizeHandle} from "react-resizable-panels";
 
 
 type WindowType = 'editor' | 'output' | 'classFile'
@@ -48,36 +46,34 @@ export const JavaExplorerApp = () => {
     const handleClearMsg = () => {
         setOutputMsg([])
     }
-    const windowForId = (id: WindowType, path: MosaicPath) => {
-        switch (id){
-            case "editor": return <EditorWindow selectLine={classFileLine} onSelectLines={(lines) => setSelectedLines(lines) } onCompile={handleCompile} mosaicPath={path} compilers={appInfo!.compilers} />
-            case "output": return <OutputWindow onClearMsg={handleClearMsg} mosaicPath={path} outputMsgs={outputMsgs}  />
-            case "classFile": return <ClassFileWindow onSelectLine={(file, line) => {
-                setClassFileLine(line)
-                setClassFileName(file)
-            }} selectedFile={selectedFile} selectedLines={selectedLines} mosaicPath={path} classFiles={classFiles}  />
-        }
+
+    const handleSelectClassFileLine = (file: string, line?: number) => {
+        setClassFileLine(line)
+        setClassFileName(file)
+    }
+
+    if(!appInfo){
+        return <div></div>
     }
     return <AppInfoContext.Provider value={appInfo}>
-     <div id="app">
-        {
-            appInfo ? <Mosaic<WindowType>
-                className="mosaic-blueprint-theme bp4-dark"
-                blueprintNamespace="bp4"
-                renderTile={windowForId}
-                initialValue={{
-                    direction: 'row',
-                    first: {
-                        direction: 'column',
-                        first: 'editor',
-                        second: 'output',
-                        splitPercentage: 60,
-                    },
-                    second: 'classFile',
-                    splitPercentage: 45,
-                }}
-            /> : null
-        }
+     <div id="app" className="mosaic-blueprint-theme bp4-dark mosaic">
+         <PanelGroup direction="horizontal">
+             <Panel>
+                 <PanelGroup direction="vertical">
+                     <Panel>
+                         <EditorWindow selectLine={classFileLine} onSelectLines={lines => setSelectedLines(lines)} onCompile={handleCompile} compilers={appInfo?.compilers || []} />
+                     </Panel>
+                     <PanelResizeHandle><div style={{background: "#00000000", height: 5}}></div></PanelResizeHandle>
+                     <Panel>
+                         <OutputWindow outputMsgs={outputMsgs} onClearMsg={handleClearMsg} />
+                     </Panel>
+                 </PanelGroup>
+             </Panel>
+             <PanelResizeHandle><div style={{background: "#00000000", width: 5, height: "100%"}}></div></PanelResizeHandle>
+             <Panel>
+                 <ClassFileWindow onSelectLine={handleSelectClassFileLine} classFiles={classFiles} selectedFile={selectedFile} selectedLines={selectedLines} />
+             </Panel>
+         </PanelGroup>
     </div>
     </AppInfoContext.Provider>
 }

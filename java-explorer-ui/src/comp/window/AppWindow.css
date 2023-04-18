@@ -1,0 +1,9 @@
+.app-window{
+    height: 100%;
+}
+.app-window-title{
+    background: #383e47;
+}
+.app-window-body{
+    height: 100%;
+}

@@ -1,14 +1,13 @@
 import './ClassFileWindow.css'
-import {MosaicPath, MosaicWindow} from "react-mosaic-component";
 import React, {useState} from "react";
 import {ClassFile} from "../../api/ApiClient";
 import {Button, Tab, Tabs} from "@blueprintjs/core";
 import {ClassImageView} from "./ClassImageView";
 import {TitleBar} from "../titleBar/TitleBar";
 import {saveZipFile} from "../Utils";
+import {AppWindow} from "../window/AppWindow";
 
 export interface ClassFileWindowProps{
-    mosaicPath: MosaicPath,
     classFiles: ClassFile[]
     selectedLines?: number[]
     selectedFile?: string
@@ -36,10 +35,10 @@ export const ClassFileWindow = (props: ClassFileWindowProps) => {
         <Button title={"Save class file(s)"} onClick={handleSaveClick} minimal={true} icon="download" />
     </div>
 
-    return <MosaicWindow<string>
-        path={props.mosaicPath}
+    return <AppWindow
+
         title="Output"
-        renderToolbar={() =><div style={{width: "100%"}}> <TitleBar title={tabs} actions={actionButtons} /> </div> }
+        actions={<div style={{width: "100%"}}> <TitleBar title={tabs} actions={actionButtons} /> </div> }
 
     >
         {
@@ -51,5 +50,5 @@ export const ClassFileWindow = (props: ClassFileWindowProps) => {
             </div>
         }
 
-    </MosaicWindow>
+    </AppWindow>
 }

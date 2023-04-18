@@ -1,8 +1,9 @@
 import './OutputWindow.css'
 import React from "react";
-import {MosaicPath, MosaicWindow} from "react-mosaic-component";
 import {Button, ButtonGroup} from "@blueprintjs/core";
 import {TitleBar} from "../titleBar/TitleBar";
+import {AppWindow} from "../window/AppWindow";
+
 
 export type OutputType = "stdout" | "stderr"
 
@@ -12,7 +13,6 @@ export interface OutputMsg{
 }
 
 export interface OutputWindowProps{
-    mosaicPath: MosaicPath
     outputMsgs: OutputMsg[]
     onClearMsg?: () => void
 }
@@ -23,16 +23,14 @@ export const OutputWindow = (props: OutputWindowProps) => {
         </ButtonGroup>} />
     </div>
     const msgRow = (msg: OutputMsg, i: number) => <div key={i + ''} className={`output-msg-${msg.type}`}>{msg.msg}</div>
-    return <MosaicWindow<string>
-        path={props.mosaicPath}
-        title={`Output`}
-        renderToolbar={() => toolbar}
-    >
+
+    return<AppWindow title={"Output"} actions={toolbar} >
+
         <div className="output-window-content">
             <pre>{
                 props.outputMsgs.map(msgRow)
             }
             </pre>
         </div>
-    </MosaicWindow>
+    </AppWindow>
 }

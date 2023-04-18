@@ -50,7 +50,7 @@ export function Editor(props: EditorProps){
             value: props.content,
             language: props.lang,
             fontSize: 18,
-            automaticLayout: false,
+            automaticLayout: true,
             minimap: {enabled: false},
             smoothScrolling: true,
             mouseWheelZoom: true,
