@@ -238,10 +238,13 @@ export interface method_info{
     maxStack: number
 }
 
-export interface ClassFile{
+export interface ClassFile extends Base64File{
+    classImage: ClassImage
+}
+
+export interface Base64File{
     path: string
     content: string
-    classImage: ClassImage
 }
 
 export interface ClassImage{

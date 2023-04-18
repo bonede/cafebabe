@@ -11,7 +11,7 @@ export const TitleBar = (props: TitleBarProps) => {
         <div className="title-bar-title">
             {props.title}
         </div>
-        <div  className="title-bar-actions">
+        <div className="title-bar-actions">
             {props.actions}
         </div>
     </div>

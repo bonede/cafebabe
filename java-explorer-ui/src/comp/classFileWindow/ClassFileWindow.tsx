@@ -5,6 +5,7 @@ import {ClassFile} from "../../api/ApiClient";
 import {Button, Tab, Tabs} from "@blueprintjs/core";
 import {ClassImageView} from "./ClassImageView";
 import {TitleBar} from "../titleBar/TitleBar";
+import {saveZipFile} from "../Utils";
 
 export interface ClassFileWindowProps{
     mosaicPath: MosaicPath,
@@ -25,8 +26,14 @@ export const ClassFileWindow = (props: ClassFileWindowProps) => {
     >
         {props.classFiles && props.classFiles.map((classFile, i) => <Tab key={i + ""} id={i} title={classFile.path} />)}
     </Tabs>
+    const handleSaveClick = () => {
+        if(props.classFiles == null || props.classFiles.length == 0){
+            return
+        }
+        saveZipFile("classes", props.classFiles)
+    }
     const actionButtons = <div>
-        <Button title={"Save class file(s)"} minimal={true} icon="download" />
+        <Button title={"Save class file(s)"} onClick={handleSaveClick} minimal={true} icon="download" />
     </div>
 
     return <MosaicWindow<string>

@@ -16,7 +16,6 @@ monaco.editor.defineTheme('vs-dark-enhanced', {
         "editor.overviewRulerBorder": "false"
     }
 });
-
 export interface EditorProps{
     lang: string
     content: string
@@ -51,7 +50,7 @@ export function Editor(props: EditorProps){
             value: props.content,
             language: props.lang,
             fontSize: 18,
-            automaticLayout: true,
+            automaticLayout: false,
             minimap: {enabled: false},
             smoothScrolling: true,
             mouseWheelZoom: true,

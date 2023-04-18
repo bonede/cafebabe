@@ -1,3 +1,7 @@
+import {Base64File} from "../api/ApiClient";
+import JSZip from "jszip";
+import {saveAs} from 'file-saver';
+
 export function addClass(ele: HTMLElement, className: string){
     if(!ele.className.split(" ").includes(className)){
         ele.className = ele.className + " " + className;
@@ -14,10 +18,12 @@ export function createDiv(className: string): HTMLDivElement{
     return div
 }
 
-export function setHeight(ele: HTMLElement, height: number){
-    ele.style.height = height + "px"
-}
+export async function saveZipFile(zipFilename: string, files: Base64File[]) {
+    const zip = new JSZip();
+    files.forEach(f => {
+        zip.file(f.path, f.content, {base64: true});
+    })
 
-export function setWidth(ele: HTMLElement, height: number){
-    ele.style.width = height + "px"
+    const blob = await zip.generateAsync({type: "blob"})
+    saveAs(blob, zipFilename);
 }
