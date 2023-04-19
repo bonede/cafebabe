@@ -42,12 +42,12 @@ const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndice
         ]
     } />
     const morePopover = props.row.more ?
-        <Popover2  content={morePopOverContent}>
+        <Popover2 autoFocus={false} content={morePopOverContent}>
             <Button style={{padding: 0}}  icon={"info-sign"} small={true} minimal={true} />
         </Popover2> : null
 
     const helpPopover = props.row.help ?
-        <Popover2  content={helpPopOverContent}>
+        <Popover2 autoFocus={false}  content={helpPopOverContent}>
             <Button style={{padding: 0}}  icon={"help"} small={true} minimal={true} />
         </Popover2> : null
 

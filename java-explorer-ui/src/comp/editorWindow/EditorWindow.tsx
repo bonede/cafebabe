@@ -77,11 +77,9 @@ export const EditorWindow = (props: EditorWindowProps) => {
     }, [])
     const  titleBarActions=
             <div style={{display: "flex"}}>
-
-
-
                 <ButtonGroup>
                     <Popover2
+                        autoFocus={false}
                         minimal={true}
                         position="bottom-left"
                         content={
@@ -118,6 +116,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
                 <ButtonGroup minimal={true}>
                     <Button title={"Build"} onClick={handleCompileClick} icon="build" loading={compiling} />
                     <Popover2
+                        autoFocus={false}
                         minimal={true}
                         position="bottom-left"
                         content={
@@ -136,6 +135,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
                         <Button title={"Share"}  icon="link" />
                     </Popover2>
                     <Popover2
+                        autoFocus={false}
                         minimal={true}
                         position="bottom-left"
                         content={
