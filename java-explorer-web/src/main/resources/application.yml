@@ -1,3 +1,6 @@
+spring:
+  redis:
+    host: 192.168.31.243
 logging:
   level:
     root: info
@@ -21,6 +24,12 @@ compiler:
 app:
   url: http://locahost:8080
   spec-url: https://docs.oracle.com/javase/specs/jvms/se{version}/html/
+  share-live-hours:
+    - 1
+    - 24
+    - 168
+  share-limit: 24
+  share-limit-window: 1d
   versions:
     45.0:
       short-jdk-version: 0

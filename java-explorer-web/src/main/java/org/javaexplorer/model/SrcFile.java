@@ -1,13 +1,13 @@
 package org.javaexplorer.model;
 
 import lombok.Data;
-import org.javaexplorer.validator.JavaFilePath;
+import org.javaexplorer.validator.FilePath;
 
 import javax.validation.constraints.NotNull;
 
 @Data
 public class SrcFile {
-    @JavaFilePath
+    @FilePath
     private String path;
     @NotNull
     private String content;

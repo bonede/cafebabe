@@ -1,0 +1,101 @@
+package org.javaexplorer.web.service;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.javaexplorer.error.ApiException;
+import org.javaexplorer.model.ShareFile;
+import org.javaexplorer.model.SrcFile;
+import org.javaexplorer.model.vo.CreateShareReq;
+import org.javaexplorer.model.vo.DeleteShareFileReq;
+import org.javaexplorer.model.vo.ShareResp;
+import org.javaexplorer.utils.JsonUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.client.HttpClientErrorException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+@Service
+@Validated
+public class ShareFileService {
+
+    @Autowired
+    private AppService.AppConfig appConfig;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private RateLimitService rateLimitService;
+
+    private String genShareId(){
+        return RandomStringUtils.randomAlphanumeric(16);
+    }
+
+    private String genDeletingToken(){
+        return RandomStringUtils.randomAlphanumeric(32);
+    }
+
+    private String shareUrl(String shareId){
+        return appConfig.getUrl() + "/?s=" + shareId;
+    }
+
+    private String redisKey(String id){
+        return ShareFile.REDIS_KEY + ":" + id;
+    }
+
+    public ShareResp share(@Valid CreateShareReq req, HttpServletRequest httpServletRequest){
+        rateLimitService.limit(httpServletRequest, "USE_OTP", appConfig.shareLimit, appConfig.getShareLimitWindow());
+        ShareFile shareFile = new ShareFile();
+        shareFile.setId(genShareId());
+        shareFile.setHoursToLive(req.getHoursToLive());
+        shareFile.setSrcFiles(req.getSrcFiles());
+        shareFile.setDeletingToken(genDeletingToken());
+        if(req.getHoursToLive() != null && !appConfig.getShareLiveHours().contains(req.getHoursToLive())){
+            throw ApiException.error("Invalid hours to live");
+        }
+        if(req.getHoursToLive() != null){
+            redisTemplate.opsForValue().set(redisKey(shareFile.getId()), JsonUtils.toJson(shareFile), req.getHoursToLive(), TimeUnit.HOURS);
+        }else {
+            redisTemplate.opsForValue().set(redisKey(shareFile.getId()), JsonUtils.toJson(shareFile));
+        }
+
+        ShareResp shareResp = new ShareResp();
+        shareResp.setDeleteToken(shareFile.getDeletingToken());
+        shareResp.setUrl(shareUrl(shareFile.getId()));
+        shareResp.setId(shareFile.getId());
+        return shareResp;
+    }
+
+    public List<SrcFile> gerSrcFilesByShareId(String shareId){
+        ShareFile shareFile = findById(shareId);
+        if(shareFile == null){
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        }
+        return shareFile.getSrcFiles();
+    }
+
+    public ShareFile findById(String id){
+        String json = redisTemplate.opsForValue().get(redisKey(id));
+        if(json == null){
+            return null;
+        }
+        return JsonUtils.fromJson(json, ShareFile.class);
+    }
+
+    public boolean delete(@Valid DeleteShareFileReq req){
+        ShareFile shareFile = findById(req.getId());
+        if(shareFile == null){
+            throw ApiException.error("Invalid share id");
+        }
+        if(!shareFile.getDeletingToken().equals(req.getToken())){
+            throw ApiException.error("Invalid delete token");
+        }
+        return redisTemplate.delete(redisKey(req.getId()));
+    }
+}

@@ -16,8 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -70,5 +74,13 @@ public class AppService {
         private Map<String, InstructionDoc> instructionDocs;
         @NotNull
         private Map<String, JdkVersion> versions;
+        @NotNull
+        @NotEmpty
+        private List<Integer> shareLiveHours;
+        @NotNull
+        @Min(1)
+        Integer shareLimit;
+        @NotNull
+        Duration shareLimitWindow;
     }
 }
