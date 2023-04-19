@@ -18,7 +18,7 @@ monaco.editor.defineTheme('vs-dark-enhanced', {
 });
 export interface EditorProps{
     lang: string
-    content: string
+    content?: string
     onContentChange?: (content: string) => void
     onSelectLines?: (lines: number[]) => void
     selectLine?: number
@@ -76,9 +76,9 @@ export function Editor(props: EditorProps){
         setEditor(editor)
     }, []);
     const handleContentChange = () => {
+        console.log("content", props.content)
         if(props.content && editor){
             editor.setValue(props.content)
-            props.onContentChange?.(props.content)
         }
     }
 

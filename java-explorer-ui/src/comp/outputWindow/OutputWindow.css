@@ -16,3 +16,6 @@
 .output-window-content .output-msg-stderr{
     color: #f75464;
 }
+.output-window-content{
+    padding-bottom: 15px;
+}

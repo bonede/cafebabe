@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react"
 import {ApiClient, CompileResult, CompilerInfo} from "../../api/ApiClient"
 import {Editor} from './Editor'
-import {Button, ButtonGroup, MenuItem} from "@blueprintjs/core"
-import {ItemRenderer, Select2} from "@blueprintjs/select";
+import {Button, ButtonGroup, Divider, Menu, MenuItem} from "@blueprintjs/core"
+import {ItemRenderer} from "@blueprintjs/select";
 import {AppWindow} from "../window/AppWindow";
+import {Popover2} from "@blueprintjs/popover2";
 
 export interface EditorWindowProps{
     compilers: CompilerInfo[]
@@ -11,7 +12,7 @@ export interface EditorWindowProps{
     onCompile?: (result: CompileResult) => void
     onSelectLines?: (lines: number[]) => void
 }
-const selectMenuItem: ItemRenderer<CompilerInfo> = (compilerInfo, { handleClick, handleFocus, modifiers, query }) => {
+const selectMenuItemRender: ItemRenderer<CompilerInfo> = (compilerInfo, { handleClick, handleFocus, modifiers, query }) => {
     if (!modifiers.matchesPredicate) {
         return null;
     }
@@ -33,6 +34,8 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const [content, setContent] = useState("")
     const [compilerInfo, setCompilerInfo] = useState(props.compilers[0])
     const [compiling, setCompiling] = useState(false)
+    const [debug, setDebug] = useState(false)
+    const [optimize, setOptimize] = useState(false)
     const handleEditorContentChange = (content: string) => {
         setContent(content)
     }
@@ -60,26 +63,75 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const handleCompileClick = async () => {
         return compile()
     }
+    const isDefaultContent = () => props.compilers.findIndex((c, i) => {
+        return !content || c.example == content
+    }) > -1
     const handleCompilerChange = (compilerInfo: CompilerInfo) => {
         setCompilerInfo(compilerInfo)
-        compile()
+        if(isDefaultContent()){
+            compile()
+        }
     }
     useEffect(() => {
         compile()
     }, [])
     const  titleBarActions=
             <div style={{display: "flex"}}>
-                <Select2<CompilerInfo>
-                    filterable={false}
-                    items={props.compilers}
-                    onItemSelect={handleCompilerChange}
-                    itemRenderer={selectMenuItem}
-                >
-                    <Button minimal={true} text={compilerInfo.name} rightIcon="double-caret-vertical" placeholder="Select a compiler" />
-                </Select2>
+
+
+
+                <ButtonGroup>
+                    <Popover2
+                        minimal={true}
+                        position="bottom-left"
+                        content={
+                            <Menu>
+                                {
+                                    props.compilers
+                                        .map(c => c.lang)
+                                        .reduce((acc: string[], c: string, i) => {
+                                            if(acc.includes(c)){
+                                                return acc
+                                            }else {
+                                                acc.push(c)
+                                            }
+                                            return acc
+                                        }, [])
+                                        .map(lang => <MenuItem text={lang}>
+                                            {
+                                                props.compilers
+                                                    .filter(cl => cl.lang == lang)
+                                                    .map(cl => <MenuItem onClick={() => handleCompilerChange(cl)} text={cl.name} />)
+                                            }
+                                        </MenuItem>)
+                                }
+                            </Menu>
+                        }
+                    >
+                        <Button minimal={true} text={compilerInfo.name} rightIcon="double-caret-vertical" />
+                    </Popover2>
+                    <Button minimal={true} active={debug} onClick={() => setDebug(!debug)} title={"Toggle debug"}  icon="bug" />
+                    <Button minimal={true} active={optimize} onClick={() => setOptimize(!optimize)} title={"Toggle optimization"}  icon="lightning" />
+                </ButtonGroup>
+
+                <Divider />
                 <ButtonGroup minimal={true}>
                     <Button title={"Build"} onClick={handleCompileClick} icon="build" loading={compiling} />
                     <Button title={"Share"}  icon="link" />
+                    <Popover2
+                        minimal={true}
+                        position="bottom-left"
+                        content={
+                            <Menu>
+                                 <MenuItem text="About..." />
+                                 <MenuItem text="Clear Locale Cache..." />
+                                 <MenuItem text="Privacy Policy..." />
+                                 <MenuItem text="Cookie Policy..." />
+                            </Menu>
+                        }
+                    >
+                    <Button title={"Main menu"}  icon="menu" />
+                    </Popover2>
                 </ButtonGroup>
             </div>
 
@@ -89,7 +141,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
             onSelectLines={props.onSelectLines}
             onContentChange={handleEditorContentChange}
             lang={compilerInfo.lang}
-            content={compilerInfo.example}
+            content={isDefaultContent() || !content ? compilerInfo.example : undefined}
         />
     </AppWindow>
 

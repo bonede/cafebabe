@@ -6,9 +6,6 @@ import {OutputMsg, OutputWindow} from "../outputWindow/OutputWindow";
 import {EditorWindow} from "../editorWindow/EditorWindow";
 import {Panel, PanelGroup, PanelResizeHandle} from "react-resizable-panels";
 
-
-type WindowType = 'editor' | 'output' | 'classFile'
-
 export const AppInfoContext = createContext(undefined as AppInfo | undefined)
 
 export const JavaExplorerApp = () => {
@@ -64,7 +61,7 @@ export const JavaExplorerApp = () => {
                          <EditorWindow selectLine={classFileLine} onSelectLines={lines => setSelectedLines(lines)} onCompile={handleCompile} compilers={appInfo?.compilers || []} />
                      </Panel>
                      <PanelResizeHandle><div style={{background: "#00000000", height: 5}}></div></PanelResizeHandle>
-                     <Panel>
+                     <Panel  defaultSize={30}>
                          <OutputWindow outputMsgs={outputMsgs} onClearMsg={handleClearMsg} />
                      </Panel>
                  </PanelGroup>

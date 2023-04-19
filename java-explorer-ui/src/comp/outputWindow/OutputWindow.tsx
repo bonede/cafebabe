@@ -25,7 +25,7 @@ export const OutputWindow = (props: OutputWindowProps) => {
 
         <div className="output-window-content">
             <pre>{
-                props.outputMsgs.map(msgRow)
+                props.outputMsgs.reverse().map(msgRow)
             }
             </pre>
         </div>
