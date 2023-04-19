@@ -55,7 +55,7 @@ export const JavaExplorerApp = () => {
     return <AppInfoContext.Provider value={appInfo}>
      <div id="app" className="mosaic-blueprint-theme bp4-dark mosaic">
          <PanelGroup direction="horizontal">
-             <Panel>
+             <Panel defaultSize={45}>
                  <PanelGroup direction="vertical">
                      <Panel>
                          <EditorWindow selectLine={classFileLine} onSelectLines={lines => setSelectedLines(lines)} onCompile={handleCompile} compilers={appInfo?.compilers || []} />

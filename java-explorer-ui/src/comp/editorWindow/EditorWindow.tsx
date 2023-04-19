@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {ApiClient, CompileResult, CompilerInfo} from "../../api/ApiClient"
 import {Editor} from './Editor'
-import {Button, ButtonGroup, Divider, Menu, MenuItem} from "@blueprintjs/core"
+import {Button, ButtonGroup, Divider, Menu, MenuDivider, MenuItem} from "@blueprintjs/core"
 import {ItemRenderer} from "@blueprintjs/select";
 import {AppWindow} from "../window/AppWindow";
 import {Popover2} from "@blueprintjs/popover2";
@@ -117,14 +117,31 @@ export const EditorWindow = (props: EditorWindowProps) => {
                 <Divider />
                 <ButtonGroup minimal={true}>
                     <Button title={"Build"} onClick={handleCompileClick} icon="build" loading={compiling} />
-                    <Button title={"Share"}  icon="link" />
+                    <Popover2
+                        minimal={true}
+                        position="bottom-left"
+                        content={
+                            <Menu>
+                                <MenuItem text="Perment Link..." />
+                                <MenuDivider />
+                                <MenuItem text="Self Destruct Link">
+                                    <MenuItem text="1 Hour Link..." />
+                                    <MenuItem text="1 Day Link.." />
+                                    <MenuItem text="7 Days Link..." />
+                                </MenuItem>
+
+                            </Menu>
+                        }
+                    >
+                        <Button title={"Share"}  icon="link" />
+                    </Popover2>
                     <Popover2
                         minimal={true}
                         position="bottom-left"
                         content={
                             <Menu>
                                  <MenuItem text="About..." />
-                                 <MenuItem text="Clear Locale Cache..." />
+                                 <MenuItem text="Clear Local Cache..." />
                                  <MenuItem text="Privacy Policy..." />
                                  <MenuItem text="Cookie Policy..." />
                             </Menu>

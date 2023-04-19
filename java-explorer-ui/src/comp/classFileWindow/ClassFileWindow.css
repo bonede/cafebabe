@@ -11,7 +11,7 @@
 }
 .class-image-window-content{
     background: #1e1e1e;
-    padding: 10px;
+    padding: 10px 10px 30px 10px;
     box-sizing: border-box;
     height: 100%;
     overflow: auto;
