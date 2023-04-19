@@ -3,7 +3,6 @@ import React, {useState} from "react";
 import {ClassFile} from "../../api/ApiClient";
 import {Button, Tab, Tabs} from "@blueprintjs/core";
 import {ClassImageView} from "./ClassImageView";
-import {TitleBar} from "../titleBar/TitleBar";
 import {saveZipFile} from "../Utils";
 import {AppWindow} from "../window/AppWindow";
 
@@ -36,10 +35,8 @@ export const ClassFileWindow = (props: ClassFileWindowProps) => {
     </div>
 
     return <AppWindow
-
-        title="Output"
-        actions={<div style={{width: "100%"}}> <TitleBar title={tabs} actions={actionButtons} /> </div> }
-
+        title={tabs}
+        actions={actionButtons}
     >
         {
             props.classFiles[classFileIndex] && <div className="class-image-window-content">

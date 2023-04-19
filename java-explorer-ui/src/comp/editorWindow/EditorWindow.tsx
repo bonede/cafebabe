@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react"
 import {ApiClient, CompileResult, CompilerInfo} from "../../api/ApiClient"
 import {Editor} from './Editor'
 import {Button, ButtonGroup, MenuItem} from "@blueprintjs/core"
-import {TitleBar} from "../titleBar/TitleBar";
 import {ItemRenderer, Select2} from "@blueprintjs/select";
 import {AppWindow} from "../window/AppWindow";
 
@@ -68,8 +67,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
     useEffect(() => {
         compile()
     }, [])
-    const toolbar = <div style={{width: "100%"}}>
-        <TitleBar title={compilerInfo.fileName} actions={
+    const  titleBarActions=
             <div style={{display: "flex"}}>
                 <Select2<CompilerInfo>
                     filterable={false}
@@ -84,9 +82,8 @@ export const EditorWindow = (props: EditorWindowProps) => {
                     <Button title={"Share"}  icon="link" />
                 </ButtonGroup>
             </div>
-        } />
-    </div>
-    return <AppWindow title={'Editor'} actions={toolbar}>
+
+    return <AppWindow title={compilerInfo.fileName} actions={titleBarActions}>
         <Editor
             selectLine={props.selectLine}
             onSelectLines={props.onSelectLines}
