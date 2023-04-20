@@ -24,6 +24,7 @@ export interface EditorProps{
 }
 export interface EditorRef{
     getContent: () => string | undefined
+    setContent: (content: string) => void
 }
 export const Editor = forwardRef((props: EditorProps, ref: ForwardedRef<EditorRef>) => {
 
@@ -34,6 +35,9 @@ export const Editor = forwardRef((props: EditorProps, ref: ForwardedRef<EditorRe
         return {
             getContent(){
                 return editor?.getValue()
+            },
+            setContent(content: string){
+              editor?.setValue(content)
             }
         };
     }, []);

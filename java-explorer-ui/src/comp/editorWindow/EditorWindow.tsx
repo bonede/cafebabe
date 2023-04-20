@@ -45,6 +45,9 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const getEditorContent = (): string | undefined => {
         return editorRef.current?.getContent()
     }
+    const setEditorContent = (content: string) => {
+        editorRef.current?.setContent(content)
+    }
     const initData = async () => {
         const shareId = getShareId(window.location.href)
         if(shareId){
@@ -165,8 +168,8 @@ export const EditorWindow = (props: EditorWindowProps) => {
                     >
                         <Button minimal={true} text={compiler.name} rightIcon="double-caret-vertical" />
                     </Popover2>
-                    <Button minimal={true} active={debug} onClick={() => setDebug(!debug)} title={"Toggle debug"}  icon="bug" />
-                    <Button minimal={true} active={optimize} onClick={() => setOptimize(!optimize)} title={"Toggle optimization"}  icon="lightning" />
+                    <Button minimal={true} active={debug} onClick={() => setDebug(!debug)} title={"Toggle Debug"}  icon="bug" />
+                    <Button minimal={true} active={optimize} onClick={() => setOptimize(!optimize)} title={"Toggle Optimization"}  icon="lightning" />
                 </ButtonGroup>
 
                 <Divider />
@@ -197,11 +200,20 @@ export const EditorWindow = (props: EditorWindowProps) => {
                         position="bottom-left"
                         content={
                             <Menu>
-                                 <MenuItem text="About..." />
-                                 <MenuItem text="Clear Local Cache..." />
-                                 <MenuItem text="Privacy Policy..." />
-                                 <MenuItem text="Cookie Policy..." />
-                                 <MenuItem onClick={props.onDeleteReq} text="Delete Share Link..." />
+                                <MenuItem text="File">
+                                    <MenuItem text="Open Exmaples">
+                                        {
+                                            props.compilers.map(c => <MenuItem text={c.name} onClick={() => setEditorContent(c.example)} />)
+                                        }
+                                    </MenuItem>
+                                </MenuItem>
+                                <MenuItem text="Help">
+                                    <MenuItem text="About..." />
+                                    <MenuItem text="Clear Local Cache..." />
+                                    <MenuItem text="Privacy Policy..." />
+                                    <MenuItem text="Cookie Policy..." />
+                                    <MenuItem onClick={props.onDeleteReq} text="Delete Share Link..." />
+                                </MenuItem>
                             </Menu>
                         }
                     >
