@@ -10,11 +10,9 @@ import org.javaexplorer.model.vo.ShareResp;
 import org.javaexplorer.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +76,7 @@ public class ShareFileService {
 
         ShareFile shareFile = findById(shareId);
         if(shareFile == null){
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+            throw ApiException.error("Share file not found");
         }
         PubShareFile pubShareFile = new PubShareFile();
         pubShareFile.setId(shareFile.getId());

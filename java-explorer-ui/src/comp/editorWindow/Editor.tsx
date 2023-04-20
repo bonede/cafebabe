@@ -1,7 +1,7 @@
 import './Editor.css'
 import * as monaco from 'monaco-editor';
 import {editor} from 'monaco-editor';
-import {useEffect, useRef, useState} from "react";
+import {ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState} from "react";
 import IStandaloneCodeEditor = editor.IStandaloneCodeEditor;
 import IEditorDecorationsCollection = editor.IEditorDecorationsCollection;
 
@@ -18,15 +18,25 @@ monaco.editor.defineTheme('vs-dark-enhanced', {
 });
 export interface EditorProps{
     lang: string
-    content?: string
-    onContentChange?: (content: string) => void
+    initContent?: string
     onSelectLines?: (lines: number[]) => void
     selectLine?: number
 }
-export function Editor(props: EditorProps){
+export interface EditorRef{
+    getContent: () => string | undefined
+}
+export const Editor = forwardRef((props: EditorProps, ref: ForwardedRef<EditorRef>) => {
+
     let [editor, setEditor] = useState<IStandaloneCodeEditor>()
     const editorElement = useRef(null)
     const [lineDecoration, setLineDecoration] = useState(undefined as IEditorDecorationsCollection | undefined)
+    useImperativeHandle(ref, () => {
+        return {
+            getContent(){
+                return editor?.getValue()
+            }
+        };
+    }, []);
     useEffect(() => {
         monaco.editor.addKeybindingRules([
             {
@@ -47,7 +57,7 @@ export function Editor(props: EditorProps){
         ]);
         editor = monaco.editor.create(editorElement.current!, {
             theme: "vs-dark-enhanced",
-            value: props.content,
+            value: props.initContent,
             language: props.lang,
             fontSize: 18,
             automaticLayout: true,
@@ -61,10 +71,6 @@ export function Editor(props: EditorProps){
             },
         })
 
-        editor.getModel()?.onDidChangeContent(e => {
-            props.onContentChange?.(editor?.getValue() || "")
-        })
-
         editor.onDidChangeCursorSelection((e) => {
             const lines: number[] = []
             for(let i = e.selection.startLineNumber; i <= e.selection.endLineNumber;){
@@ -72,15 +78,8 @@ export function Editor(props: EditorProps){
             }
             props.onSelectLines && props.onSelectLines(lines)
         });
-
         setEditor(editor)
     }, []);
-    const handleContentChange = () => {
-        console.log("content", props.content)
-        if(props.content && editor){
-            editor.setValue(props.content)
-        }
-    }
 
     const handleSelectLineChange = () => {
         lineDecoration && lineDecoration.clear()
@@ -96,7 +95,6 @@ export function Editor(props: EditorProps){
         }])
         setLineDecoration(decoration)
     }
-    useEffect(handleContentChange, [props.content])
     useEffect(handleSelectLineChange, [props.selectLine])
     return <div style={{width: "100%", height: "100%"}} ref={editorElement} className="code-editor"></div>
-}
+})

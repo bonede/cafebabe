@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/app")
 @Validated
-@CrossOrigin
+@CrossOrigin(originPatterns = {"http://localhost:5173/"})
 public class AppController {
     @Autowired
     private AppService appService;

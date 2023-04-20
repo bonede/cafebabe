@@ -14,7 +14,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/compile")
 @Validated
-@CrossOrigin
+@CrossOrigin(originPatterns = {"http://localhost:5173/"})
 public class CompileController {
     @Autowired
     private CompilerService compilerService;

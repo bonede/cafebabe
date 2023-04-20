@@ -40,3 +40,8 @@ export function showToast(message: string, intent?: Intent){
         intent
     })
 }
+
+export function getShareId(url: string){
+    const u = new URL(window.location.href)
+    return u.searchParams.get('s')
+}

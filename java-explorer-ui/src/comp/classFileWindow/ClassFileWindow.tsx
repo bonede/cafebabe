@@ -38,14 +38,11 @@ export const ClassFileWindow = (props: ClassFileWindowProps) => {
         title={tabs}
         actions={actionButtons}
     >
-        {
-            props.classFiles[classFileIndex] && <div className="class-image-window-content">
-                {
-                    // TODO handle file name
-                }
-                <ClassImageView onSelectLine={props.onSelectLine} file={props.classFiles[classFileIndex].path} selectedLines={props.selectedLines} classImage={props.classFiles[classFileIndex].classImage} />
-            </div>
+        <div className="class-image-window-content">{
+            props.classFiles[classFileIndex] &&
+            <ClassImageView onSelectLine={props.onSelectLine} file={props.classFiles[classFileIndex].path} selectedLines={props.selectedLines} classImage={props.classFiles[classFileIndex].classImage} />
         }
+        </div>
 
     </AppWindow>
 }

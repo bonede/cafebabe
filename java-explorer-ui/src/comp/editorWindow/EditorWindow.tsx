@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from "react"
-import {ApiClient, CompileResult, CompilerInfo, CompilerOps, SrcFile} from "../../api/ApiClient"
-import {Editor} from './Editor'
+import React, {useEffect, useRef, useState} from "react"
+import {ApiClient, CompileResult, CompilerInfo, CompilerOps, PubShareFile, SrcFile} from "../../api/ApiClient"
+import {Editor, EditorRef} from './Editor'
 import {Button, ButtonGroup, Divider, Menu, MenuDivider, MenuItem} from "@blueprintjs/core"
 import {ItemRenderer} from "@blueprintjs/select";
 import {AppWindow} from "../window/AppWindow";
 import {Popover2} from "@blueprintjs/popover2";
+import {getShareId, showToast} from "../Utils";
 
 export interface EditorWindowProps{
     compilers: CompilerInfo[]
@@ -33,27 +34,55 @@ const selectMenuItemRender: ItemRenderer<CompilerInfo> = (compilerInfo, { handle
 };
 export const EditorWindow = (props: EditorWindowProps) => {
     const apiClient = ApiClient.getClient()
-    const [content, setContent] = useState("")
-    const [compilerInfo, setCompilerInfo] = useState(props.compilers[0])
+    const [compiler, setCompiler] = useState(props.compilers[0])
     const [compiling, setCompiling] = useState(false)
     const [sharing, setSharing] = useState(false)
-    const [deleting ,setDeleting] = useState(false)
     const [debug, setDebug] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const [shareFile, setShareFile] = useState(undefined as PubShareFile | undefined)
     const [optimize, setOptimize] = useState(false)
-    const handleEditorContentChange = (content: string) => {
-        setContent(content)
+    const editorRef = useRef(null as EditorRef | null);
+    const getEditorContent = (): string | undefined => {
+        return editorRef.current?.getContent()
     }
+    const initData = async () => {
+        const shareId = getShareId(window.location.href)
+        if(shareId){
+            setLoading(true)
+            try {
+                const shareFile = await apiClient.getShare(shareId)
+                setShareFile(shareFile)
+                setCompiler(props.compilers.filter(c => c.name == shareFile.ops.compilerName)[0])
+                setDebug(shareFile.ops.debug)
+                setOptimize(shareFile.ops.optimize)
+                setLoading(false)
+            }catch (e){
+                showToast(e + "", "danger")
+                setLoading(false)
+            }
+        }else {
+            setCompiler(props.compilers[0])
+            setLoading(false)
+        }
+    }
+
+
+
     const compile = async () => {
+        if(!getEditorContent()){
+            showToast("Editor content is empty", "danger")
+            return
+        }
         setCompiling(true)
         try{
             const ops: CompilerOps = {
-                compilerName: compilerInfo.name,
+                compilerName: compiler.name,
                 debug,
                 optimize
             }
             const result = await apiClient.compile(ops, [{
-                path: compilerInfo.fileName,
-                content: content || compilerInfo.example
+                path: compiler.fileName,
+                content: getEditorContent()!
             }])
             props.onCompile && props.onCompile(result)
             setCompiling(false)
@@ -74,33 +103,29 @@ export const EditorWindow = (props: EditorWindowProps) => {
         return compile()
     }
 
-    const isDefaultContent = () => props.compilers.findIndex((c, i) => {
-        return !content || c.example == content
-    }) > -1
-
-    const handleCompilerChange = (compilerInfo: CompilerInfo) => {
-        setCompilerInfo(compilerInfo)
-        if(isDefaultContent()){
-            compile()
-        }
+    const handleCompilerChange = (compiler: CompilerInfo) => {
+        setCompiler(compiler)
     }
     useEffect(() => {
-        compile()
+        initData().then(() => setTimeout(() => compile(), 0.5 * 1000))
     }, [])
 
     const handleShareClick = async (hoursToLive?: number) => {
         if (!props.onShareReq) {
             return
         }
+        if(!getEditorContent()){
+            showToast("Editor content is empty", "danger")
+        }
         try {
             setSharing(true)
             await props.onShareReq({
-                compilerName: compilerInfo.name,
+                compilerName: compiler.name,
                 debug,
                 optimize
             }, [{
-                content: content,
-                path: compilerInfo.fileName
+                content: getEditorContent()!,
+                path: compiler.fileName
             }], hoursToLive)
             setSharing(false)
         } catch (e) {
@@ -138,7 +163,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
                             </Menu>
                         }
                     >
-                        <Button minimal={true} text={compilerInfo.name} rightIcon="double-caret-vertical" />
+                        <Button minimal={true} text={compiler.name} rightIcon="double-caret-vertical" />
                     </Popover2>
                     <Button minimal={true} active={debug} onClick={() => setDebug(!debug)} title={"Toggle debug"}  icon="bug" />
                     <Button minimal={true} active={optimize} onClick={() => setOptimize(!optimize)} title={"Toggle optimization"}  icon="lightning" />
@@ -185,14 +210,25 @@ export const EditorWindow = (props: EditorWindowProps) => {
                 </ButtonGroup>
             </div>
 
-    return <AppWindow title={compilerInfo.fileName} actions={titleBarActions}>
-        <Editor
-            selectLine={props.selectLine}
-            onSelectLines={props.onSelectLines}
-            onContentChange={handleEditorContentChange}
-            lang={compilerInfo.lang}
-            content={isDefaultContent() || !content ? compilerInfo.example : undefined}
-        />
+    const getInitContent = () => {
+        if(shareFile){
+            return shareFile.srcFiles[0].content
+        }else {
+            return compiler.example
+        }
+    }
+
+    return <AppWindow title={compiler.fileName} actions={titleBarActions}>
+        {
+            loading ? <div></div> : <div className="editor-window-content"><Editor
+                ref={editorRef}
+                selectLine={props.selectLine}
+                onSelectLines={props.onSelectLines}
+                lang={compiler.lang}
+                initContent={getInitContent()}
+            /></div>
+        }
+
     </AppWindow>
 
 }

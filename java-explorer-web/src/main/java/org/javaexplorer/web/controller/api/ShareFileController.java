@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/share")
-@CrossOrigin
+@CrossOrigin(originPatterns = {"http://localhost:5173/"})
 public class ShareFileController {
     @Autowired
     private ShareFileService shareFileService;

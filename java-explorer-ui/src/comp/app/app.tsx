@@ -21,6 +21,7 @@ export const JavaExplorerApp = () => {
     const [deleting, setDeleting] = useState(false)
     const [classFileName, setClassFileName] = useState(undefined as string | undefined)
     const [classFileLine, setClassFileLine] = useState(undefined as number | undefined)
+
     useEffect(() => {
         apiClient.getAppInfo().then(a => setAppInfo(a))
     }, [])
@@ -30,6 +31,7 @@ export const JavaExplorerApp = () => {
             msg
         }])
     }
+
     const handleCompile = (result: CompileResult) => {
         if(result.classFiles != null){
             setClassFiles(result.classFiles)
@@ -41,6 +43,7 @@ export const JavaExplorerApp = () => {
             pushMsg("stderr", result.stderr)
         }
     }
+
     const handleClearMsg = () => {
         setOutputMsg([])
     }
@@ -62,9 +65,11 @@ export const JavaExplorerApp = () => {
             pushMsg("stderr", e + "")
         }
     }
+
     const handleDeleteReq = () => {
         setDeleting(true)
     }
+
     return <AppInfoContext.Provider value={appInfo}>
      <div id="app" className="mosaic-blueprint-theme bp4-dark mosaic">
          <ShareRespDialog onClose={() => setShareResp(undefined)} shareResp={shareResp} />
