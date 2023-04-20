@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 public class DeleteShareFileReq {
     @NotEmpty
     @NotNull
-    private String id;
+    private String url;
     @NotEmpty
     @NotNull
-    private String token;
+    private String deletingToken;
 }

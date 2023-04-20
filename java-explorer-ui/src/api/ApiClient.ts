@@ -368,9 +368,9 @@ export class ApiClient{
         return  await this.request<PubShareFile>("/share/" + id, "get")
     }
 
-    public async deleteShare(id: string, deletingToken: string): Promise<ShareResp> {
+    public async deleteShare(url: string, deletingToken: string): Promise<ShareResp> {
         return  await this.request<ShareResp>("/share", "delete", {
-            id,
+            url,
             deletingToken,
         })
     }

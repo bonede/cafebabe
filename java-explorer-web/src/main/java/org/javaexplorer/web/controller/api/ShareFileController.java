@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/share")
+@CrossOrigin
 public class ShareFileController {
     @Autowired
     private ShareFileService shareFileService;
@@ -27,7 +28,7 @@ public class ShareFileController {
     }
 
     @DeleteMapping
-    public ApiResp<Boolean> share(@RequestBody DeleteShareFileReq req){
+    public ApiResp<Boolean> deleteShare(@RequestBody DeleteShareFileReq req){
         return ApiResp.ok(shareFileService.delete(req));
     }
 }

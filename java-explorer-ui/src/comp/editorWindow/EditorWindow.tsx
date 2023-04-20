@@ -12,6 +12,7 @@ export interface EditorWindowProps{
     onCompile?: (result: CompileResult) => void
     onSelectLines?: (lines: number[]) => void
     onShareReq?: (ops: CompilerOps, srcFiles: SrcFile[], hoursToLive?: number) => Promise<void>
+    onDeleteReq?: () => void
 }
 const selectMenuItemRender: ItemRenderer<CompilerInfo> = (compilerInfo, { handleClick, handleFocus, modifiers, query }) => {
     if (!modifiers.matchesPredicate) {
@@ -36,6 +37,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const [compilerInfo, setCompilerInfo] = useState(props.compilers[0])
     const [compiling, setCompiling] = useState(false)
     const [sharing, setSharing] = useState(false)
+    const [deleting ,setDeleting] = useState(false)
     const [debug, setDebug] = useState(false)
     const [optimize, setOptimize] = useState(false)
     const handleEditorContentChange = (content: string) => {
@@ -174,7 +176,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
                                  <MenuItem text="Clear Local Cache..." />
                                  <MenuItem text="Privacy Policy..." />
                                  <MenuItem text="Cookie Policy..." />
-                                 <MenuItem text="Delete Share Link..." />
+                                 <MenuItem onClick={props.onDeleteReq} text="Delete Share Link..." />
                             </Menu>
                         }
                     >

@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -94,13 +96,22 @@ public class ShareFileService {
     }
 
     public boolean delete(@Valid DeleteShareFileReq req){
-        ShareFile shareFile = findById(req.getId());
+        MultiValueMap<String, String> parameters = UriComponentsBuilder
+                        .fromUriString(req.getUrl())
+                        .build()
+                        .getQueryParams();
+        String id = parameters.getFirst("s");
+        if(id == null){
+            throw ApiException.error("Invalid url");
+        }
+        ShareFile shareFile = findById(id);
         if(shareFile == null){
             throw ApiException.error("Invalid share id");
         }
-        if(!shareFile.getDeletingToken().equals(req.getToken())){
+        if(!shareFile.getDeletingToken().equals(req.getDeletingToken())){
             throw ApiException.error("Invalid delete token");
         }
-        return redisTemplate.delete(redisKey(req.getId()));
+        return redisTemplate.delete(redisKey(id));
+
     }
 }

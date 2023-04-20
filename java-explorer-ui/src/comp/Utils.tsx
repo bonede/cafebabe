@@ -1,6 +1,7 @@
 import {Base64File} from "../api/ApiClient";
 import JSZip from "jszip";
 import {saveAs} from 'file-saver';
+import {Intent, Toaster, ToasterInstance} from "@blueprintjs/core";
 
 export function addClass(ele: HTMLElement, className: string){
     if(!ele.className.split(" ").includes(className)){
@@ -26,4 +27,16 @@ export async function saveZipFile(zipFilename: string, files: Base64File[]) {
 
     const blob = await zip.generateAsync({type: "blob"})
     saveAs(blob, zipFilename);
+}
+
+let toaster: ToasterInstance | undefined = undefined
+
+export function showToast(message: string, intent?: Intent){
+    if(toaster === undefined){
+        toaster = Toaster.create()
+    }
+    toaster.show({
+        message: message,
+        intent
+    })
 }
