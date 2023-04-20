@@ -12,14 +12,20 @@ compiler:
       lang: java
       cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
+      debug-args: -g
+      optimize-args: -O
     - name: openjdk11
       lang: java
       cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
+      debug-args: -g
+      optimize-args: -O
     - name: kotlin1.7.20
       lang: kotlin
       cmd: kotlinc -d build {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
+      debug-args: -g
+      optimize-args: -opt
 
 app:
   url: http://locahost:8080

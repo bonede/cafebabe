@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.javaexplorer.bytecode.vm.ClassImage;
+import org.javaexplorer.error.ApiException;
 import org.javaexplorer.model.ClassFile;
 import org.javaexplorer.model.SrcFile;
 import org.javaexplorer.model.vo.CompileOutput;
@@ -26,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,7 +104,7 @@ public class CompilerService {
                              List<SrcFile> srcFiles
     ){
         String srcFileParameter = srcFiles.stream()
-                .map(s -> s.getPath())
+                .map(SrcFile::getPath)
                 .collect(Collectors.joining(" "));
         return cmd.replace("{WORKING_DIR}", workingDir)
                 .replace("{OPTS}", compilerOptions == null ? "" : compilerOptions)
@@ -112,12 +114,13 @@ public class CompilerService {
 
     public CompileOutput compile(CompileReq compileReq) throws IOException {
         CompilerConfig.Compiler compiler = compilerConfig.getCompilers().stream()
-                .filter(c -> c.getName().equals(compileReq.getCompilerName()))
+                .filter(c -> c.getName().equals(compileReq.getOps().getCompilerName()))
                 .findFirst()
-                .get();
+                .orElseThrow(() -> ApiException.error("Invalid compiler"));
 
         Path workingDir = saveFile(compileReq.getSrcFiles());
-        String cmd = formatCmd(compiler.getCmd(), workingDir.toString(), compileReq.getCompilerOptions(), compileReq.getSrcFiles());
+        String cmdArgs = compiler.getDebugAndOptimizeArgs(compileReq.getOps().getDebug(), compileReq.getOps().getOptimize());
+        String cmd = formatCmd(compiler.getCmd(), workingDir.toString(), cmdArgs, compileReq.getSrcFiles());
         CommandUtils.CommandResult result = CommandUtils.run(workingDir.toFile(), cmd.split(" "));
         if(result.getCode() == 0){
             List<ClassFile> classFiles = collectClassFile(workingDir);
@@ -125,8 +128,7 @@ public class CompilerService {
                     classFiles,
                     result.getStdout(),
                     result.getStderr(),
-                    compileReq.getCompilerName(),
-                    compileReq.getCompilerOptions()
+                    compileReq.getOps()
             );
             FileUtils.deleteDirectory(workingDir.toFile());
             return compileOutput;
@@ -136,8 +138,7 @@ public class CompilerService {
                     result.getCode(),
                     result.getStdout(),
                     result.getStderr(),
-                    compileReq.getCompilerName(),
-                    compileReq.getCompilerOptions()
+                    compileReq.getOps()
             );
         }
 
@@ -156,6 +157,19 @@ public class CompilerService {
             private String lang;
             private String cmd;
             private String example;
+            private String debugArgs;
+            private String optimizeArgs;
+
+            public String getDebugAndOptimizeArgs(boolean debug, boolean optimize){
+                StringJoiner stringJoiner = new StringJoiner(" ");
+                if(debug){
+                    stringJoiner.add(debugArgs);
+                }
+                if(optimize){
+                    stringJoiner.add(optimizeArgs);
+                }
+                return stringJoiner.toString();
+            }
         }
     }
 }

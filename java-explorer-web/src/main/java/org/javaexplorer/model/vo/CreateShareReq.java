@@ -13,4 +13,6 @@ public class CreateShareReq {
     @NotNull
     @NotEmpty
     private List<SrcFile> srcFiles;
+    @NotNull
+    private CompilerOps ops;
 }

@@ -3,7 +3,7 @@ package org.javaexplorer.web.service;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.javaexplorer.error.ApiException;
 import org.javaexplorer.model.ShareFile;
-import org.javaexplorer.model.SrcFile;
+import org.javaexplorer.model.ShareFile.PubShareFile;
 import org.javaexplorer.model.vo.CreateShareReq;
 import org.javaexplorer.model.vo.DeleteShareFileReq;
 import org.javaexplorer.model.vo.ShareResp;
@@ -17,7 +17,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -56,6 +55,7 @@ public class ShareFileService {
         shareFile.setHoursToLive(req.getHoursToLive());
         shareFile.setSrcFiles(req.getSrcFiles());
         shareFile.setDeletingToken(genDeletingToken());
+        shareFile.setOps(req.getOps());
         if(req.getHoursToLive() != null && !appConfig.getShareLiveHours().contains(req.getHoursToLive())){
             throw ApiException.error("Invalid hours to live");
         }
@@ -66,18 +66,23 @@ public class ShareFileService {
         }
 
         ShareResp shareResp = new ShareResp();
-        shareResp.setDeleteToken(shareFile.getDeletingToken());
+        shareResp.setDeletingToken(shareFile.getDeletingToken());
         shareResp.setUrl(shareUrl(shareFile.getId()));
         shareResp.setId(shareFile.getId());
         return shareResp;
     }
 
-    public List<SrcFile> gerSrcFilesByShareId(String shareId){
+    public PubShareFile gerPubFilesByShareId(String shareId){
+
         ShareFile shareFile = findById(shareId);
         if(shareFile == null){
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
         }
-        return shareFile.getSrcFiles();
+        PubShareFile pubShareFile = new PubShareFile();
+        pubShareFile.setId(shareFile.getId());
+        pubShareFile.setSrcFiles(shareFile.getSrcFiles());
+        pubShareFile.setOps(shareFile.getOps());
+        return pubShareFile;
     }
 
     public ShareFile findById(String id){

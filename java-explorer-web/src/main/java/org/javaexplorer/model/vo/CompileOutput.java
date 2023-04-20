@@ -14,21 +14,19 @@ public class CompileOutput {
     private int returnCode;
     private String stdout;
     private String stderr;
-    private String compiler;
-    private String compilerOptions;
+    private CompilerOps ops;
     public static CompileOutput fail(
             int returnCode,
             String stdout,
             String stderr,
-            String compiler,
-            String compilerOptions
+            CompilerOps ops
 
     ){
         CompileOutput compileOutput = new CompileOutput();
         compileOutput.setStdout(stdout);
+        compileOutput.setStderr(stderr);
         compileOutput.setReturnCode(returnCode);
-        compileOutput.setCompiler(compiler);
-        compileOutput.setCompilerOptions(compilerOptions);
+        compileOutput.setOps(ops);
         return compileOutput;
     }
 
@@ -36,15 +34,14 @@ public class CompileOutput {
             List<ClassFile> classFiles,
             String stdout,
             String stderr,
-            String compiler,
-            String compilerOptions
+            CompilerOps ops
     ){
         CompileOutput compileOutput = new CompileOutput();
         compileOutput.setClassFiles(classFiles);
         compileOutput.setStdout(stdout);
-        compileOutput.setCompiler(compiler);
+        compileOutput.setStderr(stderr);
+        compileOutput.setOps(ops);
         compileOutput.setReturnCode(0);
-        compileOutput.setCompilerOptions(compilerOptions);
         return compileOutput;
     }
 }

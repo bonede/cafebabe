@@ -1,5 +1,6 @@
 package org.javaexplorer.web.controller.api;
 
+import org.javaexplorer.model.ShareFile;
 import org.javaexplorer.model.vo.ApiResp;
 import org.javaexplorer.model.vo.CreateShareReq;
 import org.javaexplorer.model.vo.DeleteShareFileReq;
@@ -19,6 +20,10 @@ public class ShareFileController {
     @PostMapping
     public ApiResp<ShareResp> share(@RequestBody CreateShareReq req, HttpServletRequest httpServletRequest){
         return ApiResp.ok(shareFileService.share(req, httpServletRequest));
+    }
+    @GetMapping("/{id}")
+    public ApiResp<ShareFile.PubShareFile> getShare(@PathVariable String id){
+        return ApiResp.ok(shareFileService.gerPubFilesByShareId(id));
     }
 
     @DeleteMapping

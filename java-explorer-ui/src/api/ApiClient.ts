@@ -40,6 +40,22 @@ export interface CompileResult{
     stdout: string
     stderr: string
 }
+export interface ShareResp{
+    id: string
+    url: string
+    deletingToken: string
+}
+export interface CompilerOps{
+    compilerName: string
+    debug: boolean
+    optimize: boolean
+}
+
+export interface PubShareFile{
+    id: string
+    ops: CompilerOps
+    srcFiles: SrcFile[]
+}
 type class_access_flag = "ACC_PUBLIC" |
     "ACC_FINAL" |
     "ACC_SUPER" |
@@ -289,7 +305,7 @@ export interface inner_class_info{
     inner_class_access_flags: class_access_flag[]
 }
 
-type HttpMethod = "get" | "post"
+type HttpMethod = "get" | "post" | "put" | "delete"
 
 export class ApiClient{
     private static API_CLIENT = new ApiClient();
@@ -308,42 +324,57 @@ export class ApiClient{
         }
     }
 
-    public request<T>(path: string, method: HttpMethod, params?: Record<string, any>): Promise<ApiResp<T>>{
+    public async request<T>(path: string, method: HttpMethod, params?: Record<string, any>): Promise<T> {
         let url = this.getApiUrl() + path
         const init: RequestInit = {
             method: method,
         }
         const headers: HeadersInit = {}
-        if(method == "post"){
+        if (method == "post" || method == "put" || method == "delete") {
             init.body = JSON.stringify(params)
             headers['Content-Type'] = 'application/json'
-        }else if(method == "get" && params != null){
+        } else if (method == "get" && params != null) {
             const searchParams = new URLSearchParams(params);
             url = url + "?" + searchParams.toString()
         }
         init.headers = headers
-        return fetch(url, init).then(r => r.json())
+        const resp: ApiResp<T> = await fetch(url, init).then(r => r.json())
+        if(resp.code != 'ok'){
+            throw new Error(resp.msg)
+        }
+        return resp.data
     }
 
     public async getAppInfo(): Promise<AppInfo> {
-        let resp = await this.request<AppInfo>("/app/info", "get")
-        if("ok" == resp.code){
-            return resp.data;
-        }
-        throw new Error(resp.msg);
+        return this.request<AppInfo>("/app/info", "get")
     }
 
-    public async compile(compilerName: string, compilerOptions: string, srcFiles: SrcFile[]): Promise<CompileResult> {
-        let resp = await this.request<CompileResult>("/compile", "post", {
-            compilerName,
-            compilerOptions,
+    public async compile(ops: CompilerOps, srcFiles: SrcFile[]): Promise<CompileResult> {
+        return  await this.request<CompileResult>("/compile", "post", {
+            ops,
             srcFiles
         })
-        if("ok" == resp.code){
-            return resp.data;
-        }
-        throw new Error(resp.msg);
     }
+
+    public async createShare(ops: CompilerOps, srcFiles: SrcFile[], hoursToLive?: number): Promise<ShareResp> {
+        return  await this.request<ShareResp>("/share", "post", {
+            srcFiles,
+            hoursToLive,
+            ops
+        })
+    }
+
+    public async getShare(id: string): Promise<PubShareFile>{
+        return  await this.request<PubShareFile>("/share/" + id, "get")
+    }
+
+    public async deleteShare(id: string, deletingToken: string): Promise<ShareResp> {
+        return  await this.request<ShareResp>("/share", "delete", {
+            id,
+            deletingToken,
+        })
+    }
+
 
 
 }

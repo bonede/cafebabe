@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-import {ApiClient, CompileResult, CompilerInfo} from "../../api/ApiClient"
+import {ApiClient, CompileResult, CompilerInfo, CompilerOps, SrcFile} from "../../api/ApiClient"
 import {Editor} from './Editor'
 import {Button, ButtonGroup, Divider, Menu, MenuDivider, MenuItem} from "@blueprintjs/core"
 import {ItemRenderer} from "@blueprintjs/select";
@@ -11,6 +11,7 @@ export interface EditorWindowProps{
     selectLine?: number
     onCompile?: (result: CompileResult) => void
     onSelectLines?: (lines: number[]) => void
+    onShareReq?: (ops: CompilerOps, srcFiles: SrcFile[], hoursToLive?: number) => Promise<void>
 }
 const selectMenuItemRender: ItemRenderer<CompilerInfo> = (compilerInfo, { handleClick, handleFocus, modifiers, query }) => {
     if (!modifiers.matchesPredicate) {
@@ -34,6 +35,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const [content, setContent] = useState("")
     const [compilerInfo, setCompilerInfo] = useState(props.compilers[0])
     const [compiling, setCompiling] = useState(false)
+    const [sharing, setSharing] = useState(false)
     const [debug, setDebug] = useState(false)
     const [optimize, setOptimize] = useState(false)
     const handleEditorContentChange = (content: string) => {
@@ -42,7 +44,12 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const compile = async () => {
         setCompiling(true)
         try{
-            const result = await apiClient.compile(compilerInfo.name, "", [{
+            const ops: CompilerOps = {
+                compilerName: compilerInfo.name,
+                debug,
+                optimize
+            }
+            const result = await apiClient.compile(ops, [{
                 path: compilerInfo.fileName,
                 content: content || compilerInfo.example
             }])
@@ -60,12 +67,15 @@ export const EditorWindow = (props: EditorWindowProps) => {
             setCompiling(false)
         }
     }
+
     const handleCompileClick = async () => {
         return compile()
     }
+
     const isDefaultContent = () => props.compilers.findIndex((c, i) => {
         return !content || c.example == content
     }) > -1
+
     const handleCompilerChange = (compilerInfo: CompilerInfo) => {
         setCompilerInfo(compilerInfo)
         if(isDefaultContent()){
@@ -75,6 +85,26 @@ export const EditorWindow = (props: EditorWindowProps) => {
     useEffect(() => {
         compile()
     }, [])
+
+    const handleShareClick = async (hoursToLive?: number) => {
+        if (!props.onShareReq) {
+            return
+        }
+        try {
+            setSharing(true)
+            await props.onShareReq({
+                compilerName: compilerInfo.name,
+                debug,
+                optimize
+            }, [{
+                content: content,
+                path: compilerInfo.fileName
+            }], hoursToLive)
+            setSharing(false)
+        } catch (e) {
+            setSharing(false)
+        }
+    }
     const  titleBarActions=
             <div style={{display: "flex"}}>
                 <ButtonGroup>
@@ -121,18 +151,18 @@ export const EditorWindow = (props: EditorWindowProps) => {
                         position="bottom-left"
                         content={
                             <Menu>
-                                <MenuItem text="Perment Link..." />
+                                <MenuItem onClick={() => handleShareClick()} text="Permanent Link..." />
                                 <MenuDivider />
                                 <MenuItem text="Self Destruct Link">
-                                    <MenuItem text="1 Hour Link..." />
-                                    <MenuItem text="1 Day Link.." />
-                                    <MenuItem text="7 Days Link..." />
+                                    <MenuItem onClick={() => handleShareClick(1)}  text="1 Hour Link..." />
+                                    <MenuItem onClick={() => handleShareClick(24)} text="1 Day Link.." />
+                                    <MenuItem onClick={() => handleShareClick( 7 * 24)} text="7 Days Link..." />
                                 </MenuItem>
 
                             </Menu>
                         }
                     >
-                        <Button title={"Share"}  icon="link" />
+                        <Button loading={sharing} title={"Share"}  icon="link" />
                     </Popover2>
                     <Popover2
                         autoFocus={false}
@@ -144,6 +174,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
                                  <MenuItem text="Clear Local Cache..." />
                                  <MenuItem text="Privacy Policy..." />
                                  <MenuItem text="Cookie Policy..." />
+                                 <MenuItem text="Delete Share Link..." />
                             </Menu>
                         }
                     >

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.javaexplorer.model.SrcFile;
 import org.javaexplorer.model.vo.CompileOutput;
 import org.javaexplorer.model.vo.CompileReq;
+import org.javaexplorer.model.vo.CompilerOps;
 import org.javaexplorer.utils.JsonUtils;
 import org.javaexplorer.utils.ResourcesUtils;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ import java.util.Arrays;
 class CompilerServiceTest {
     @Autowired
     private CompilerService compilerService;
-    private String javaFileName = "Main.java";
 
     @Test
     void explore() throws IOException {
@@ -27,7 +27,11 @@ class CompilerServiceTest {
         srcFile.setPath("Main.java");
         srcFile.setContent(new String(javaFileBytes));
         CompileReq compileReq = new CompileReq();
-        compileReq.setCompilerName("openjdk8");
+        CompilerOps ops = new CompilerOps();
+        ops.setCompilerName("openjdk8");
+        ops.setDebug(true);
+        ops.setOptimize(true);
+        compileReq.setOps(ops);
         compileReq.setSrcFiles(Arrays.asList(srcFile));
         CompileOutput result = compilerService.compile(compileReq);
         log.info("result {}", JsonUtils.toJson(result));
