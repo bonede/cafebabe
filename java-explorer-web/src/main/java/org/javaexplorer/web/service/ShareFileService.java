@@ -49,7 +49,7 @@ public class ShareFileService {
     }
 
     public ShareResp share(@Valid CreateShareReq req, HttpServletRequest httpServletRequest){
-        rateLimitService.limit(httpServletRequest, "USE_OTP", appConfig.shareLimit, appConfig.getShareLimitWindow());
+        rateLimitService.limit(httpServletRequest, "Share", appConfig.shareLimit, appConfig.getShareLimitWindow());
         ShareFile shareFile = new ShareFile();
         shareFile.setId(genShareId());
         shareFile.setHoursToLive(req.getHoursToLive());

@@ -12,14 +12,18 @@ import java.time.Duration;
 @Service
 public class RateLimitService {
     @Autowired
-    private RedisTemplate<String, Integer> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
+    private String getKey(String op, HttpServletRequest httpServletRequest){
+        return "RateLimit" + ":" + op + ":" + IpUtils.getIp(httpServletRequest);
+    }
 
     public void limit(HttpServletRequest httpServletRequest, String op, Integer limit, Duration timeWindow){
-        String key = "RateLimit" + ":" + op + ":" + IpUtils.getIp(httpServletRequest);
-        redisTemplate.opsForValue().setIfAbsent(key, limit - 1, timeWindow);
-        Integer count = redisTemplate.opsForValue().get(key);
-        if(count != null && count < 0){
+        String key = getKey(op, httpServletRequest);
+        redisTemplate.opsForValue().setIfAbsent(key, String.valueOf(limit), timeWindow);
+        int amount = Integer.parseInt(redisTemplate.opsForValue().get(key));
+        if(amount < 1){
             throw ApiException.error("Too many request");
         }
+        redisTemplate.opsForValue().decrement(key);
     }
 }
