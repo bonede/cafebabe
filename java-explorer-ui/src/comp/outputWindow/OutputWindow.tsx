@@ -18,7 +18,7 @@ export interface OutputWindowProps{
 export const OutputWindow = (props: OutputWindowProps) => {
     const [autoscroll, setAutoscroll] = useState(false)
     const divRef = useRef(null as HTMLDivElement | null)
-    const msgRow = (msg: OutputMsg, i: number) => <div key={i + ''} className={`output-msg-${msg.type}`}>{msg.msg}</div>
+    const msgRow = (msg: OutputMsg, i: number) => <div key={i + ''} className={`output-msg output-msg-${msg.type}`}>{msg.msg}</div>
 
     useEffect(() => {
         const div = divRef.current

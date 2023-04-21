@@ -3,10 +3,10 @@
     background: #1e1e1e;
     overflow-y: auto;
     color: #dcdcdc;
-    padding-left: 10px;
     padding-bottom: 15px;
 }
 .output-window-content pre{
+    margin-top: 0;
     font-family: Consolas, "Courier New", monospace;
     font-weight: normal;
     font-size: 18px;
@@ -16,4 +16,8 @@
 }
 .output-window-content .output-msg-stderr{
     color: #f75464;
+}
+.output-msg{
+    padding: 3px 10px 3px 3px;
+    border-bottom: 1px solid #ffffff33;
 }
