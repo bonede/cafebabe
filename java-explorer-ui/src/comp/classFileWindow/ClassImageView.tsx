@@ -203,6 +203,43 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                         color: COLOR_REF,
                     })
                 }); break;
+            case "LocalVariableTable":
+                attributeInfo.local_variable_table.forEach( (l, i) => {
+                    rows.push({
+                        key: "Local variable " + i,
+                        value: "",
+                        color: COLOR_REF,
+                        more: {
+                            groupName: "Local variable",
+                            rows: [
+                                {
+                                    key: "Pc",
+                                    value: "" + l.start_pc,
+                                },
+                                {
+                                    key: "Length",
+                                    value: l.length + ""
+                                },
+                                {
+                                    key: "Name index",
+                                    value: "#" + l.name_index,
+                                    cpIndices: [l.name_index],
+                                    color: COLOR_REF
+                                },
+                                {
+                                    key: "Descriptor index",
+                                    value: "#" + l.descriptor_index,
+                                    cpIndices: [l.descriptor_index],
+                                    color: COLOR_REF
+                                },
+                                {
+                                    key: "Index",
+                                    value: l.index + "",
+                                }
+                            ]
+                        }
+                    })
+                }); break;
             case "Deprecated": break;
             default:
                 rows.push({key: "Value", value: "0x" + attributeInfo.value});

@@ -337,6 +337,7 @@ public class ClassImage {
                 case "InnerClasses": attribute_info = new InnerClasses_attribute(this, name_index, length); break;
                 case "NestHost": attribute_info = new NestHost_attribute(this, name_index, length); break;
                 case "NestMembers": attribute_info = new NestMembers_attribute(this, name_index, length); break;
+                case "LocalVariableTable": attribute_info = new LocalVariableTable_attribute(this, name_index, length); break;
                 // TODO add more attributes
                 default: attribute_info = new Unknown_attribute(this, name_index, length); break;
             }
@@ -1868,6 +1869,15 @@ public class ClassImage {
         private int inner_name_index;
         private List<class_access_flag> inner_class_access_flags;
     }
+
+    @Data
+    public static class local_variable_info{
+        private int start_pc;
+        private int length;
+        private int name_index;
+        private int descriptor_index;
+        private int index;
+    }
     /**
      * <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.6">ref</a>
      */
@@ -1944,6 +1954,36 @@ public class ClassImage {
             class_indices = new int[number_of_classes];
             for(int i = 0; i < number_of_classes; i++){
                 class_indices[i] = classImage.readu2();
+            }
+        }
+    }
+
+    public static class LocalVariableTable_attribute  extends attribute_info{
+        private int local_variable_table_length;
+        private local_variable_info[] local_variable_table;
+        public LocalVariableTable_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+        public int getLocal_variable_table_length() {
+            return local_variable_table_length;
+        }
+
+        public local_variable_info[] getLocal_variable_table(){
+            return local_variable_table;
+        }
+
+        @Override
+        public void read() {
+            local_variable_table_length = classImage.readu2();
+            local_variable_table = new local_variable_info[local_variable_table_length];
+            for(int i = 0; i < local_variable_table_length; i++){
+                local_variable_table[i] = new local_variable_info();
+                local_variable_table[i].start_pc = classImage.readu2();
+                local_variable_table[i].length = classImage.readu2();
+                local_variable_table[i].name_index = classImage.readu2();
+                local_variable_table[i].descriptor_index = classImage.readu2();
+                local_variable_table[i].index = classImage.readu2();
             }
         }
     }

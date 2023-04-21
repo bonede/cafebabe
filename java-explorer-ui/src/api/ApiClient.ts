@@ -151,7 +151,10 @@ export interface attribute_info{
     host_class_index: number
     // NestMembers
     class_indices: number[]
-    // unhanded, hex string
+    // LocalVariableTable
+    local_variable_table_length: number
+    local_variable_table: local_variable_info[]
+    // Unhanded, hex string
     value: string
 }
 type cp_info_tag = "CONSTANT_Class" |
@@ -252,6 +255,14 @@ export interface method_info{
     attributes: attribute_info[]
     maxLocals: number
     maxStack: number
+}
+
+export interface local_variable_info{
+    start_pc: number
+    length: number
+    name_index: number
+    descriptor_index: number
+    index: number
 }
 
 export interface ClassFile extends Base64File{
