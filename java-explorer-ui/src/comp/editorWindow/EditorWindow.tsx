@@ -1,37 +1,20 @@
 import React, {useEffect, useRef, useState} from "react"
-import {ApiClient, CompileResult, CompilerInfo, CompilerOps, PubShareFile, SrcFile} from "../../api/ApiClient"
+import {ApiClient, AppState, Compiler, CompileResult, CompilerOps, PubShareFile, SrcFile} from "../../api/ApiClient"
 import {Editor, EditorRef} from './Editor'
 import {Button, ButtonGroup, Divider, Menu, MenuDivider, MenuItem} from "@blueprintjs/core"
-import {ItemRenderer} from "@blueprintjs/select";
 import {AppWindow} from "../window/AppWindow";
 import {Popover2} from "@blueprintjs/popover2";
 import {getShareId, showToast} from "../Utils";
 
 export interface EditorWindowProps{
-    compilers: CompilerInfo[]
+    compilers: Compiler[]
     selectLine?: number
     onCompile?: (result: CompileResult) => void
     onSelectLines?: (lines: number[]) => void
     onShareReq?: (ops: CompilerOps, srcFiles: SrcFile[], hoursToLive?: number) => Promise<void>
     onDeleteReq?: () => void
 }
-const selectMenuItemRender: ItemRenderer<CompilerInfo> = (compilerInfo, { handleClick, handleFocus, modifiers, query }) => {
-    if (!modifiers.matchesPredicate) {
-        return null;
-    }
-    return (
-        <MenuItem
-            active={modifiers.active}
-            disabled={modifiers.disabled}
-            key={compilerInfo.lang + compilerInfo.name}
-            text={compilerInfo.name}
-            onClick={handleClick}
-            onFocus={handleFocus}
-            roleStructure="listoption"
-            label={`${compilerInfo.lang}`}
-        />
-    );
-};
+
 export const EditorWindow = (props: EditorWindowProps) => {
     const apiClient = ApiClient.getClient()
     const [compiler, setCompiler] = useState(props.compilers[0])
@@ -41,14 +24,24 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const [loading, setLoading] = useState(true)
     const [shareFile, setShareFile] = useState(undefined as PubShareFile | undefined)
     const [optimize, setOptimize] = useState(false)
+    const [appState, setAppState] = useState({} as AppState)
     const editorRef = useRef(null as EditorRef | null);
     const getEditorContent = (): string | undefined => {
         return editorRef.current?.getContent()
     }
+
     const setEditorContent = (content: string) => {
         editorRef.current?.setContent(content)
     }
+
     const initData = async () => {
+        const localAppState = apiClient.getAppState()
+        if(localAppState !== null){
+            appState.optimize = localAppState.optimize
+            appState.debug = localAppState.debug
+            appState.compiler = localAppState.compiler
+            appState.editorContent = localAppState.editorContent
+        }
         const shareId = getShareId(window.location.href)
         if(shareId){
             setLoading(true)
@@ -64,22 +57,32 @@ export const EditorWindow = (props: EditorWindowProps) => {
                 setLoading(false)
             }
         }else {
-            setCompiler(props.compilers[0])
+            if(appState.compiler !== undefined){
+                setCompiler(appState.compiler)
+            }
+            if(appState.debug !== undefined){
+                setDebug(appState.debug)
+            }
+            if(appState.optimize != undefined){
+                setOptimize(appState.optimize)
+            }
             setLoading(false)
         }
+        return appState
     }
 
 
 
-    const compile = async () => {
+    const compile = async (c?: Compiler) => {
         if(!getEditorContent()){
             showToast("Editor content is empty", "danger")
             return
         }
         setCompiling(true)
         try{
+            console.log(c)
             const ops: CompilerOps = {
-                compilerName: compiler.name,
+                compilerName: c ? c.name : compiler.name,
                 debug,
                 optimize
             }
@@ -106,11 +109,13 @@ export const EditorWindow = (props: EditorWindowProps) => {
         return compile()
     }
 
-    const handleCompilerChange = (compiler: CompilerInfo) => {
+    const handleCompilerChange = (compiler: Compiler) => {
         setCompiler(compiler)
+        appState.compiler = compiler
+        apiClient.saveAppState(appState)
     }
     useEffect(() => {
-        initData().then(() => setTimeout(() => compile(), 0.5 * 1000))
+        initData().then((appState) => setTimeout(() => compile(appState.compiler), 0.5 * 1000))
     }, [])
 
     const handleShareClick = async (hoursToLive?: number) => {
@@ -135,6 +140,18 @@ export const EditorWindow = (props: EditorWindowProps) => {
             setSharing(false)
         }
     }
+    const handleDebugClick = () => {
+        appState.debug = !debug
+        setDebug(appState.debug)
+        apiClient.saveAppState(appState)
+    }
+
+    const handleOptimizeClick = () => {
+        appState.optimize = !optimize
+        setOptimize(appState.optimize)
+        apiClient.saveAppState(appState)
+    }
+
     const  titleBarActions=
             <div style={{display: "flex"}}>
                 <ButtonGroup>
@@ -155,11 +172,11 @@ export const EditorWindow = (props: EditorWindowProps) => {
                                             }
                                             return acc
                                         }, [])
-                                        .map(lang => <MenuItem text={lang}>
+                                        .map(lang => <MenuItem key={lang} text={lang}>
                                             {
                                                 props.compilers
                                                     .filter(cl => cl.lang == lang)
-                                                    .map(cl => <MenuItem onClick={() => handleCompilerChange(cl)} text={cl.name} />)
+                                                    .map(cl => <MenuItem key={cl.name} onClick={() => handleCompilerChange(cl)} text={cl.name} />)
                                             }
                                         </MenuItem>)
                                 }
@@ -168,8 +185,8 @@ export const EditorWindow = (props: EditorWindowProps) => {
                     >
                         <Button minimal={true} text={compiler.name} rightIcon="double-caret-vertical" />
                     </Popover2>
-                    <Button minimal={true} active={debug} onClick={() => setDebug(!debug)} title={"Toggle Debug"}  icon="bug" />
-                    <Button minimal={true} active={optimize} onClick={() => setOptimize(!optimize)} title={"Toggle Optimization"}  icon="lightning" />
+                    <Button minimal={true} active={debug} onClick={handleDebugClick} title={"Toggle Debug"}  icon="bug" />
+                    <Button minimal={true} active={optimize} onClick={handleOptimizeClick} title={"Toggle Optimization"}  icon="lightning" />
                 </ButtonGroup>
 
                 <Divider />
@@ -203,7 +220,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
                                 <MenuItem text="File">
                                     <MenuItem text="Open Exmaples">
                                         {
-                                            props.compilers.map(c => <MenuItem text={c.name} onClick={() => setEditorContent(c.example)} />)
+                                            props.compilers.map(c => <MenuItem key={c.name} text={c.name} onClick={() => setEditorContent(c.example)} />)
                                         }
                                     </MenuItem>
                                 </MenuItem>
@@ -223,12 +240,24 @@ export const EditorWindow = (props: EditorWindowProps) => {
             </div>
 
     const getInitContent = () => {
+        console.log(appState)
         if(shareFile){
             return shareFile.srcFiles[0].content
+        }else if(appState.editorContent){
+            return appState.editorContent
         }else {
             return compiler.example
         }
     }
+
+
+    setInterval(() => {
+        if(getEditorContent()){
+            appState.editorContent = getEditorContent()
+            apiClient.saveAppState(appState)
+        }
+    }, 3000)
+
 
     return <AppWindow title={compiler.fileName} actions={titleBarActions}>
         {

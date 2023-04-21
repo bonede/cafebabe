@@ -1,4 +1,4 @@
-export interface CompilerInfo{
+export interface Compiler {
     name: string
     example: string
     lang: string
@@ -25,7 +25,7 @@ export interface JdkVersion{
 export interface AppInfo{
     instructionDocs: Record<string, InstructionDoc>
     versions: Record<string, JdkVersion>
-    compilers: CompilerInfo[]
+    compilers: Compiler[]
     specUrl: string
 }
 export interface SrcFile{
@@ -324,6 +324,13 @@ export interface inner_class_info{
     inner_class_access_flags: class_access_flag[]
 }
 
+export interface AppState{
+    debug?: boolean
+    optimize?: boolean
+    editorContent?: string
+    compiler?: Compiler
+}
+
 type HttpMethod = "get" | "post" | "put" | "delete"
 
 export class ApiClient{
@@ -392,6 +399,20 @@ export class ApiClient{
             url,
             deletingToken,
         })
+    }
+
+    static APP_STATE_KEY = "appState"
+
+    public saveAppState(appState: AppState){
+        localStorage.setItem(ApiClient.APP_STATE_KEY, JSON.stringify(appState))
+    }
+
+    public getAppState(): AppState | null{
+        const json = localStorage.getItem(ApiClient.APP_STATE_KEY)
+        if(json){
+            return JSON.parse(json)
+        }
+        return null
     }
 
 

@@ -74,7 +74,7 @@ export const JavaExplorerApp = () => {
      <div id="app" className="bp4-dark">
          <ShareRespDialog onClose={() => setShareResp(undefined)} shareResp={shareResp} />
          <DeleteShareDialog isOpen={deleting} onClose={() => setDeleting(false)} onDeleted={() => setDeleting(false)} />
-         <PanelGroup direction="horizontal">
+         <PanelGroup autoSaveId="cafebabe" direction="horizontal">
              <Panel defaultSize={45}>
                  <PanelGroup direction="vertical">
                      <Panel>
