@@ -29,7 +29,7 @@ export const JavaExplorerApp = () => {
         setOutputMsg([...outputMsgs, {
             type,
             msg
-        }])
+        },])
     }
 
     const handleCompile = (result: CompileResult) => {
@@ -71,7 +71,7 @@ export const JavaExplorerApp = () => {
     }
 
     return <AppInfoContext.Provider value={appInfo}>
-     <div id="app" className="mosaic-blueprint-theme bp4-dark mosaic">
+     <div id="app" className="bp4-dark">
          <ShareRespDialog onClose={() => setShareResp(undefined)} shareResp={shareResp} />
          <DeleteShareDialog isOpen={deleting} onClose={() => setDeleting(false)} onDeleted={() => setDeleting(false)} />
          <PanelGroup direction="horizontal">

@@ -22,10 +22,10 @@ compiler:
       optimize-args: -O
     - name: kotlin1.7.20
       lang: kotlin
-      cmd: kotlinc -d build {OPTS} {SRC_FILES}
+      cmd: kotlinc.bat -d build {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
-      debug-args: -g
-      optimize-args: -opt
+      debug-args: ""
+      optimize-args: ""
 
 app:
   url: http://locahost:8080

@@ -1,21 +1,19 @@
-.output-window-content, .output-window-content pre{
+.output-window-content{
     height: 100%;
     background: #1e1e1e;
-    overflow-y: scroll;
+    overflow-y: auto;
     color: #dcdcdc;
     padding-left: 10px;
-    display: flex;
-    flex-direction: column-reverse;
+    padding-bottom: 15px;
+}
+.output-window-content pre{
     font-family: Consolas, "Courier New", monospace;
     font-weight: normal;
     font-size: 18px;
     font-feature-settings: "liga" 0, "calt" 0;
     line-height: 24px;
-    letter-spacing: 0px;
+    letter-spacing: 0;
 }
 .output-window-content .output-msg-stderr{
     color: #f75464;
-}
-.output-window-content{
-    padding-bottom: 15px;
 }

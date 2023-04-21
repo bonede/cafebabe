@@ -331,8 +331,12 @@ public class ClassImage {
                 case "Exceptions": attribute_info = new Exceptions_attribute(this, name_index, length); break;
                 case "Deprecated": attribute_info = new Deprecated_attribute(this, name_index, length); break;
                 case "SourceFile": attribute_info = new SourceFile_attribute(this, name_index, length); break;
-                case "RuntimeVisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
-                case "RuntimeInvisibleAnnotations": attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
+                case "RuntimeVisibleAnnotations":
+                case "RuntimeInvisibleAnnotations":
+                    attribute_info = new RuntimeVisibleAnnotations_attribute(this, name_index, length); break;
+                case "RuntimeInvisibleParameterAnnotations":
+                case "RuntimeVisibleParameterAnnotations":
+                    attribute_info = new RuntimeVisibleParameterAnnotations_attribute(this, name_index, length); break;
                 case "StackMapTable": attribute_info = new StackMapTable_attribute(this, name_index, length); break;
                 case "InnerClasses": attribute_info = new InnerClasses_attribute(this, name_index, length); break;
                 case "NestHost": attribute_info = new NestHost_attribute(this, name_index, length); break;
@@ -1834,6 +1838,44 @@ public class ClassImage {
             }
         }
     }
+
+    /**
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.7.18">ref</a>
+     */
+    public static class RuntimeVisibleParameterAnnotations_attribute  extends attribute_info{
+        private int num_parameters;
+        private parameter_annotation[] parameter_annotations;
+        public RuntimeVisibleParameterAnnotations_attribute (ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+
+        public int getNum_parameters() {
+            return num_parameters;
+        }
+
+        public parameter_annotation[] getParameter_annotations() {
+            return parameter_annotations;
+        }
+
+        @Override
+        public void read() {
+            num_parameters = classImage.readu1();
+
+            parameter_annotations = new parameter_annotation[num_parameters];
+            for(int i = 0; i < num_parameters; i++){
+                parameter_annotation parameter_annotation = new parameter_annotation();
+                int num_annotations = classImage.readu2();
+                parameter_annotation.num_annotations = num_annotations;
+                parameter_annotation.annotations = new annotation[num_annotations];
+                for(int j = 0; j < num_annotations; j++){
+                    parameter_annotation.annotations[j] = readAnnotation(classImage);
+                }
+                parameter_annotations[i] = parameter_annotation;
+            }
+        }
+    }
+
     /**
      * <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.4">ref</a>
      */
@@ -1995,6 +2037,14 @@ public class ClassImage {
         private int num_element_value_pairs;
         private element_value_pair[] element_value_pairs;
     }
+
+    @Data
+    public static class parameter_annotation{
+        private int num_annotations;
+        private annotation[] annotations;
+    }
+
+
     @Data
     public static class element_value_pair{
         private int element_name_index;

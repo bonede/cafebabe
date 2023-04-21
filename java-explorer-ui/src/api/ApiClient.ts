@@ -77,6 +77,11 @@ export interface annotation{
     typeName: string
 }
 
+export interface parameter_annotation{
+    num_annotations: number
+    annotations: annotation[]
+}
+
 export interface element_value_pair{
     element_name_index: number
     elementName: string
@@ -139,9 +144,12 @@ export interface attribute_info{
     // LineNumberTable
     lineNumberTableLength: number
     lineNumberTable: line_number_table_item[]
-    // RuntimeVisibleAnnotations
+    // RuntimeVisibleAnnotations / RuntimeInvisibleAnnotations
     numAnnotations: number
     annotations: annotation[]
+    // RuntimeVisibleParameterAnnotations / RuntimeInvisibleParameterAnnotations
+    num_parameters: number
+    parameter_annotations: parameter_annotation[]
     // Stack frame map
     entries: stack_map_frame[]
     // Inner class

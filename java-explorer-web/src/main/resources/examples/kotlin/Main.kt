@@ -4,4 +4,5 @@
  */
 
 class Main {
+    fun foo(a: Int = 0, b: String = "") { }
 }

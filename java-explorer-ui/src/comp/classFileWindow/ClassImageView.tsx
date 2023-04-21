@@ -8,6 +8,7 @@ import {
     Instruction,
     JdkVersion,
     method_info,
+    parameter_annotation,
     stack_map_frame
 } from "../../api/ApiClient";
 import {ClassImageItemGroup, ClassImageItemGroupRow, ClassImageSection} from "./ClassImageSection";
@@ -103,6 +104,18 @@ export const ClassImageView = (props: ClassImageViewProps) => {
         }
     }
 
+    const parameterAnnotationItemRow = (annotation: parameter_annotation, i: number): ClassImageItemGroupRow => {
+
+        return {
+            key: "Parameter #" + i,
+            value: "",
+            more: {
+                groupName: "Annotations",
+                rows: annotation.annotations.map(a => annotationItemRow(a))
+            }
+        }
+    }
+
     const stackFrameItemRow = (stack_map_frame: stack_map_frame): ClassImageItemGroupRow => {
         let moreRows: ClassImageItemGroupRow[] = [
             {
@@ -172,6 +185,10 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 attributeInfo.annotations.forEach( a => rows.push(annotationItemRow(a))); break;
             case "RuntimeInvisibleAnnotations":
                 attributeInfo.annotations.forEach( a => rows.push(annotationItemRow(a))); break;
+            case "RuntimeVisibleParameterAnnotations":
+                attributeInfo.parameter_annotations.forEach( (a, i) => rows.push(parameterAnnotationItemRow(a, i))); break;
+            case "RuntimeInvisibleParameterAnnotations":
+                attributeInfo.parameter_annotations.forEach( (a, i) => rows.push(parameterAnnotationItemRow(a, i))); break;
             case "StackMapTable":
                 attributeInfo.entries && attributeInfo.entries.forEach( s => rows.push(stackFrameItemRow(s))); break;
             case "InnerClasses":
