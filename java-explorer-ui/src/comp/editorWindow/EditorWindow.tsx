@@ -37,9 +37,9 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const initData = async () => {
         const localAppState = apiClient.getAppState()
         if(localAppState !== null){
+            appState.compiler = localAppState.compiler
             appState.optimize = localAppState.optimize
             appState.debug = localAppState.debug
-            appState.compiler = localAppState.compiler
             appState.editorContent = localAppState.editorContent
         }
         const shareId = getShareId(window.location.href)
@@ -57,15 +57,6 @@ export const EditorWindow = (props: EditorWindowProps) => {
                 setLoading(false)
             }
         }else {
-            if(appState.compiler !== undefined){
-                setCompiler(appState.compiler)
-            }
-            if(appState.debug !== undefined){
-                setDebug(appState.debug)
-            }
-            if(appState.optimize != undefined){
-                setOptimize(appState.optimize)
-            }
             setLoading(false)
         }
         return appState
@@ -79,15 +70,16 @@ export const EditorWindow = (props: EditorWindowProps) => {
             return
         }
         setCompiling(true)
+        const com = c || compiler
         try{
-            console.log(c)
+            console.log("compiler", c)
             const ops: CompilerOps = {
-                compilerName: c ? c.name : compiler.name,
+                compilerName: com.name,
                 debug,
                 optimize
             }
             const result = await apiClient.compile(ops, [{
-                path: compiler.fileName,
+                path: com.fileName,
                 content: getEditorContent()!
             }])
             props.onCompile && props.onCompile(result)
@@ -240,7 +232,6 @@ export const EditorWindow = (props: EditorWindowProps) => {
             </div>
 
     const getInitContent = () => {
-        console.log(appState)
         if(shareFile){
             return shareFile.srcFiles[0].content
         }else if(appState.editorContent){

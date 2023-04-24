@@ -26,6 +26,18 @@ compiler:
       example: examples/kotlin/Main.kt
       debug-args: ""
       optimize-args: ""
+    - name: scala3.2.2
+      lang: scala
+      cmd: scalac.bat -d build {OPTS} {SRC_FILES}
+      example: examples/scala/Main.scala
+      debug-args: ""
+      optimize-args: ""
+    - name: groovy4.0.11
+      lang: groovy
+      cmd: groovyc.bat -d=build {OPTS} {SRC_FILES}
+      example: examples/groovy/Main.groovy
+      debug-args: ""
+      optimize-args: ""
 
 app:
   url: http://locahost:8080
