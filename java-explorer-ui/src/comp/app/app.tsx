@@ -1,6 +1,15 @@
 import './app.css'
 import React, {createContext, useEffect, useState} from "react";
-import {ApiClient, AppInfo, ClassFile, CompileResult, CompilerOps, ShareResp, SrcFile} from "../../api/ApiClient";
+import {
+    ApiClient,
+    AppInfo,
+    AppState,
+    ClassFile,
+    CompileResult,
+    CompilerOps,
+    ShareResp,
+    SrcFile
+} from "../../api/ApiClient";
 import {ClassFileWindow} from "../classFileWindow/ClassFileWindow";
 import {OutputMsg, OutputType, OutputWindow} from "../outputWindow/OutputWindow";
 import {EditorWindow} from "../editorWindow/EditorWindow";
@@ -21,15 +30,28 @@ export const JavaExplorerApp = () => {
     const [deleting, setDeleting] = useState(false)
     const [classFileName, setClassFileName] = useState(undefined as string | undefined)
     const [classFileLine, setClassFileLine] = useState(undefined as number | undefined)
+    const [appState, setAppState] = useState({} as AppState)
+    const [pinOutputMsgs, setPinOutputMsgs] = useState(true)
 
     useEffect(() => {
         apiClient.getAppInfo().then(a => setAppInfo(a))
+        const appData = apiClient.getAppState()
+        setAppState(appState)
+        if(appData?.pinOutputMsgs !== undefined){
+            setPinOutputMsgs(appData.pinOutputMsgs)
+        }
     }, [])
     const pushMsg = (type: OutputType, msg: string) => {
-        setOutputMsg([...outputMsgs, {
+        const ouputMsg = {
             type,
             msg
-        },])
+        }
+        if(pinOutputMsgs){
+            setOutputMsg([...outputMsgs, ouputMsg])
+        }else {
+            setOutputMsg([ouputMsg])
+        }
+
     }
 
     const handleCompile = (result: CompileResult) => {
@@ -82,7 +104,9 @@ export const JavaExplorerApp = () => {
                      </Panel>
                      <PanelResizeHandle><div style={{background: "#00000000", height: 5}}></div></PanelResizeHandle>
                      <Panel  defaultSize={30}>
-                         <OutputWindow outputMsgs={outputMsgs} onClearMsg={handleClearMsg} />
+                         <OutputWindow pinMsgs={pinOutputMsgs} onPinMsgsClick={() => {
+                             setPinOutputMsgs(!pinOutputMsgs)
+                         }} outputMsgs={outputMsgs} onClearMsg={handleClearMsg} />
                      </Panel>
                  </PanelGroup>
              </Panel>

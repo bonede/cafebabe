@@ -14,9 +14,11 @@ export interface OutputMsg{
 export interface OutputWindowProps{
     outputMsgs: OutputMsg[]
     onClearMsg?: () => void
+    onPinMsgsClick?: () => void
+    pinMsgs?: boolean
 }
 export const OutputWindow = (props: OutputWindowProps) => {
-    const [autoscroll, setAutoscroll] = useState(false)
+    const [autoscroll, setAutoscroll] = useState(true)
     const divRef = useRef(null as HTMLDivElement | null)
     const msgRow = (msg: OutputMsg, i: number) => <div key={i + ''} className={`output-msg output-msg-${msg.type}`}>{msg.msg}</div>
 
@@ -36,6 +38,7 @@ export const OutputWindow = (props: OutputWindowProps) => {
         setAutoscroll(bottom)
     }
     return <AppWindow title={"Output"} actions={<ButtonGroup minimal={true}>
+        <Button active={props.pinMsgs} onClick={props.onPinMsgsClick} icon="pin" />
         <Button onClick={props.onClearMsg} icon="trash" />
     </ButtonGroup>} >
 

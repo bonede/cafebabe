@@ -348,6 +348,7 @@ export interface inner_class_info{
 
 export interface AppState{
     debug?: boolean
+    pinOutputMsgs?: boolean
     optimize?: boolean
     editorContent?: string
     compiler?: Compiler
