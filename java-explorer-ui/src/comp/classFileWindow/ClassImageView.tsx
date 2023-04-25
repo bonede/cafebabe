@@ -420,7 +420,11 @@ export const ClassImageView = (props: ClassImageViewProps) => {
 
     }
     const selectedLine = (pc: number, lineNumberTable: attribute_info): number | undefined =>{
+        if(!lineNumberTable){
+            return
+        }
         const lineNumbers = lineNumberTable.lineNumberTable
+
         for(let i = 0; i < lineNumbers.length; i++){
             const line = lineNumbers[i]
             const endLine = lineNumbers[i + 1]
@@ -463,6 +467,9 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 rows: instructions.map((instruction) =>
                     {
                         const doc = appInfo?.instructionDocs[instruction.opMnemonic]
+                        if(instruction.opMnemonic == "invokevirtual"){
+                            console.log(instruction)
+                        }
                         return {
                             key: instruction.pc + " " + instruction.opMnemonic,
                             help: {
