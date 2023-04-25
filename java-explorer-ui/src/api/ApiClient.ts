@@ -117,6 +117,18 @@ export interface Instruction{
     /** calculated in client side */
     pc: number
 }
+
+export interface bootstrap_method{
+    bootstrap_method_ref: number;
+    num_bootstrap_arguments: number;
+    bootstrap_arguments: number[];
+}
+export interface parameter{
+    name: string
+    name_index: number
+    access_flags: parameter_access_flag[]
+}
+
 export interface attribute_info{
     attributeNameIndex: number
     attributeName: string
@@ -162,7 +174,13 @@ export interface attribute_info{
     // LocalVariableTable
     local_variable_table_length: number
     local_variable_table: local_variable_info[]
-    // Unhanded, hex string
+    // BootstrapMethods
+    num_bootstrap_methods: number
+    bootstrap_methods: bootstrap_method[]
+    // MethodParameters
+    parameters_count: number
+    parameters: parameter[]
+    // Unknown, hex string
     value: string
 }
 type cp_info_tag = "CONSTANT_Class" |
@@ -242,6 +260,10 @@ type method_access_flag = "ACC_PUBLIC" |
     "ACC_ABSTRACT" |
     "ACC_STRICT" |
     "ACC_SYNTHETIC"
+
+type parameter_access_flag = "ACC_FINAL" |
+    "ACC_SYNTHETIC" |
+    "ACC_MANDATED"
 
 export interface field_info{
     name: string

@@ -257,6 +257,48 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                         }
                     })
                 }); break;
+            case "BootstrapMethods":
+                attributeInfo.bootstrap_methods.forEach( (l, i) => {
+                    rows.push({
+                        key: "Bootstrap method " + i,
+                        value: "",
+                        more: {
+                            groupName: "Bootstrap method",
+                            rows: [
+                                {
+                                    key: "Method ref",
+                                    value: "#"+ l.bootstrap_method_ref,
+                                    color: COLOR_REF,
+                                    cpIndices: [l.bootstrap_method_ref]
+                                },
+                                ...l.bootstrap_arguments ? l.bootstrap_arguments.map((a, k) => {
+                                    return {
+                                        key: "Argument " + k,
+                                        value: "#" + a,
+                                        color: COLOR_REF,
+                                        cpIndices: [a]
+                                    }
+                                }) : []
+                            ]
+                        }
+                    })
+                }); break;
+            case "MethodParameters":
+                rows.push({
+                    key: "Method parameters",
+                    value: "",
+                    more: {
+                        groupName: "Method parameters",
+                        rows: attributeInfo.parameters.map( p => {
+                            return {
+                                key: p.name,
+                                value: p.access_flags.join("/"),
+                                cpIndices: [p.name_index]
+                            }
+
+                        })
+                    }
+                }); break;
             case "Deprecated": break;
             default:
                 rows.push({key: "Value", value: "0x" + attributeInfo.value});
@@ -311,9 +353,9 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 case "CONSTANT_Double": return cpInfo.value
                 case "CONSTANT_NameAndType" : return cpInfo.name + cpInfo.descriptor
                 case "CONSTANT_Utf8": return cpInfo.value
-                case "CONSTANT_MethodHandle" : return cpInfo.className
+                case "CONSTANT_MethodHandle" : return cpInfo.kind + " #" + cpInfo.referenceIndex
                 case "CONSTANT_MethodType": return cpInfo.className
-                case "CONSTANT_InvokeDynamic": return cpInfo.className
+                case "CONSTANT_InvokeDynamic": return "#" + cpInfo.nameAndTypeIndex + " " + cpInfo.bootstrapMethodAttrIndex
                 default: return ""
             }
         }
@@ -343,7 +385,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                         value: c == null ? "null" : getValue(c) + "",
                         color: color(c),
                         flash: cpIndices?.includes(i),
-                        cpIndices: c == null ? [] : [c.nameIndex, c.classIndex, c.descriptorIndex, c.stringIndex, c.descriptorIndex, c.nameAndTypeIndex]
+                        cpIndices: c == null ? [] : [c.nameIndex, c.classIndex, c.descriptorIndex, c.stringIndex, c.descriptorIndex, c.nameAndTypeIndex, c.referenceIndex]
                     }
                 })
             }

@@ -41,6 +41,9 @@ export const EditorWindow = (props: EditorWindowProps) => {
             appState.optimize = localAppState.optimize
             appState.debug = localAppState.debug
             appState.editorContent = localAppState.editorContent
+            if(localAppState.compiler){
+                setCompiler(localAppState.compiler!)
+            }
         }
         const shareId = getShareId(window.location.href)
         if(shareId){

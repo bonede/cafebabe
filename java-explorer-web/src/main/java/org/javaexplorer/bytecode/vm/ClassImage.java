@@ -342,6 +342,8 @@ public class ClassImage {
                 case "NestHost": attribute_info = new NestHost_attribute(this, name_index, length); break;
                 case "NestMembers": attribute_info = new NestMembers_attribute(this, name_index, length); break;
                 case "LocalVariableTable": attribute_info = new LocalVariableTable_attribute(this, name_index, length); break;
+                case "BootstrapMethods": attribute_info = new BootstrapMethods_attribute(this, name_index, length); break;
+                case "MethodParameters": attribute_info = new MethodParameters_attribute(this, name_index, length); break;
                 // TODO add more attributes
                 default: attribute_info = new Unknown_attribute(this, name_index, length); break;
             }
@@ -605,6 +607,26 @@ public class ClassImage {
         public static List<method_access_flag> fromBitField(short flags){
             List<method_access_flag> result = new ArrayList<>();
             for(method_access_flag flag : method_access_flag.values()){
+                if((flag.value & flags) > 0){
+                    result.add(flag);
+                }
+            }
+            return result;
+        }
+    }
+
+    public enum parameter_access_flag{
+        ACC_FINAL(0x0010),
+        ACC_SYNTHETIC(0x1000),
+        ACC_MANDATED(0x8000);
+        private final int value;
+        parameter_access_flag(int value) {
+            this.value = value;
+        }
+
+        public static List<parameter_access_flag> fromBitField(short flags){
+            List<parameter_access_flag> result = new ArrayList<>();
+            for(parameter_access_flag flag : parameter_access_flag.values()){
                 if((flag.value & flags) > 0){
                     result.add(flag);
                 }
@@ -1240,6 +1262,14 @@ public class ClassImage {
 
         private short bootstrap_method_attr_index;
         private short name_and_type_index;
+
+        public String getName(){
+            return classImage.getNameAndTypeInfo(name_and_type_index).getName();
+        }
+
+        public String getDescriptor(){
+            return classImage.getNameAndTypeInfo(name_and_type_index).getDescriptor();
+        }
 
         public short getBootstrapMethodAttrIndex() {
             return bootstrap_method_attr_index;
@@ -2030,6 +2060,78 @@ public class ClassImage {
         }
     }
 
+    public static class BootstrapMethods_attribute extends attribute_info{
+        private int num_bootstrap_methods;
+        private bootstrap_method[] bootstrap_methods;
+        public BootstrapMethods_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+        public int getNum_bootstrap_methods() {
+            return num_bootstrap_methods;
+        }
+
+        public bootstrap_method[] getBootstrap_methods(){
+            return bootstrap_methods;
+        }
+
+        @Override
+        public void read() {
+            num_bootstrap_methods = classImage.readu2();
+            bootstrap_methods = new bootstrap_method[num_bootstrap_methods];
+            for(int i = 0; i < num_bootstrap_methods; i++){
+                bootstrap_method bootstrapMethod = new bootstrap_method();
+                bootstrap_methods[i] = bootstrapMethod;
+                bootstrapMethod.bootstrap_method_ref = classImage.readu2();
+                bootstrapMethod.num_bootstrap_arguments = classImage.readu2();
+                bootstrapMethod.bootstrap_arguments = new int[bootstrapMethod.num_bootstrap_arguments];
+                for(int k = 0; k < bootstrapMethod.num_bootstrap_arguments; k++){
+                    bootstrapMethod.bootstrap_arguments[k] = classImage.readu2();
+                }
+
+            }
+        }
+    }
+
+    @Data
+    public static class parameter{
+        private String name;
+        private int name_index;
+        private short access_flags;
+        public List<parameter_access_flag> getAccess_flags(){
+           return parameter_access_flag.fromBitField(access_flags);
+        }
+    }
+
+    public static class MethodParameters_attribute extends attribute_info{
+        private int parameters_count;
+        private parameter[] parameters;
+        public int getParameters_count(){
+            return parameters_count;
+        }
+
+        public parameter[] getParameters(){
+            return parameters;
+        }
+
+        public MethodParameters_attribute(ClassImage classImage, int attribute_name_index, int attribute_length) {
+            super(classImage, attribute_name_index, attribute_length);
+        }
+
+        @Override
+        public void read() {
+            parameters_count = classImage.readu1();
+            parameters = new parameter[parameters_count];
+            for(int i = 0; i < parameters_count; i++){
+                parameter parameter = new parameter();
+                parameters[i] = parameter;
+                parameter.name_index = classImage.readu2();
+                parameter.access_flags = classImage.readShort();
+                parameter.name = classImage.getUtf8At(parameter.name_index);
+            }
+        }
+    }
+
     @Data
     public static class annotation{
         private int type_index;
@@ -2042,6 +2144,13 @@ public class ClassImage {
     public static class parameter_annotation{
         private int num_annotations;
         private annotation[] annotations;
+    }
+
+    @Data
+    public static class bootstrap_method{
+        private int bootstrap_method_ref;
+        private int num_bootstrap_arguments;
+        private int[] bootstrap_arguments;
     }
 
 
