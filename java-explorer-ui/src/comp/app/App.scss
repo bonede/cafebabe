@@ -1,3 +1,4 @@
+@import "@blueprintjs/core/lib/scss/variables.scss";
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -57,4 +58,7 @@ body{
   margin: 0;
   background: #252a31;
   padding: 5px;
+}
+#app .bp4-button.bp4-active.bp4-minimal.toggle{
+  background: $blue2;
 }

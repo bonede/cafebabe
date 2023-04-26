@@ -18,7 +18,8 @@
     "monaco-editor": "0.37.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-resizable-panels": "^0.0.40"
+    "react-resizable-panels": "^0.0.40",
+    "sass": "^1.62.0"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.5",

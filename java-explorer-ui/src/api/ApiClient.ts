@@ -290,8 +290,10 @@ export interface method_info{
 export interface local_variable_info{
     start_pc: number
     length: number
+    name: string
     name_index: number
     descriptor_index: number
+    descriptor: string
     index: number
 }
 

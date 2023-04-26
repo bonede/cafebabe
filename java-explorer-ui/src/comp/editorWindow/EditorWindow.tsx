@@ -18,6 +18,7 @@ export interface EditorWindowProps{
 export const EditorWindow = (props: EditorWindowProps) => {
     const apiClient = ApiClient.getClient()
     const [compiling, setCompiling] = useState(false)
+    const [uploading, setUploading] = useState(false)
     const [sharing, setSharing] = useState(false)
     const [loading, setLoading] = useState(true)
     const [shareFile, setShareFile] = useState(undefined as PubShareFile | undefined)
@@ -103,6 +104,10 @@ export const EditorWindow = (props: EditorWindowProps) => {
         return compile()
     }
 
+    const handleUploadClick = () => {
+
+    }
+
     const handleCompilerChange = (compiler: Compiler) => {
         editorState.compiler = compiler
         setEditorState({...editorState})
@@ -142,7 +147,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
     }
 
     const handleOptimizeClick = () => {
-        editorState.optimize = !editorState.debug
+        editorState.optimize = !editorState.optimize
         setEditorState({...editorState})
         apiClient.saveAppState(editorState)
     }
@@ -180,8 +185,8 @@ export const EditorWindow = (props: EditorWindowProps) => {
                     >
                         <Button minimal={true} text={editorState.compiler.name} rightIcon="double-caret-vertical" />
                     </Popover2>
-                    <Button minimal={true} active={editorState.debug} onClick={handleDebugClick} title={"Toggle compiler debug flag"}  icon="bug" />
-                    <Button minimal={true} active={editorState.optimize} onClick={handleOptimizeClick} title={"Toggle compiler optimize flag"}  icon="lightning" />
+                    <Button className={'toggle'} minimal={true} active={editorState.debug} onClick={handleDebugClick} title={"Toggle compiler debug flag"}  icon="bug" />
+                    <Button className={'toggle'} minimal={true} active={editorState.optimize} onClick={handleOptimizeClick} title={"Toggle compiler optimize flag"}  icon="lightning" />
                 </ButtonGroup>
 
                 <Divider />

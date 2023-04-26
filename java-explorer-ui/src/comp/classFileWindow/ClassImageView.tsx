@@ -238,14 +238,14 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                                     value: l.length + ""
                                 },
                                 {
-                                    key: "Name index",
-                                    value: "#" + l.name_index,
+                                    key: "Name",
+                                    value: l.name,
                                     cpIndices: [l.name_index],
                                     color: COLOR_REF
                                 },
                                 {
-                                    key: "Descriptor index",
-                                    value: "#" + l.descriptor_index,
+                                    key: "Descriptor",
+                                    value: l.descriptor,
                                     cpIndices: [l.descriptor_index],
                                     color: COLOR_REF
                                 },

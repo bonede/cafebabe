@@ -1946,6 +1946,8 @@ public class ClassImage {
     public static class local_variable_info{
         private int start_pc;
         private int length;
+        private String name;
+        private String descriptor;
         private int name_index;
         private int descriptor_index;
         private int index;
@@ -2054,7 +2056,9 @@ public class ClassImage {
                 local_variable_table[i].start_pc = classImage.readu2();
                 local_variable_table[i].length = classImage.readu2();
                 local_variable_table[i].name_index = classImage.readu2();
+                local_variable_table[i].name = classImage.getUtf8At(local_variable_table[i].name_index);
                 local_variable_table[i].descriptor_index = classImage.readu2();
+                local_variable_table[i].descriptor = classImage.getUtf8At(local_variable_table[i].descriptor_index);
                 local_variable_table[i].index = classImage.readu2();
             }
         }

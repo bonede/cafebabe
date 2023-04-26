@@ -38,7 +38,7 @@ export const OutputWindow = (props: OutputWindowProps) => {
         setAutoscroll(bottom)
     }
     return <AppWindow title={"Output"} actions={<ButtonGroup minimal={true}>
-        <Button title="Do not clear messages on recompiling" active={props.pinMsgs} onClick={props.onPinMsgsClick} icon="pin" />
+        <Button className={'toggle'} minimal={true} title="Do not clear messages on recompiling" active={props.pinMsgs} onClick={props.onPinMsgsClick} icon="pin" />
         <Button title="Clear all messages" onClick={props.onClearMsg} icon="trash" />
     </ButtonGroup>} >
 
