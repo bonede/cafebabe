@@ -17,14 +17,16 @@ export interface EditorWindowProps{
 
 export const EditorWindow = (props: EditorWindowProps) => {
     const apiClient = ApiClient.getClient()
-    const [compiler, setCompiler] = useState(props.compilers[0])
     const [compiling, setCompiling] = useState(false)
     const [sharing, setSharing] = useState(false)
-    const [debug, setDebug] = useState(false)
     const [loading, setLoading] = useState(true)
     const [shareFile, setShareFile] = useState(undefined as PubShareFile | undefined)
-    const [optimize, setOptimize] = useState(false)
-    const [appState, setAppState] = useState({} as EditorState)
+    const [editorState, setEditorState] = useState({
+        optimize: true,
+        debug: true,
+        compiler: props.compilers[0],
+        editorContent: ""
+    } as EditorState)
     const editorRef = useRef(null as EditorRef | null);
     const getEditorContent = (): string | undefined => {
         return editorRef.current?.getContent()
@@ -37,12 +39,12 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const initData = async () => {
         const localAppState = apiClient.getEditorState()
         if(localAppState !== null){
-            appState.compiler = localAppState.compiler
-            appState.optimize = localAppState.optimize
-            appState.debug = localAppState.debug
-            appState.editorContent = localAppState.editorContent
+            editorState.compiler = localAppState.compiler
+            editorState.optimize = localAppState.optimize
+            editorState.debug = localAppState.debug
+            editorState.editorContent = localAppState.editorContent
             if(localAppState.compiler){
-                setCompiler(localAppState.compiler!)
+                editorState.compiler = localAppState.compiler
             }
         }
         const shareId = getShareId(window.location.href)
@@ -51,9 +53,9 @@ export const EditorWindow = (props: EditorWindowProps) => {
             try {
                 const shareFile = await apiClient.getShare(shareId)
                 setShareFile(shareFile)
-                setCompiler(props.compilers.filter(c => c.name == shareFile.ops.compilerName)[0])
-                setDebug(shareFile.ops.debug)
-                setOptimize(shareFile.ops.optimize)
+                editorState.compiler = props.compilers.filter(c => c.name == shareFile.ops.compilerName)[0]
+                editorState.debug = shareFile.ops.debug
+                editorState.optimize = shareFile.ops.optimize
                 setLoading(false)
             }catch (e){
                 showToast(e + "", "danger")
@@ -62,10 +64,8 @@ export const EditorWindow = (props: EditorWindowProps) => {
         }else {
             setLoading(false)
         }
-        return appState
+        return editorState
     }
-
-
 
     const compile = async (c?: Compiler) => {
         if(!getEditorContent()){
@@ -73,13 +73,12 @@ export const EditorWindow = (props: EditorWindowProps) => {
             return
         }
         setCompiling(true)
-        const com = c || compiler
+        const com = c || editorState.compiler
         try{
-            console.log("compiler", c)
             const ops: CompilerOps = {
                 compilerName: com.name,
-                debug,
-                optimize
+                debug: editorState.debug,
+                optimize: editorState.optimize
             }
             const result = await apiClient.compile(ops, [{
                 path: com.fileName,
@@ -105,9 +104,9 @@ export const EditorWindow = (props: EditorWindowProps) => {
     }
 
     const handleCompilerChange = (compiler: Compiler) => {
-        setCompiler(compiler)
-        appState.compiler = compiler
-        apiClient.saveAppState(appState)
+        editorState.compiler = compiler
+        setEditorState({...editorState})
+        apiClient.saveAppState(editorState)
     }
     useEffect(() => {
         initData().then((appState) => setTimeout(() => compile(appState.compiler), 0.5 * 1000))
@@ -123,28 +122,29 @@ export const EditorWindow = (props: EditorWindowProps) => {
         try {
             setSharing(true)
             await props.onShareReq({
-                compilerName: compiler.name,
-                debug,
-                optimize
+                compilerName: editorState.compiler.name,
+                debug: editorState.debug,
+                optimize: editorState.optimize
             }, [{
                 content: getEditorContent()!,
-                path: compiler.fileName
+                path: editorState.compiler.fileName
             }], hoursToLive)
             setSharing(false)
         } catch (e) {
             setSharing(false)
         }
     }
+
     const handleDebugClick = () => {
-        appState.debug = !debug
-        setDebug(appState.debug)
-        apiClient.saveAppState(appState)
+        editorState.debug = !editorState.debug
+        setEditorState({...editorState})
+        apiClient.saveAppState(editorState)
     }
 
     const handleOptimizeClick = () => {
-        appState.optimize = !optimize
-        setOptimize(appState.optimize)
-        apiClient.saveAppState(appState)
+        editorState.optimize = !editorState.debug
+        setEditorState({...editorState})
+        apiClient.saveAppState(editorState)
     }
 
     const  titleBarActions=
@@ -178,10 +178,10 @@ export const EditorWindow = (props: EditorWindowProps) => {
                             </Menu>
                         }
                     >
-                        <Button minimal={true} text={compiler.name} rightIcon="double-caret-vertical" />
+                        <Button minimal={true} text={editorState.compiler.name} rightIcon="double-caret-vertical" />
                     </Popover2>
-                    <Button minimal={true} active={debug} onClick={handleDebugClick} title={"Toggle Debug"}  icon="bug" />
-                    <Button minimal={true} active={optimize} onClick={handleOptimizeClick} title={"Toggle Optimization"}  icon="lightning" />
+                    <Button minimal={true} active={editorState.debug} onClick={handleDebugClick} title={"Toggle compiler debug flag"}  icon="bug" />
+                    <Button minimal={true} active={editorState.optimize} onClick={handleOptimizeClick} title={"Toggle compiler optimize flag"}  icon="lightning" />
                 </ButtonGroup>
 
                 <Divider />
@@ -237,29 +237,29 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const getInitContent = () => {
         if(shareFile){
             return shareFile.srcFiles[0].content
-        }else if(appState.editorContent){
-            return appState.editorContent
+        }else if(editorState.editorContent){
+            return editorState.editorContent
         }else {
-            return compiler.example
+            return editorState.compiler.example
         }
     }
 
 
     setInterval(() => {
         if(getEditorContent()){
-            appState.editorContent = getEditorContent()
-            apiClient.saveAppState(appState)
+            editorState.editorContent = getEditorContent() || ""
+            apiClient.saveAppState(editorState)
         }
     }, 3000)
 
 
-    return <AppWindow title={compiler.fileName} actions={titleBarActions}>
+    return <AppWindow title={editorState.compiler.fileName} actions={titleBarActions}>
         {
             loading ? <div></div> : <div className="editor-window-content"><Editor
                 ref={editorRef}
                 selectLine={props.selectLine}
                 onSelectLines={props.onSelectLines}
-                lang={compiler.lang}
+                lang={editorState.compiler.lang}
                 initContent={getInitContent()}
             /></div>
         }

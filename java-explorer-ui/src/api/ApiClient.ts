@@ -347,11 +347,10 @@ export interface inner_class_info{
 }
 
 export interface EditorState {
-    debug?: boolean
-    pinOutputMsgs?: boolean
-    optimize?: boolean
-    editorContent?: string
-    compiler?: Compiler
+    debug: boolean
+    optimize: boolean
+    editorContent: string
+    compiler: Compiler
 }
 
 export interface OutputState {

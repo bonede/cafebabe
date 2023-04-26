@@ -13,7 +13,7 @@ import {
 } from "../../api/ApiClient";
 import {ClassImageItemGroup, ClassImageItemGroupRow, ClassImageSection} from "./ClassImageSection";
 import React, {ReactElement, ReactNode, useContext, useState} from "react";
-import {AppInfoContext} from "../app/app";
+import {AppInfoContext} from "../app/App";
 
 
 export interface ClassImageViewProps{

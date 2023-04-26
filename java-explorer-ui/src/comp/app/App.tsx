@@ -1,4 +1,4 @@
-import './app.css'
+import './App.css'
 import React, {createContext, useEffect, useState} from "react";
 import {
     ApiClient,
@@ -44,16 +44,22 @@ export const JavaExplorerApp = () => {
 
 
     const pushMsg = (type: OutputType, msg: string) => {
-        const ouputMsg = {
+        const outputMsg = {
             type,
             msg
         }
         if(outputState.pinMsg){
-            setOutputMsg([...outputMsgs, ouputMsg])
+            setOutputMsg([...outputMsgs, outputMsg])
         }else {
-            setOutputMsg([ouputMsg])
+            setOutputMsg([outputMsg])
         }
 
+    }
+
+    const clearMsgs = () => {
+        if(!outputState.pinMsg){
+            setOutputMsg([])
+        }
     }
 
     const handlePinMsgClick  = () => {
@@ -73,6 +79,9 @@ export const JavaExplorerApp = () => {
         }
         if(result.stderr){
             pushMsg("stderr", result.stderr)
+        }
+        if(!result.stdout && !result.stderr){
+            clearMsgs()
         }
     }
 

@@ -1,5 +1,5 @@
 import './index.css'
-import {JavaExplorerApp} from "./comp/app/app"
+import {JavaExplorerApp} from "./comp/app/App"
 
 import * as ReactDOM from 'react-dom/client'
 import "normalize.css"
