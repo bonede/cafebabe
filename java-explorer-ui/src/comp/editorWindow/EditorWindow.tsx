@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react"
-import {ApiClient, AppState, Compiler, CompileResult, CompilerOps, PubShareFile, SrcFile} from "../../api/ApiClient"
+import {ApiClient, Compiler, CompileResult, CompilerOps, EditorState, PubShareFile, SrcFile} from "../../api/ApiClient"
 import {Editor, EditorRef} from './Editor'
 import {Button, ButtonGroup, Divider, Menu, MenuDivider, MenuItem} from "@blueprintjs/core"
 import {AppWindow} from "../window/AppWindow";
@@ -24,7 +24,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
     const [loading, setLoading] = useState(true)
     const [shareFile, setShareFile] = useState(undefined as PubShareFile | undefined)
     const [optimize, setOptimize] = useState(false)
-    const [appState, setAppState] = useState({} as AppState)
+    const [appState, setAppState] = useState({} as EditorState)
     const editorRef = useRef(null as EditorRef | null);
     const getEditorContent = (): string | undefined => {
         return editorRef.current?.getContent()
@@ -35,7 +35,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
     }
 
     const initData = async () => {
-        const localAppState = apiClient.getAppState()
+        const localAppState = apiClient.getEditorState()
         if(localAppState !== null){
             appState.compiler = localAppState.compiler
             appState.optimize = localAppState.optimize

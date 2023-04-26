@@ -346,12 +346,16 @@ export interface inner_class_info{
     inner_class_access_flags: class_access_flag[]
 }
 
-export interface AppState{
+export interface EditorState {
     debug?: boolean
     pinOutputMsgs?: boolean
     optimize?: boolean
     editorContent?: string
     compiler?: Compiler
+}
+
+export interface OutputState {
+    pinMsg?: boolean
 }
 
 type HttpMethod = "get" | "post" | "put" | "delete"
@@ -424,14 +428,27 @@ export class ApiClient{
         })
     }
 
-    static APP_STATE_KEY = "appState"
+    static EDITOR_STATE_KEY = "editorState"
+    static OUTPUT_STATE_KEY = "outputState"
 
-    public saveAppState(appState: AppState){
-        localStorage.setItem(ApiClient.APP_STATE_KEY, JSON.stringify(appState))
+    public saveAppState(appState: EditorState){
+        localStorage.setItem(ApiClient.EDITOR_STATE_KEY, JSON.stringify(appState))
     }
 
-    public getAppState(): AppState | null{
-        const json = localStorage.getItem(ApiClient.APP_STATE_KEY)
+    public getEditorState(): EditorState | null{
+        const json = localStorage.getItem(ApiClient.EDITOR_STATE_KEY)
+        if(json){
+            return JSON.parse(json)
+        }
+        return null
+    }
+
+    public saveOutputState(outputState: OutputState){
+        localStorage.setItem(ApiClient.OUTPUT_STATE_KEY, JSON.stringify(outputState))
+    }
+
+    public getOutputState(): OutputState | null{
+        const json = localStorage.getItem(ApiClient.OUTPUT_STATE_KEY)
         if(json){
             return JSON.parse(json)
         }
