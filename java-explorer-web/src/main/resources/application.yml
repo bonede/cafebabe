@@ -1,11 +1,19 @@
 logging:
   level:
     root: info
-compiler:
+app:
+  url: http://locahost:8080
+  spec-url: https://docs.oracle.com/javase/specs/jvms/se{version}/html/
+  share-live-hours:
+    - 1
+    - 24
+    - 168
+  share-limit: 24
+  share-limit-window: 1d
   working-dir: /data/java-explorer
   build-dir: build
-  use-docker: false
-  docker-cmd: docker run --rm -v /data:/data {IMG}
+  using-docker: false
+  docker-cmd: docker run --rm -v /data:/data -w {WD} {IMG} {CMD}
   compilers:
     - name: openjdk8
       img: amazoncorretto/8
@@ -24,34 +32,24 @@ compiler:
     - name: kotlin1.7.20
       img: amazoncorretto/11
       lang: kotlin
-      cmd: kotlinc.bat -d build {OPTS} {SRC_FILES}
+      cmd: kotlinc -d build {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
       debug-args: ""
       optimize-args: ""
     - name: scala3.2.2
       img: amazoncorretto/11
       lang: scala
-      cmd: scalac.bat -d build {OPTS} {SRC_FILES}
+      cmd: scalac -d build {OPTS} {SRC_FILES}
       example: examples/scala/Main.scala
       debug-args: ""
       optimize-args: ""
     - name: groovy4.0.11
       lang: groovy
       img: 4.0.11-jdk11
-      cmd: groovyc.bat -d=build {OPTS} {SRC_FILES}
+      cmd: groovyc -d=build {OPTS} {SRC_FILES}
       example: examples/groovy/Main.groovy
       debug-args: ""
       optimize-args: ""
-
-app:
-  url: http://locahost:8080
-  spec-url: https://docs.oracle.com/javase/specs/jvms/se{version}/html/
-  share-live-hours:
-    - 1
-    - 24
-    - 168
-  share-limit: 24
-  share-limit-window: 1d
   versions:
     45.0:
       short-jdk-version: 0

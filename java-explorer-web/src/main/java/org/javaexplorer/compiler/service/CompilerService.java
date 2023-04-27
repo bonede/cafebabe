@@ -1,6 +1,5 @@
 package org.javaexplorer.compiler.service;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -12,9 +11,8 @@ import org.javaexplorer.model.SrcFile;
 import org.javaexplorer.model.vo.CompileOutput;
 import org.javaexplorer.model.vo.CompileReq;
 import org.javaexplorer.utils.CommandUtils;
+import org.javaexplorer.web.service.AppService.AppConfig.CompilerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -26,26 +24,27 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.javaexplorer.web.service.AppService.AppConfig;
 
 @Service
 @Slf4j
 public class CompilerService {
     @Autowired
-    private CompilerConfig compilerConfig;
+    private AppConfig appConfig;
 
     @PostMapping
     public void init() throws IOException {
-        Path workingDir = Paths.get(compilerConfig.getWorkingDir());
+        Path workingDir = Paths.get(appConfig.getWorkingDir());
         if(Files.exists(workingDir)){
             Files.createDirectories(workingDir);
         }
     }
 
     private Path genWorkingDir(){
-        return Paths.get(compilerConfig.getWorkingDir(), RandomStringUtils.randomAlphanumeric(6));
+        return Paths.get(appConfig.getWorkingDir(), RandomStringUtils.randomAlphanumeric(6));
     }
 
     /**
@@ -54,7 +53,7 @@ public class CompilerService {
      * @return 工作文件夹
      * @throws IOException
      */
-    private Path saveFile(List<SrcFile> srcFiles) throws IOException {
+    private Path saveSrcFiles(List<SrcFile> srcFiles) throws IOException {
         Path workingDir = genWorkingDir();
         Files.createDirectories(workingDir);
         srcFiles.forEach(javaFile -> {
@@ -66,7 +65,7 @@ public class CompilerService {
             }
 
         });
-        Files.createDirectories(workingDir.resolve(compilerConfig.getBuildDir()));
+        Files.createDirectories(workingDir.resolve(appConfig.getBuildDir()));
         return workingDir;
     }
 
@@ -99,7 +98,8 @@ public class CompilerService {
         }
     }
 
-    private String formatCmd(String cmd,
+    private String formatCmd(
+            CompilerConfig compilerConfig,
                              String workingDir,
                              String compilerOptions,
                              List<SrcFile> srcFiles
@@ -107,21 +107,28 @@ public class CompilerService {
         String srcFileParameter = srcFiles.stream()
                 .map(SrcFile::getPath)
                 .collect(Collectors.joining(" "));
-        return cmd.replace("{WORKING_DIR}", workingDir)
+        String cmd = compilerConfig.getCmd()
                 .replace("{OPTS}", compilerOptions == null ? "" : compilerOptions)
                 .replace("{SRC_FILES}", srcFileParameter);
+        if(!appConfig.isUsingDocker()){
+            return cmd;
+        }
+        return appConfig.getDockerCmd()
+                .replace("{WD}", workingDir)
+                .replace("{IMG} ", compilerConfig.getImg())
+                .replace("{CMD}", cmd);
     }
 
 
     public CompileOutput compile(CompileReq compileReq) throws IOException {
-        CompilerConfig.Compiler compiler = compilerConfig.getCompilers().stream()
+        CompilerConfig compiler = appConfig.getCompilers().stream()
                 .filter(c -> c.getName().equals(compileReq.getOps().getCompilerName()))
                 .findFirst()
                 .orElseThrow(() -> ApiException.error("Invalid compiler"));
 
-        Path workingDir = saveFile(compileReq.getSrcFiles());
+        Path workingDir = saveSrcFiles(compileReq.getSrcFiles());
         String cmdArgs = compiler.getDebugAndOptimizeArgs(compileReq.getOps().getDebug(), compileReq.getOps().getOptimize());
-        String cmd = formatCmd(compiler.getCmd(), workingDir.toString(), cmdArgs, compileReq.getSrcFiles());
+        String cmd = formatCmd(compiler, workingDir.toString(), cmdArgs, compileReq.getSrcFiles());
         CommandUtils.CommandResult result = CommandUtils.run(workingDir.toFile(), cmd.split(" "));
         if(result.getCode() == 0){
             List<ClassFile> classFiles = collectClassFile(workingDir);
@@ -145,35 +152,6 @@ public class CompilerService {
 
     }
 
-    @ConfigurationProperties("compiler")
-    @Component
-    @Data
-    public static class CompilerConfig {
-        private String workingDir;
-        private String buildDir;
-        private List<Compiler> compilers;
-        private boolean useDocker;
-        private String dockerCmd;
-        @Data
-        public static class Compiler{
-            private String name;
-            private String img;
-            private String lang;
-            private String cmd;
-            private String example;
-            private String debugArgs;
-            private String optimizeArgs;
 
-            public String getDebugAndOptimizeArgs(boolean debug, boolean optimize){
-                StringJoiner stringJoiner = new StringJoiner(" ");
-                if(debug){
-                    stringJoiner.add(debugArgs);
-                }
-                if(optimize){
-                    stringJoiner.add(optimizeArgs);
-                }
-                return stringJoiner.toString();
-            }
-        }
-    }
+
 }

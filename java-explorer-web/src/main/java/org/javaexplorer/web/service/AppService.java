@@ -6,7 +6,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.hibernate.validator.constraints.URL;
 import org.javaexplorer.bytecode.op.InstructionDoc;
 import org.javaexplorer.bytecode.op.JdkVersion;
-import org.javaexplorer.compiler.service.CompilerService;
 import org.javaexplorer.model.vo.AppInfo;
 import org.javaexplorer.model.vo.CompilerInfo;
 import org.javaexplorer.utils.ResourcesUtils;
@@ -23,6 +22,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,15 +31,13 @@ public class AppService {
     @Autowired
     private AppConfig appConfig;
 
-    @Autowired
-    private CompilerService.CompilerConfig compilerConfig;
 
     public AppInfo getAppInfo(){
         if(appInfo != null){
             return appInfo;
         }
         appInfo = new AppInfo();
-        appInfo.setCompilers(compilerConfig.getCompilers().stream().map( c -> {
+        appInfo.setCompilers(appConfig.getCompilers().stream().map( c -> {
             CompilerInfo compilerInfo = new CompilerInfo();
             compilerInfo.setName(c.getName());
             compilerInfo.setLang(c.getLang());
@@ -82,5 +80,32 @@ public class AppService {
         Integer shareLimit;
         @NotNull
         Duration shareLimitWindow;
+        private String workingDir;
+        private String buildDir;
+        private boolean usingDocker;
+        private String dockerCmd;
+        public List<CompilerConfig> compilers;
+        @Data
+        public static class CompilerConfig {
+
+            private String name;
+            private String img;
+            private String lang;
+            private String cmd;
+            private String example;
+            private String debugArgs;
+            private String optimizeArgs;
+
+            public String getDebugAndOptimizeArgs(boolean debug, boolean optimize){
+                StringJoiner stringJoiner = new StringJoiner(" ");
+                if(debug){
+                    stringJoiner.add(debugArgs);
+                }
+                if(optimize){
+                    stringJoiner.add(optimizeArgs);
+                }
+                return stringJoiner.toString();
+            }
+        }
     }
 }
