@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -29,6 +28,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -59,7 +59,7 @@ public class CompilerService {
         Files.createDirectories(workingDir);
         srcFiles.forEach(javaFile -> {
             Path filePath = workingDir.resolve(javaFile.getPath());
-            try(OutputStream outputStream = new FileOutputStream(filePath.toFile());) {
+            try(OutputStream outputStream = Files.newOutputStream(filePath)) {
                 IOUtils.write(javaFile.getContent(), outputStream, "utf-8");
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -70,31 +70,32 @@ public class CompilerService {
         return workingDir;
     }
 
-    public List<ClassFile> collectClassFile(Path workingDir) throws IOException {
-        return Files.walk(workingDir)
-                .filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".class"))
-                .map(p -> {
-                    try {
-                        return toClassFile(workingDir, p);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .sorted(Comparator.comparing(ClassFile::getPath).reversed())
-                .collect(Collectors.toList());
+    public boolean isClassFile(Path path){
+        return path.getFileName().endsWith(".class") && path.toFile().isFile();
     }
 
-    private ClassFile toClassFile(Path workingDir, Path classFilePath) throws IOException {
+    public List<ClassFile> collectClassFile(Path workingDir) throws IOException {
+        try (Stream<Path> stream = Files.walk(workingDir)){
+            return stream.filter(this::isClassFile)
+                    .map(this::toClassFile)
+                    .sorted(Comparator.comparing(ClassFile::getPath).reversed())
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private ClassFile toClassFile(Path classFilePath)  {
         try(
             FileInputStream fileInputStream = new FileInputStream(classFilePath.toFile());
         ) {
             ClassFile classFile = new ClassFile();
             classFile.setContent(IOUtils.toByteArray(fileInputStream));
-            Path pathWithBuildDir = workingDir.relativize(classFilePath);
+            Path pathWithBuildDir = genWorkingDir().relativize(classFilePath);
             Path pathWithoutBuildDir = pathWithBuildDir.subpath(1, pathWithBuildDir.getNameCount());
             classFile.setPath(pathWithoutBuildDir.toString());
             classFile.setClassImage(new ClassImage(classFile.getContent()));
             return classFile;
+        }catch (IOException e){
+            throw new RuntimeException(e);
         }
     }
 
@@ -151,6 +152,7 @@ public class CompilerService {
         private String workingDir;
         private String buildDir;
         private List<Compiler> compilers;
+        private boolean useDocker;
         @Data
         public static class Compiler{
             private String name;

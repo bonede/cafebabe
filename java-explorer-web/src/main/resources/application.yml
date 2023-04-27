@@ -5,7 +5,7 @@ compiler:
   working-dir: /data/java-explorer
   build-dir: build
   compilers:
-    - name: openjdk8
+    - name: openjdk8df -k
       lang: java
       cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
