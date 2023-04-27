@@ -1,4 +1,4 @@
-rootProject.name = 'java-explorer'
+rootProject.name = 'cafebabe'
 include 'java-explorer-web'
 include 'java-explorer-ui'
 
