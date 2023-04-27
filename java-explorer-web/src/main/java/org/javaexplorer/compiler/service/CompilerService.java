@@ -129,6 +129,7 @@ public class CompilerService {
         Path workingDir = saveSrcFiles(compileReq.getSrcFiles());
         String cmdArgs = compiler.getDebugAndOptimizeArgs(compileReq.getOps().getDebug(), compileReq.getOps().getOptimize());
         String cmd = formatCmd(compiler, workingDir.toString(), cmdArgs, compileReq.getSrcFiles());
+        log.info("CMD {}", cmd);
         CommandUtils.CommandResult result = CommandUtils.run(workingDir.toFile(), cmd.split(" "));
         if(result.getCode() == 0){
             List<ClassFile> classFiles = collectClassFile(workingDir);

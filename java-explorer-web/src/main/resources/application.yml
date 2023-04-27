@@ -16,28 +16,28 @@ app:
   docker-cmd: docker run --rm -v /data:/data -w {WD} {IMG} {CMD}
   compilers:
     - name: openjdk8
-      img: amazoncorretto/8
+      img: amazoncorretto:8
       lang: java
       cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
       debug-args: -g
       optimize-args: -O
     - name: openjdk11
-      img: amazoncorretto/11
+      img: amazoncorretto:11
       lang: java
       cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
       debug-args: -g
       optimize-args: -O
     - name: kotlin1.7.20
-      img: amazoncorretto/11
+      img: amazoncorretto:11
       lang: kotlin
       cmd: kotlinc -d build {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
       debug-args: ""
       optimize-args: ""
     - name: scala3.2.2
-      img: amazoncorretto/11
+      img: amazoncorretto:11
       lang: scala
       cmd: scalac -d build {OPTS} {SRC_FILES}
       example: examples/scala/Main.scala
@@ -45,7 +45,7 @@ app:
       optimize-args: ""
     - name: groovy4.0.11
       lang: groovy
-      img: 4.0.11-jdk11
+      img: groovy:4.0.11-jdk11
       cmd: groovyc -d=build {OPTS} {SRC_FILES}
       example: examples/groovy/Main.groovy
       debug-args: ""
