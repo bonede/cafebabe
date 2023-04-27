@@ -71,7 +71,7 @@ public class CompilerService {
     }
 
     public boolean isClassFile(Path path){
-        return path.getFileName().endsWith(".class") && path.toFile().isFile();
+        return path.getFileName().toString().endsWith(".class") && path.toFile().isFile();
     }
 
     public List<ClassFile> collectClassFile(Path workingDir) throws IOException {
@@ -153,9 +153,11 @@ public class CompilerService {
         private String buildDir;
         private List<Compiler> compilers;
         private boolean useDocker;
+        private String dockerCmd;
         @Data
         public static class Compiler{
             private String name;
+            private String img;
             private String lang;
             private String cmd;
             private String example;
