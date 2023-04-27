@@ -115,7 +115,7 @@ public class CompilerService {
         }
         return appConfig.getDockerCmd()
                 .replace("{WD}", workingDir)
-                .replace("{IMG} ", compilerConfig.getImg())
+                .replace("{IMG}", compilerConfig.getImg())
                 .replace("{CMD}", cmd);
     }
 

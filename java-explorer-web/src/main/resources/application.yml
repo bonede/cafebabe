@@ -12,20 +12,20 @@ app:
   share-limit-window: 1d
   working-dir: /data/java-explorer
   build-dir: build
-  using-docker: false
+  using-docker: true
   docker-cmd: docker run --rm -v /data:/data -w {WD} {IMG} {CMD}
   compilers:
     - name: openjdk8
       img: amazoncorretto:8
       lang: java
-      cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
+      cmd: javac -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
       debug-args: -g
       optimize-args: -O
     - name: openjdk11
       img: amazoncorretto:11
       lang: java
-      cmd: javac "-J-Duser.language=en" -d build {OPTS} {SRC_FILES}
+      cmd: javac -d build {OPTS} {SRC_FILES}
       example: examples/java/Main.java
       debug-args: -g
       optimize-args: -O
