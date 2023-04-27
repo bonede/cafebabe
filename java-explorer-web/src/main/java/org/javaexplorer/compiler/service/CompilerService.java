@@ -90,7 +90,7 @@ public class CompilerService {
             ClassFile classFile = new ClassFile();
             classFile.setContent(IOUtils.toByteArray(fileInputStream));
             Path pathWithBuildDir = genWorkingDir().relativize(classFilePath);
-            Path pathWithoutBuildDir = pathWithBuildDir.subpath(1, pathWithBuildDir.getNameCount());
+            Path pathWithoutBuildDir = pathWithBuildDir.subpath(3, pathWithBuildDir.getNameCount());
             classFile.setPath(pathWithoutBuildDir.toString());
             classFile.setClassImage(new ClassImage(classFile.getContent()));
             return classFile;
