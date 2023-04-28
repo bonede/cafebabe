@@ -13,7 +13,7 @@ app:
   working-dir: /data/java-explorer
   build-dir: build
   using-docker: false
-  docker-cmd: docker run --rm -v /data:/data -w {WD} {IMG} {CMD}
+  docker-cmd: docker run -v /data:/data -w {WD} {IMG} {CMD}
   compilers:
     - name: openjdk8
       img: amazoncorretto:8
