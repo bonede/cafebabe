@@ -13,7 +13,7 @@ app:
   working-dir: /data/java-explorer
   build-dir: build
   using-docker: false
-  docker-cmd: docker run --rm -v /data:/data -w {WD} {IMG} {CMD}
+  docker-cmd: docker run --rm -v {WD}:{WD} -w {WD} {IMG} {CMD}
   compilers:
     - name: openjdk8
       img: amazoncorretto:8
@@ -37,7 +37,7 @@ app:
       debug-args: ""
       optimize-args: ""
     - name: scala3.2.2
-      img: amazoncorretto:11
+      img: sbtscala/scala-sbt:eclipse-temurin-jammy-11.0.17_8_1.8.2_3.2.2
       lang: scala
       cmd: scalac -d build {OPTS} {SRC_FILES}
       example: examples/scala/Main.scala

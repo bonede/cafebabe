@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.javaexplorer.web.service.AppService.AppConfig;
+import org.springframework.util.FileSystemUtils;
 
 @Service
 @Slf4j
@@ -140,10 +141,10 @@ public class CompilerService {
                     result.getStderr(),
                     compileReq.getOps()
             );
-            FileUtils.forceDelete(workingDir.toFile());
+            FileSystemUtils.deleteRecursively(workingDir.toFile());
             return compileOutput;
         }else {
-            FileUtils.forceDelete(workingDir.toFile());
+            FileSystemUtils.deleteRecursively(workingDir.toFile());
             return CompileOutput.fail(
                     result.getCode(),
                     result.getStdout(),
@@ -151,7 +152,6 @@ public class CompilerService {
                     compileReq.getOps()
             );
         }
-
     }
 
 
