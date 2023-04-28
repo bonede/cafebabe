@@ -139,10 +139,10 @@ public class CompilerService {
                     result.getStderr(),
                     compileReq.getOps()
             );
-            FileUtils.deleteDirectory(workingDir.toFile());
+            FileUtils.forceDelete(workingDir.toFile());
             return compileOutput;
         }else {
-            FileUtils.deleteDirectory(workingDir.toFile());
+            FileUtils.forceDelete(workingDir.toFile());
             return CompileOutput.fail(
                     result.getCode(),
                     result.getStdout(),
