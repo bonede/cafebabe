@@ -29,8 +29,8 @@ app:
       example: examples/java/Main.java
       debug-args: -g
       optimize-args: -O
-    - name: kotlin1.7.20
-      img: amazoncorretto:11
+    - name: kotlin1.8.21
+      img: bonede/kotlin:1.8.21
       lang: kotlin
       cmd: kotlinc -d build {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
