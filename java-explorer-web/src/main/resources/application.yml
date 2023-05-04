@@ -85,6 +85,27 @@ app:
       example: examples/groovy/Main.groovy
       debug-args: ""
       optimize-args: ""
+    - name: groovy3.0.17
+      lang: groovy
+      img: bonede/groovy:3.0.17
+      cmd: groovyc -d=build {OPTS} {SRC_FILES}
+      example: examples/groovy/Main.groovy
+      debug-args: ""
+      optimize-args: ""
+    - name: groovy2.5.22
+      lang: groovy
+      img: bonede/groovy:2.5.22
+      cmd: groovyc -d=build {OPTS} {SRC_FILES}
+      example: examples/groovy/Main.groovy
+      debug-args: ""
+      optimize-args: ""
+    - name: groovy2.4.21
+      lang: groovy
+      img: bonede/groovy:2.4.21
+      cmd: groovyc -d=build {OPTS} {SRC_FILES}
+      example: examples/groovy/Main.groovy
+      debug-args: ""
+      optimize-args: ""
   versions:
     45.0:
       short-jdk-version: 0
