@@ -3,7 +3,7 @@ RUN set -eux \
     && cd / \
     &&  yum install -y unzip \
     && curl -sLO https://archive.apache.org/dist/groovy/3.0.17/distribution/apache-groovy-binary-3.0.17.zip \
-    && echo "335fe28bc7d93ab9f73e0d21bfc3591c63f4532572e7e1f93dc22cb0401ab422 apache-groovy-binary-3.0.17.zip" > sha256 \
+    && echo "efcfb9f98f516ef46419a3888f27d61711e8de62488f12ec921a1189833062db apache-groovy-binary-3.0.17.zip" > sha256 \
     && sha256sum -c sha256 \
     && unzip apache-groovy-binary-3.0.17.zip \
     && rm apache-groovy-binary-3.0.17.zip sha256
