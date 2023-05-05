@@ -7,7 +7,6 @@ plugins {
 
 group = 'app.cafebabe'
 version = '0.0.1'
-sourceCompatibility = '8'
 
 ext{
     dockerFiles = ["openjdk8", "openjdk11"]
