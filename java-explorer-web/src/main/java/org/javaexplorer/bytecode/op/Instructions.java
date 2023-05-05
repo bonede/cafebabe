@@ -6036,6 +6036,11 @@ public class Instructions {
       */
     public static class invokedynamic implements Instruction{
         private int index;
+
+        public int getIndex() {
+            return index;
+        }
+
         @Override
         public String getOpMnemonic() {
             return "invokedynamic";
@@ -6070,6 +6075,15 @@ public class Instructions {
     public static class invokeinterface implements Instruction{
         private int index;
         private int count;
+
+        public int getIndex() {
+            return index;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
         @Override
         public String getOpMnemonic() {
             return "invokeinterface";

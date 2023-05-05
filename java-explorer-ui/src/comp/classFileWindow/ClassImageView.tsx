@@ -343,7 +343,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
             switch (cpInfo.tag){
                 case "CONSTANT_Class": return cpInfo.name
                 case "CONSTANT_Fieldref": return cpInfo.className + "." + cpInfo.fieldName
-                case "CONSTANT_Methodref": return cpInfo.className + "." + cpInfo.methodName
+                case "CONSTANT_Methodref": return cpInfo.className + "." + cpInfo.methodName + cpInfo.methodDescriptor
                 case "CONSTANT_InterfaceMethodref" : return cpInfo.className
                 case "CONSTANT_String": return cpInfo.string
                 case "CONSTANT_Integer": return cpInfo.value
@@ -353,8 +353,8 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 case "CONSTANT_NameAndType" : return cpInfo.name + cpInfo.descriptor
                 case "CONSTANT_Utf8": return cpInfo.value
                 case "CONSTANT_MethodHandle" : return cpInfo.kind + " #" + cpInfo.referenceIndex
-                case "CONSTANT_MethodType": return cpInfo.className
-                case "CONSTANT_InvokeDynamic": return "#" + cpInfo.nameAndTypeIndex + " " + cpInfo.bootstrapMethodAttrIndex
+                case "CONSTANT_MethodType": return cpInfo.descriptor
+                case "CONSTANT_InvokeDynamic": return cpInfo.name + cpInfo.descriptor + cpInfo.bootstrapMethodAttrIndex
                 default: return ""
             }
         }
@@ -370,6 +370,8 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 case "CONSTANT_Methodref":
                 case "CONSTANT_Fieldref":
                 case "CONSTANT_NameAndType":
+                case "CONSTANT_MethodType":
+                case "CONSTANT_InvokeDynamic":
                     return COLOR_REF
 
             }
@@ -466,9 +468,6 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 rows: instructions.map((instruction) =>
                     {
                         const doc = appInfo?.instructionDocs[instruction.opMnemonic]
-                        if(instruction.opMnemonic == "invokevirtual"){
-                            console.log(instruction)
-                        }
                         return {
                             key: instruction.pc + " " + instruction.opMnemonic,
                             help: {
