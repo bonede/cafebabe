@@ -1,5 +1,8 @@
 app:
   url: https://www.cafebabe.build
   using-docker: true
+spring:
+  redis:
+    host: redis
 
 
