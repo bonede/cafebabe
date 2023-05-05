@@ -17,12 +17,13 @@ cd cafebabe-web && ./gradlew bootJar
 ```
 # Run it using Docker
 ```shell
-docker -v /var/run/docker.sock:/var/run/docker.sock \
+docker run -v /var/run/docker.sock:/var/run/docker.sock \
   -p 8080:8080 \
-  -e SPRING_REDIS_HOST=localhost \
+  -e SPRING_REDIS_HOST=redis.host.name \
   -e SPRING_REDIS_PORT=6379 \
   -v /data/cafebabe:/data/cafebabe \
-  bonede:cafebabe:0.0.1
+  bonede/cafebabe:0.0.1
+# Open http://localhost:8080/ in browser
 ```
 
 
