@@ -151,8 +151,9 @@ export interface attribute_info{
     // ConstantValue
     constantValueIndex: number
     // Exceptions
-    numberOfExceptions: number
-    exceptionIndexTable: number[]
+    number_of_exceptions: number
+    exceptions: string
+    exception_index_table: number[]
     // LineNumberTable
     lineNumberTableLength: number
     lineNumberTable: line_number_table_item[]

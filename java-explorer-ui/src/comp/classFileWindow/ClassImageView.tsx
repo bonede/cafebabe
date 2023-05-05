@@ -164,8 +164,8 @@ export const ClassImageView = (props: ClassImageViewProps) => {
             case "SourceFile": rows.push({key: "Source file", value: attributeInfo.sourceFileName, cpIndices: [attributeInfo.sourceFileNameIndex], color: COLOR_STRING}); break;
             case "Signature": rows.push({key: "Source file", value: attributeInfo.signature}); break;
             case "Exceptions":
-                attributeInfo.exceptionIndexTable.forEach((index, i) => {
-                    rows.push({key: "Exception " + i, value: "#" + index, cpIndices: [index]})
+                attributeInfo.exception_index_table.forEach((index, i) => {
+                    rows.push({key: "Exception " + i, value: attributeInfo.exceptions[i], cpIndices: [index], color: COLOR_REF})
                 });break;
             case "LineNumberTable":
                 attributeInfo.lineNumberTable.forEach( l => {
