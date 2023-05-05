@@ -3,3 +3,6 @@
 **/.gradle
 bin
 .vscode
+**/*.class
+**/META-INFO
+**/*.tasty
