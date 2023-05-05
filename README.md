@@ -17,7 +17,7 @@ cd cafebabe-web && ./gradlew bootJar
 ```
 # Run it using Docker
 ```shell
-docker run -v /var/run/docker.sock:/var/run/docker.sock \
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -p 8080:8080 \
   -e SPRING_REDIS_HOST=redis.host.name \
   -e SPRING_REDIS_PORT=6379 \
