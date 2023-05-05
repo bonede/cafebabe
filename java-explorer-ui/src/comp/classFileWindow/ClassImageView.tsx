@@ -372,6 +372,7 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 case "CONSTANT_NameAndType":
                 case "CONSTANT_MethodType":
                 case "CONSTANT_InvokeDynamic":
+                case "CONSTANT_MethodHandle":
                     return COLOR_REF
 
             }

@@ -73,7 +73,7 @@ const RowView = (props: {row: ClassImageItemGroupRow, onSelectCpInfo?: (cpIndice
         <div className="class-image-item-group-row-key">
             {props.row.key} {helpIcon && helpPopover}
         </div>
-        <div className="class-image-item-group-row-value" style={{color: props.row.color ? props.row.color : undefined}}>
+        <div title={props.row.value} className="class-image-item-group-row-value" style={{color: props.row.color ? props.row.color : undefined}}>
             {props.row.value} {morePopover} {helpLink}
         </div>
     </div>

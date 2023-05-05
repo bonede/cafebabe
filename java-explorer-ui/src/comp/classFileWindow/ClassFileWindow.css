@@ -75,3 +75,14 @@
 .class-image-view-method-list .class-image-item{
     margin-bottom: 10px;
 }
+.class-image-item-group-row-value{
+    max-width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-left: 5px;
+    padding-top: 5px;
+    margin-left: -5px;
+    margin-top: -5px;
+
+}
