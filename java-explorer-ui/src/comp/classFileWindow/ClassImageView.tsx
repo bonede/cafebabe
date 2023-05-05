@@ -195,27 +195,26 @@ export const ClassImageView = (props: ClassImageViewProps) => {
                 attributeInfo.classes.forEach( (c, i) => {
                     rows.push({
                         key: "Class " + i,
-
-                        value: "#" + c.inner_class_info_index,
+                        value: c.innerClass,
                         cpIndices: [c.inner_class_info_index],
                         color: COLOR_REF,
                         more: {
                             groupName: "Detail",
                             rows: [
-                                {key: "Inner class", value: "#" + c.inner_class_info_index, color: COLOR_REF, cpIndices: [ c.inner_class_info_index]},
-                                {key: "Inner name", value: "#" + c.inner_name_index, color: COLOR_STRING, cpIndices: [c.inner_name_index]},
+                                {key: "Inner class", value: c.innerClass, color: COLOR_REF, cpIndices: [ c.inner_class_info_index]},
+                                {key: "Inner name", value: c.innerName, color: COLOR_STRING, cpIndices: [c.inner_name_index]},
                                 {key: "Inner flags", value: c.inner_class_access_flags.join("/")},
-                                {key: "Outer class", value: "#" + c.outer_class_info_index, color: COLOR_REF, cpIndices: [c.outer_class_info_index]}
+                                {key: "Outer class", value: c.outerClass, color: COLOR_REF, cpIndices: [c.outer_class_info_index]}
                             ]
                         }
                     })
                 }); break;
-            case "NestHost": rows.push({key: "Host class", value: "#" + attributeInfo.host_class_index + "", color: COLOR_REF, cpIndices: [ attributeInfo.host_class_index]}); break;
+            case "NestHost": rows.push({key: "Host class", value: attributeInfo.hostClass + "", color: COLOR_REF, cpIndices: [ attributeInfo.host_class_index]}); break;
             case "NestMembers":
                 attributeInfo.class_indices.forEach( (c, i) => {
                     rows.push({
                         key: "Class " + i,
-                        value: "#" + c,
+                        value: attributeInfo.classNames[i],
                         cpIndices: [c],
                         color: COLOR_REF,
                     })

@@ -3,6 +3,7 @@ package org.javaexplorer.bytecode.vm;
 
 
 import org.apache.commons.io.IOUtils;
+import org.javaexplorer.bytecode.classimage.ClassImage;
 
 import java.io.File;
 import java.io.IOException;

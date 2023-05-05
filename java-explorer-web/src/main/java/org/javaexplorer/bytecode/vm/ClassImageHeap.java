@@ -1,5 +1,7 @@
 package org.javaexplorer.bytecode.vm;
 
+import org.javaexplorer.bytecode.classimage.ClassImage;
+
 import java.util.HashMap;
 import java.util.Map;
 

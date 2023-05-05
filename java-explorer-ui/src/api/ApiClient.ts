@@ -169,8 +169,10 @@ export interface attribute_info{
     classes: inner_class_info[]
     // NestHost
     host_class_index: number
+    hostClass: string
     // NestMembers
     class_indices: number[]
+    classNames: string[]
     // LocalVariableTable
     local_variable_table_length: number
     local_variable_table: local_variable_info[]
@@ -345,6 +347,9 @@ export interface inner_class_info{
     inner_class_info_index: number
     outer_class_info_index: number
     inner_name_index: number
+    innerName: string
+    innerClass: string
+    outerClass: string
     inner_class_access_flags: class_access_flag[]
 }
 

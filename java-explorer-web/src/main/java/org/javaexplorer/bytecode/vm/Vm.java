@@ -1,6 +1,10 @@
 package org.javaexplorer.bytecode.vm;
 
 
+import org.javaexplorer.bytecode.classimage.ClassImage;
+import org.javaexplorer.bytecode.classimage.constant.CONSTANT_String_info;
+import org.javaexplorer.bytecode.classimage.constant.cp_info;
+import org.javaexplorer.bytecode.classimage.method_info;
 import org.javaexplorer.bytecode.op.Instruction;
 
 import java.io.IOException;
@@ -82,14 +86,14 @@ public class Vm {
 
 
     public void initImage(ClassImage classImage) {
-        for (ClassImage.cp_info c : classImage.getConstantPool()) {
-            if (c instanceof ClassImage.CONSTANT_String_info) {
-                String value = ((ClassImage.CONSTANT_String_info) c).getValue(classImage);
+        for (cp_info c : classImage.getConstantPool()) {
+            if (c instanceof CONSTANT_String_info) {
+                String value = ((CONSTANT_String_info) c).getValue(classImage);
                 // TODO put string to heap
             }
         }
 
-        for (ClassImage.method_info method : classImage.getMethods()) {
+        for (method_info method : classImage.getMethods()) {
             if (method.isStaticInitializer(classImage)) {
                 pushFrame(-1, 0, 0);
                 pushFrame(method.getIndex(), classImage.hashCode(), 0);
@@ -105,7 +109,7 @@ public class Vm {
         stack.push(new StackFrame(-1, -1));
         classImageHeap.put(classImage);
         initImage(classImage);
-        ClassImage.method_info mainMethod = classImage.getMainMethod();
+        method_info mainMethod = classImage.getMainMethod();
         if (mainMethod == null) {
             throw new RuntimeException("No main method in " + classImage.getClassName());
         }
@@ -121,7 +125,7 @@ public class Vm {
         return staticStack.peek();
     }
 
-    public ClassImage.method_info getCurrentStaticMethod() {
+    public method_info getCurrentStaticMethod() {
         if (staticStack.isEmpty()) {
             return null;
         }
@@ -133,7 +137,7 @@ public class Vm {
         return classImage.getMethodByIndex(getCurrentStaticFrame().getMi());
     }
 
-    public ClassImage.method_info getCurrentMethod() {
+    public method_info getCurrentMethod() {
         if (stack.isEmpty()) {
             return null;
         }
@@ -174,7 +178,7 @@ public class Vm {
 
     }
 
-    public Instruction fetchInstruction(ClassImage.method_info method_info) {
+    public Instruction fetchInstruction(method_info method_info) {
         Instruction instruction = method_info.fetchInstruction(this);
         if (instruction == null) {
             return null;
@@ -182,7 +186,7 @@ public class Vm {
         return instruction;
     }
 
-    public ClassImage.cp_info getConstant(int index) {
+    public cp_info getConstant(int index) {
         return getCurrentClassImage().getConstant(index);
     }
 
@@ -226,7 +230,7 @@ public class Vm {
                 continue;
             }
             ClassImage classImage = classImageHeap.getByRef(stackFrame.getCi());
-            ClassImage.method_info method = classImage.getMethodByIndex(stackFrame.getMi());
+            method_info method = classImage.getMethodByIndex(stackFrame.getMi());
             System.out.println(
                     classImage.getClassName() + "." +
                             method.getName() +

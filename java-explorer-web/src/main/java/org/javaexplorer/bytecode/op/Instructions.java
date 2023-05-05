@@ -1,9 +1,14 @@
 package org.javaexplorer.bytecode.op;
 
+import org.javaexplorer.bytecode.classimage.ClassImage;
+import org.javaexplorer.bytecode.classimage.attribute.CONSTANT_Long_info;
+import org.javaexplorer.bytecode.classimage.attribute.Code_attribute;
+import org.javaexplorer.bytecode.classimage.constant.*;
+import org.javaexplorer.bytecode.classimage.method_access_flag;
+import org.javaexplorer.bytecode.classimage.method_info;
 import org.javaexplorer.bytecode.op.DescriptorParser.FieldTag;
 import org.javaexplorer.bytecode.op.DescriptorParser.FieldType;
 import org.javaexplorer.bytecode.op.DescriptorParser.MethodType;
-import org.javaexplorer.bytecode.vm.ClassImage;
 import org.javaexplorer.bytecode.vm.HeapObject;
 import org.javaexplorer.bytecode.vm.Vm;
 
@@ -477,7 +482,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -1172,7 +1177,7 @@ public class Instructions {
         private int value;
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu1();
             value = code_attribute.readu1();
         }
@@ -2321,7 +2326,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.value = code_attribute.readByte();
         }
 
@@ -2355,7 +2360,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -2390,7 +2395,7 @@ public class Instructions {
             vm.increasePc(getSize());
         }
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
         @Override
@@ -2422,7 +2427,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -2456,7 +2461,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -2490,7 +2495,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -2525,7 +2530,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -2559,7 +2564,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -2593,7 +2598,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -2628,11 +2633,11 @@ public class Instructions {
 
         @Override
         public void execute(Vm vm) {
-            ClassImage.cp_info c = vm.getConstant(index);
-            if(c instanceof ClassImage.CONSTANT_Long_info){
-                vm.pushOpLong(((ClassImage.CONSTANT_Long_info) c).getValue());
-            }else if(c instanceof ClassImage.CONSTANT_Double_info){
-                vm.pushOpDouble(((ClassImage.CONSTANT_Double_info) c).getValue());
+            cp_info c = vm.getConstant(index);
+            if(c instanceof CONSTANT_Long_info){
+                vm.pushOpLong(((CONSTANT_Long_info) c).getValue());
+            }else if(c instanceof CONSTANT_Double_info){
+                vm.pushOpDouble(((CONSTANT_Double_info) c).getValue());
             }else {
                 throw new RuntimeException("Must be long or double constant");
             }
@@ -2640,7 +2645,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -2676,18 +2681,18 @@ public class Instructions {
         }
         @Override
         public void execute(Vm vm) {
-            ClassImage.cp_info c = vm.getConstant(index);
-            if(c instanceof ClassImage.CONSTANT_Integer_info){
+            cp_info c = vm.getConstant(index);
+            if(c instanceof CONSTANT_Integer_info){
                 // int
-                vm.pushOpInt(((ClassImage.CONSTANT_Integer_info) c).getValue());
-            }else if(c instanceof ClassImage.CONSTANT_Float_info){
+                vm.pushOpInt(((CONSTANT_Integer_info) c).getValue());
+            }else if(c instanceof CONSTANT_Float_info){
                 // float
-                vm.pushOpFloat(((ClassImage.CONSTANT_Float_info) c).getValue());
-            }else if(c instanceof ClassImage.CONSTANT_String_info){
+                vm.pushOpFloat(((CONSTANT_Float_info) c).getValue());
+            }else if(c instanceof CONSTANT_String_info){
                 // string
-                vm.pushOpInt(((ClassImage.CONSTANT_String_info) c).getValue(vm.getCurrentClassImage()).hashCode());
-            }else if(c instanceof ClassImage.CONSTANT_Class_info){
-                String className = ((ClassImage.CONSTANT_Class_info) c).getName();
+                vm.pushOpInt(((CONSTANT_String_info) c).getValue(vm.getCurrentClassImage()).hashCode());
+            }else if(c instanceof CONSTANT_Class_info){
+                String className = ((CONSTANT_Class_info) c).getName();
                 vm.pushOpRef(vm.getClassImageByName(className).hashCode());
             }else {
                 // TODO implement push reference to Class, Method
@@ -2697,7 +2702,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu1();
         }
 
@@ -2736,7 +2741,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             value = code_attribute.readShort();
         }
 
@@ -2774,7 +2779,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -2812,7 +2817,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -2861,7 +2866,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -2910,7 +2915,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -2959,7 +2964,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3007,7 +3012,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3050,7 +3055,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3093,7 +3098,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3135,7 +3140,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3182,7 +3187,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3223,7 +3228,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3264,7 +3269,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3305,7 +3310,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3346,7 +3351,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3387,7 +3392,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3428,7 +3433,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3484,7 +3489,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             int padding = 4 - code_attribute.getCodeBufferPosition() % 4;
             size += padding;
             code_attribute.skip(padding);
@@ -3551,7 +3556,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             int padding = 4 - code_attribute.getCodeBufferPosition() % 4;
             size += padding;
             code_attribute.skip(padding);
@@ -3591,7 +3596,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readShort();
         }
 
@@ -3636,7 +3641,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3674,7 +3679,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readu4();
         }
 
@@ -3713,7 +3718,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readShort();
         }
 
@@ -3752,7 +3757,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.offset = code_attribute.readu4();
         }
 
@@ -3786,7 +3791,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -3820,7 +3825,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -3866,7 +3871,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readu1();
         }
 
@@ -3903,7 +3908,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
         @Override
@@ -3940,7 +3945,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
         @Override
@@ -3984,7 +3989,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readu1();
         }
 
@@ -4019,7 +4024,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4053,7 +4058,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4087,7 +4092,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4120,7 +4125,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4157,7 +4162,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readu1();
         }
 
@@ -4191,7 +4196,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4225,7 +4230,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4259,7 +4264,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4293,7 +4298,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4332,7 +4337,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readu1();
         }
 
@@ -4467,7 +4472,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readu1();
         }
 
@@ -4603,7 +4608,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readu1();
         }
 
@@ -4638,7 +4643,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4673,7 +4678,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4707,7 +4712,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4773,7 +4778,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readu1();
         }
 
@@ -4806,7 +4811,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4835,7 +4840,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -4920,13 +4925,13 @@ public class Instructions {
         private int index;
         @Override
         public void execute(Vm vm) {
-            ClassImage.CONSTANT_Methodref_info method_ref = (ClassImage.CONSTANT_Methodref_info) vm.getConstant(index);
+            CONSTANT_Methodref_info method_ref = (CONSTANT_Methodref_info) vm.getConstant(index);
             String className = method_ref.getClassName();
-            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
+            CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
             ClassImage classImage = vm.findClassImageByClassName(className);
             String methodName = nameAndType.getName();
             String methodDescriptor = nameAndType.getDescriptor();
-            ClassImage.method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
+            method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
 
             int ref = vm.popOpRef();
             DescriptorParser.MethodType methodType = (MethodType) DescriptorParser.parse(methodDescriptor);
@@ -4975,7 +4980,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -5013,15 +5018,15 @@ public class Instructions {
         @Override
         public void execute(Vm vm) {
 
-            ClassImage.CONSTANT_Methodref_info method_ref = (ClassImage.CONSTANT_Methodref_info) vm.getConstant(index);
+            CONSTANT_Methodref_info method_ref = (CONSTANT_Methodref_info) vm.getConstant(index);
             String className = method_ref.getClassName();
-            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
+            CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
             ClassImage classImage = vm.findClassImageByClassName(className);
             String methodName = nameAndType.getName();
             String methodDescriptor = nameAndType.getDescriptor();
-            ClassImage.method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
+            method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
             DescriptorParser.MethodType methodType = (MethodType) DescriptorParser.parse(methodDescriptor);
-            if(method.access_flags().contains(ClassImage.method_access_flag.ACC_NATIVE)){
+            if(method.access_flags().contains(method_access_flag.ACC_NATIVE)){
                 if(methodType.getReturnType().getTag() == FieldTag.V){
                     vm.increasePc(getSize());
                     return;
@@ -5072,7 +5077,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -5110,15 +5115,15 @@ public class Instructions {
         @Override
         public void execute(Vm vm) {
 
-            ClassImage.CONSTANT_Methodref_info method_ref = (ClassImage.CONSTANT_Methodref_info) vm.getConstant(index);
+            CONSTANT_Methodref_info method_ref = (CONSTANT_Methodref_info) vm.getConstant(index);
             String className = method_ref.getClassName();
-            ClassImage.CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
+            CONSTANT_NameAndType_info nameAndType = method_ref.getNameAndType();
             ClassImage classImage = vm.findClassImageByClassName(className);
             String methodName = nameAndType.getName();
             String methodDescriptor = nameAndType.getDescriptor();
-            ClassImage.method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
+            method_info method = classImage.getMethodByNameAndType(methodName, methodDescriptor);
             DescriptorParser.MethodType methodType = (MethodType) DescriptorParser.parse(methodDescriptor);
-            if(method.access_flags().contains(ClassImage.method_access_flag.ACC_NATIVE)){
+            if(method.access_flags().contains(method_access_flag.ACC_NATIVE)){
                 if(methodType.getReturnType().getTag() == FieldTag.V){
                     vm.increasePc(getSize());
                     return;
@@ -5172,7 +5177,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -5212,7 +5217,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -5247,13 +5252,13 @@ public class Instructions {
         private int index;
         @Override
         public void execute(Vm vm) {
-            ClassImage.cp_info c = vm.getConstant(index);
-            if(!(c instanceof ClassImage.CONSTANT_Fieldref_info)){
+            cp_info c = vm.getConstant(index);
+            if(!(c instanceof CONSTANT_Fieldref_info)){
                 throw new RuntimeException("Not a field ref: @" + index);
             }
-            ClassImage.CONSTANT_Fieldref_info field_ref = (ClassImage.CONSTANT_Fieldref_info) c;
+            CONSTANT_Fieldref_info field_ref = (CONSTANT_Fieldref_info) c;
             String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.getClassIndex()).getName();
-            ClassImage.CONSTANT_NameAndType_info nameAndType = (ClassImage.CONSTANT_NameAndType_info) vm.getConstant(field_ref.getNameAndTypeIndex());
+            CONSTANT_NameAndType_info nameAndType = (CONSTANT_NameAndType_info) vm.getConstant(field_ref.getNameAndTypeIndex());
             String fieldName = nameAndType.getName();
             String fieldDescriptor = nameAndType.getDescriptor();
             FieldType fieldType = (DescriptorParser.FieldType) DescriptorParser.parse(fieldDescriptor);
@@ -5292,7 +5297,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -5385,7 +5390,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -5417,7 +5422,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5449,7 +5454,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5507,7 +5512,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5565,7 +5570,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5623,7 +5628,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5681,7 +5686,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5739,7 +5744,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5851,7 +5856,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5882,7 +5887,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -5917,13 +5922,13 @@ public class Instructions {
         private int index;
         @Override
         public void execute(Vm vm) {
-            ClassImage.cp_info c = vm.getConstant(index);
-            if(!(c instanceof ClassImage.CONSTANT_Fieldref_info)){
+            cp_info c = vm.getConstant(index);
+            if(!(c instanceof CONSTANT_Fieldref_info)){
                 throw new RuntimeException("Not a field ref: @" + index);
             }
-            ClassImage.CONSTANT_Fieldref_info field_ref = (ClassImage.CONSTANT_Fieldref_info) c;
+            CONSTANT_Fieldref_info field_ref = (CONSTANT_Fieldref_info) c;
             String className = vm.getCurrentClassImage().getClassInfoAt(field_ref.getClassIndex()).getName();
-            ClassImage.CONSTANT_NameAndType_info nameAndType = (ClassImage.CONSTANT_NameAndType_info) vm.getConstant(field_ref.getNameAndTypeIndex());
+            CONSTANT_NameAndType_info nameAndType = (CONSTANT_NameAndType_info) vm.getConstant(field_ref.getNameAndTypeIndex());
             String fieldName = nameAndType.getName();
             String fieldDescriptor = nameAndType.getDescriptor();
             FieldType fieldType = (DescriptorParser.FieldType) DescriptorParser.parse(fieldDescriptor);
@@ -5964,7 +5969,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -6006,7 +6011,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             this.index = code_attribute.readShort();
         }
 
@@ -6047,7 +6052,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
             // read 2 zero byte
             code_attribute.readu2();
@@ -6081,7 +6086,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
             count = code_attribute.readu1();
             // read 1 zero byte
@@ -6117,7 +6122,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -6155,7 +6160,7 @@ public class Instructions {
         public void execute(Vm vm) {
             int ref = vm.popOpRef();
             HeapObject heapObject = vm.getHeap().get(ref);
-            ClassImage.CONSTANT_Fieldref_info fieldRef = vm.getCurrentClassImage().getFieldrefAt(index);
+            CONSTANT_Fieldref_info fieldRef = vm.getCurrentClassImage().getFieldrefAt(index);
             String className = fieldRef.getClassName();
             String fieldName = fieldRef.getFieldName();
             FieldType fieldType = fieldRef.getFieldType();
@@ -6179,7 +6184,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu2();
         }
 
@@ -6212,7 +6217,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6245,7 +6250,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readShort();
         }
 
@@ -6280,7 +6285,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6315,7 +6320,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6348,7 +6353,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6381,7 +6386,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6416,7 +6421,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6452,7 +6457,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6487,7 +6492,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6521,7 +6526,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6554,7 +6559,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
 
         }
 
@@ -6620,7 +6625,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             opCode = code_attribute.readu1();
             index = code_attribute.readu2();
             value = code_attribute.readu2();
@@ -6820,7 +6825,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu1();
         }
 
@@ -6951,7 +6956,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu1();
         }
 
@@ -7086,7 +7091,7 @@ public class Instructions {
         }
 
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             index = code_attribute.readu1();
         }
 
@@ -7209,7 +7214,7 @@ public class Instructions {
     }
     public static class reserved implements Instruction{
         @Override
-        public void parse(ClassImage.Code_attribute code_attribute) {
+        public void parse(Code_attribute code_attribute) {
             throw new RuntimeException("Reserved opcode should not appear in class file");
         }
 

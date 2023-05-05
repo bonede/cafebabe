@@ -1,7 +1,7 @@
 package org.javaexplorer.bytecode.op;
 
 
-import org.javaexplorer.bytecode.vm.ClassImage;
+import org.javaexplorer.bytecode.classimage.attribute.Code_attribute;
 import org.javaexplorer.bytecode.vm.Vm;
 
 public interface Instruction {
@@ -13,7 +13,7 @@ public interface Instruction {
      * @param code_attribute
      * @return operand size
      */
-    default void parse(ClassImage.Code_attribute code_attribute){}
+    default void parse(Code_attribute code_attribute){}
     int getOpCode();
     int getSize();
 }

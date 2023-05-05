@@ -1,7 +1,7 @@
 package org.javaexplorer.model;
 
 import lombok.Data;
-import org.javaexplorer.bytecode.vm.ClassImage;
+import org.javaexplorer.bytecode.classimage.ClassImage;
 
 /**
  * Class file with its content and parsed class image

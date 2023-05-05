@@ -1,10 +1,9 @@
 package org.javaexplorer.compiler.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.javaexplorer.bytecode.vm.ClassImage;
+import org.javaexplorer.bytecode.classimage.ClassImage;
 import org.javaexplorer.error.ApiException;
 import org.javaexplorer.model.ClassFile;
 import org.javaexplorer.model.SrcFile;
@@ -14,6 +13,7 @@ import org.javaexplorer.utils.CommandUtils;
 import org.javaexplorer.web.service.AppService.AppConfig.CompilerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.FileInputStream;
@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.javaexplorer.web.service.AppService.AppConfig;
-import org.springframework.util.FileSystemUtils;
 
 @Service
 @Slf4j
