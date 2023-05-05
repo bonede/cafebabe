@@ -75,7 +75,7 @@ app:
       debug-args: ""
       optimize-args: ""
     - name: scala2.13.10
-      img: sbtscala/scala-sbt:eclipse-temurin-jammy-11.0.17_8_1.8.2.13.10
+      img: sbtscala/scala-sbt:eclipse-temurin-11.0.15_1.7.1_2.13.8
       lang: scala
       cmd: scalac -d build {OPTS} {SRC_FILES}
       example: examples/scala/Main.scala
