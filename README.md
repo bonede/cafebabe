@@ -15,6 +15,12 @@ Please visit https://www.cafebabe.app
 cd cafebabe-web && ./gradlew bootJar
 # Open http://localhost:8080/ in browser
 ```
+# Run it using Docker
+```shell
+docker -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /data/cafebabe:/data/cafebabe \
+  bonede:cafebabe:0.0.1
+```
 
 
 # Build a release

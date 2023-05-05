@@ -1,0 +1,4 @@
+# Change name of this file to `application.yml` to overwrite development configurations
+app:
+  using-docker: true
+# More configurations please reference `application.yml` in `src/main/resources/application.yml`

@@ -1,0 +1,54 @@
+version: "3.3"
+
+services:
+
+  # load balance
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    restart: always
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=bonede@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/data/acme.json"
+    ports:
+      - "443:443"
+    volumes:
+      - "/data/acme:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  # redis
+  redis:
+    image: redis:7.0.8-alpine
+    container_name: redis
+    restart: always
+    expose:
+      - 6379
+    volumes:
+      - /data/redis:/data
+
+  # api
+  api:
+    image: amazoncorretto:11
+    container_name: api
+    restart: always
+    expose:
+      - 8080
+    depends_on:
+      - redis
+    environment:
+      - spring_profiles_active=prod
+    command: java -jar /data/gungunshou-0.0.1-SNAPSHOT.jar
+    volumes:
+      - /opt/data/api:/data
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`www.cafebabe.app`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
