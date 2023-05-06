@@ -70,8 +70,8 @@ public class CompilerService {
         return path.getFileName().toString().endsWith(".class") && path.toFile().isFile();
     }
 
-    public List<ClassFile> collectClassFile(Path workingDir) throws IOException {
-        try (Stream<Path> stream = Files.walk(workingDir)){
+    public List<ClassFile> collectClassFile(Path buildDir) throws IOException {
+        try (Stream<Path> stream = Files.walk(buildDir)){
             return stream.filter(this::isClassFile)
                     .map(this::toClassFile)
                     .sorted(Comparator.comparing(ClassFile::getPath).reversed())
@@ -107,13 +107,13 @@ public class CompilerService {
                 .collect(Collectors.joining(" "));
         String cmd = compilerConfig.getCmd()
                 .replace("{OPTS}", compilerOptions == null ? "" : compilerOptions)
+                .replace("{BUILD_DIR}", appConfig.getBuildDir())
                 .replace("{SRC_FILES}", srcFileParameter);
         if(!appConfig.isUsingDocker()){
             return cmd;
         }
         return appConfig.getDockerCmd()
                 .replace("{WD}", workingDir)
-                .replace("{BUILD_DIR}", appConfig.getBuildDir())
                 .replace("{IMG}", compilerConfig.getImg())
                 .replace("{CMD}", cmd);
     }
@@ -126,12 +126,13 @@ public class CompilerService {
                 .orElseThrow(() -> ApiException.error("Invalid compiler"));
 
         Path workingDir = saveSrcFiles(compileReq.getSrcFiles());
+        Path buildDir = workingDir.resolve(appConfig.getBuildDir());
         String cmdArgs = compiler.getDebugAndOptimizeArgs(compileReq.getOps().getDebug(), compileReq.getOps().getOptimize());
         String cmd = formatCmd(compiler, workingDir.toString(), cmdArgs, compileReq.getSrcFiles());
         log.info("CMD {}", cmd);
         CommandUtils.CommandResult result = CommandUtils.run(workingDir.toFile(), cmd.split(" "));
         if(result.getCode() == 0){
-            List<ClassFile> classFiles = collectClassFile(workingDir);
+            List<ClassFile> classFiles = collectClassFile(buildDir);
             CompileOutput compileOutput = CompileOutput.success(
                     classFiles,
                     result.getStdout(),
