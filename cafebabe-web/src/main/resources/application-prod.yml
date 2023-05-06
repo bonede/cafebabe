@@ -1,5 +1,5 @@
 app:
-  url: https://www.cafebabe.build
+  url: https://www.cafebabe.app
   using-docker: true
 
 spring:
