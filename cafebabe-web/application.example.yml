@@ -1,4 +1,8 @@
-# Change name of this file to `application.yml` to overwrite development configurations
+# Make a copy of this file and rename to `application.yml` to
+# overwrite development configurations and make sure working
+# dir is `cafebabe-web` when running the application.
+
 app:
-  using-docker: true
-# More configurations please reference `application.yml` in `src/main/resources/application.yml`
+  using-docker: false
+
+# For more configurations, please reference to `src/main/resources/application.yml`

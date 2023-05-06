@@ -6,3 +6,4 @@ bin
 **/*.class
 **/META-INFO
 **/*.tasty
+cafebabe-web/application.yml

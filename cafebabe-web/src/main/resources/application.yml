@@ -1,9 +1,6 @@
 logging:
   level:
     root: info
-spring:
-  redis:
-    host:
 app:
   url: http://locahost:8080
   spec-url: https://docs.oracle.com/javase/specs/jvms/se{version}/html/
