@@ -1,6 +1,10 @@
 logging:
   level:
     root: info
+management:
+  web:
+    exposure:
+      include: 'all'
 app:
   url: http://locahost:8080
   spec-url: https://docs.oracle.com/javase/specs/jvms/se{version}/html/
@@ -10,7 +14,7 @@ app:
     - 168
   share-limit: 24
   share-limit-window: 1d
-  working-dir: /data/cafebabe
+  working-dir-root: /data/work
   build-dir: build
   using-docker: true
   docker-cmd: docker run --rm -v {WD}:{WD} -w {WD} {IMG} {CMD}

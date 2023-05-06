@@ -35,14 +35,14 @@ public class CompilerService {
 
     @PostMapping
     public void init() throws IOException {
-        Path workingDir = Paths.get(appConfig.getWorkingDir());
+        Path workingDir = Paths.get(appConfig.getWorkingDirRoot());
         if(Files.exists(workingDir)){
             Files.createDirectories(workingDir);
         }
     }
 
     private Path genWorkingDir(){
-        return Paths.get(appConfig.getWorkingDir(), RandomStringUtils.randomAlphanumeric(6));
+        return Paths.get(appConfig.getWorkingDirRoot(), RandomStringUtils.randomAlphanumeric(6));
     }
 
     /**

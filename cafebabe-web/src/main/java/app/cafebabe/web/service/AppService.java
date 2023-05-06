@@ -80,7 +80,7 @@ public class AppService {
         Integer shareLimit;
         @NotNull
         Duration shareLimitWindow;
-        private String workingDir;
+        private String workingDirRoot;
         private String buildDir;
         private boolean usingDocker;
         private String dockerCmd;

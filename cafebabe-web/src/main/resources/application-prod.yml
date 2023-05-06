@@ -1,8 +1,16 @@
 app:
   url: https://www.cafebabe.build
   using-docker: true
+
 spring:
   redis:
     host: redis
 
+management:
+  web:
+    exposure:
+      include: 'health'
 
+logging:
+  file:
+    path: /data/logs

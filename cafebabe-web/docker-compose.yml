@@ -43,7 +43,7 @@ services:
     environment:
       - spring_profiles_active=prod
     volumes:
-      - /data/cafebabe:/data/cafebabe
+      - /data/cafebabe:/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`www.cafebabe.app`)"
