@@ -13,4 +13,4 @@ management:
 
 logging:
   file:
-    path: /data/logs
+    path: /data/cafebabe/logs

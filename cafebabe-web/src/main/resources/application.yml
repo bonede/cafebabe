@@ -14,7 +14,7 @@ app:
     - 168
   share-limit: 24
   share-limit-window: 1d
-  working-dir-root: /data/work
+  working-dir-root: /data/cafebabe/work
   build-dir: build
   using-docker: true
   docker-cmd: docker run --rm -v {WD}:{WD} -w {WD} {IMG} {CMD}
