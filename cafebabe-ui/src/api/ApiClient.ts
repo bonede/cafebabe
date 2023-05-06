@@ -379,8 +379,7 @@ export class ApiClient{
         if(href.includes("localhost") || href.includes("127.0.0.1")){
             return "http://localhost:8080/api"
         }else {
-            // TODO return production url
-            return ""
+            return "https://www.cafebabe.app/api"
         }
     }
 
