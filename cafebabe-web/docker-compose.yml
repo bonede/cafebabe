@@ -19,6 +19,7 @@ services:
       - "443:443"
     volumes:
       - /data/acme:/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   # redis
   redis:
