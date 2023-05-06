@@ -6,7 +6,10 @@ import app.cafebabe.model.vo.CompileOutput;
 import app.cafebabe.model.vo.CompileReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -14,7 +17,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/compile")
 @Validated
-@CrossOrigin(originPatterns = {"http://localhost:5173/"})
 public class CompileController {
     @Autowired
     private CompilerService compilerService;
