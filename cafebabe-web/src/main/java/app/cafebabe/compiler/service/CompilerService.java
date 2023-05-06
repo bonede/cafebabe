@@ -63,7 +63,6 @@ public class CompilerService {
             }
 
         });
-        Files.createDirectories(workingDir.resolve(appConfig.getBuildDir()));
         return workingDir;
     }
 
@@ -114,6 +113,7 @@ public class CompilerService {
         }
         return appConfig.getDockerCmd()
                 .replace("{WD}", workingDir)
+                .replace("{BUILD_DIR}", appConfig.getBuildDir())
                 .replace("{IMG}", compilerConfig.getImg())
                 .replace("{CMD}", cmd);
     }

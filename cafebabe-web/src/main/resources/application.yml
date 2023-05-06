@@ -22,91 +22,91 @@ app:
     - name: openjdk8
       img: amazoncorretto:8
       lang: java
-      cmd: javac -d build {OPTS} {SRC_FILES}
+      cmd: javac -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/java/Main.java
       debug-args: -g
       optimize-args: -O
     - name: openjdk11
       img: amazoncorretto:11
       lang: java
-      cmd: javac -d build {OPTS} {SRC_FILES}
+      cmd: javac -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/java/Main.java
       debug-args: -g
       optimize-args: -O
     - name: openjdk17
       img: amazoncorretto:17
       lang: java
-      cmd: javac -d build {OPTS} {SRC_FILES}
+      cmd: javac -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/java/Main.java
       debug-args: -g
       optimize-args: -O
     - name: kotlin1.8.21
       img: bonede/kotlin:1.8.21
       lang: kotlin
-      cmd: kotlinc -d build {OPTS} {SRC_FILES}
+      cmd: kotlinc -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
       debug-args: ""
       optimize-args: ""
     - name: kotlin1.7.21
       img: bonede/kotlin:1.7.21
       lang: kotlin
-      cmd: kotlinc -d build {OPTS} {SRC_FILES}
+      cmd: kotlinc -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
       debug-args: ""
       optimize-args: ""
     - name: kotlin1.6.21
       img: bonede/kotlin:1.6.21
       lang: kotlin
-      cmd: kotlinc -d build {OPTS} {SRC_FILES}
+      cmd: kotlinc -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
       debug-args: ""
       optimize-args: ""
     - name: kotlin1.5.32
       img: bonede/kotlin:1.5.32
       lang: kotlin
-      cmd: kotlinc -d build {OPTS} {SRC_FILES}
+      cmd: kotlinc -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/kotlin/Main.kt
       debug-args: ""
       optimize-args: ""
     - name: scala3.2.2
       img: sbtscala/scala-sbt:eclipse-temurin-jammy-11.0.17_8_1.8.2_3.2.2
       lang: scala
-      cmd: scalac -d build {OPTS} {SRC_FILES}
+      cmd: scalac -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/scala/Main.scala
       debug-args: ""
       optimize-args: ""
     - name: scala2.13.10
       img: sbtscala/scala-sbt:eclipse-temurin-11.0.15_1.7.1_2.13.8
       lang: scala
-      cmd: scalac -d build {OPTS} {SRC_FILES}
+      cmd: scalac -d {BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/scala/Main.scala
       debug-args: ""
       optimize-args: ""
     - name: groovy4.0.11
       lang: groovy
       img: groovy:4.0.11-jdk11
-      cmd: groovyc -d=build {OPTS} {SRC_FILES}
+      cmd: groovyc -d={BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/groovy/Main.groovy
       debug-args: ""
       optimize-args: ""
     - name: groovy3.0.17
       lang: groovy
       img: bonede/groovy:3.0.17
-      cmd: groovyc -d=build {OPTS} {SRC_FILES}
+      cmd: groovyc -d={BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/groovy/Main.groovy
       debug-args: ""
       optimize-args: ""
     - name: groovy2.5.22
       lang: groovy
       img: bonede/groovy:2.5.22
-      cmd: groovyc -d=build {OPTS} {SRC_FILES}
+      cmd: groovyc -d={BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/groovy/Main.groovy
       debug-args: ""
       optimize-args: ""
     - name: groovy2.4.21
       lang: groovy
       img: bonede/groovy:2.4.21
-      cmd: groovyc -d=build {OPTS} {SRC_FILES}
+      cmd: groovyc -d={BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/groovy/Main.groovy
       debug-args: ""
       optimize-args: ""
