@@ -84,7 +84,7 @@ app:
       optimize-args: ""
     - name: groovy4.0.11
       lang: groovy
-      img: groovy:4.0.11-jdk11
+      img: bonede/groovy:4.0.11
       cmd: groovyc -d={BUILD_DIR} {OPTS} {SRC_FILES}
       example: examples/groovy/Main.groovy
       debug-args: ""
