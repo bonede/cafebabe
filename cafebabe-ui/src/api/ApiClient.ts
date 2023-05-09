@@ -43,7 +43,7 @@ export interface CompileResult{
 export interface ShareResp{
     id: string
     url: string
-    deletingToken: string
+    deletingUrl: string
 }
 export interface CompilerOps{
     compilerName: string

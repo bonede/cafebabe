@@ -6,5 +6,5 @@ import lombok.Data;
 public class ShareResp {
     private String id;
     private String url;
-    private String deletingToken;
+    private String deletingUrl;
 }

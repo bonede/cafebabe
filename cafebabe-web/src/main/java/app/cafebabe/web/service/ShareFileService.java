@@ -17,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -44,6 +45,10 @@ public class ShareFileService {
         return appConfig.getUrl() + "/?s=" + shareId;
     }
 
+    private String deletingUrl(String shareId, String deletingToken){
+        return appConfig.getUrl() + "/?s=" + shareId + "&d=" + deletingToken;
+    }
+
     private String redisKey(String id){
         return ShareFile.REDIS_KEY + ":" + id;
     }
@@ -56,6 +61,7 @@ public class ShareFileService {
         shareFile.setSrcFiles(req.getSrcFiles());
         shareFile.setDeletingToken(genDeletingToken());
         shareFile.setOps(req.getOps());
+        shareFile.setCreatedAt(LocalDateTime.now());
         if(req.getHoursToLive() != null && !appConfig.getShareLiveHours().contains(req.getHoursToLive())){
             throw ApiException.error("Invalid hours to live");
         }
@@ -66,8 +72,8 @@ public class ShareFileService {
         }
 
         ShareResp shareResp = new ShareResp();
-        shareResp.setDeletingToken(shareFile.getDeletingToken());
         shareResp.setUrl(shareUrl(shareFile.getId()));
+        shareResp.setDeletingUrl(deletingUrl(shareFile.getId(), shareFile.getDeletingToken()));
         shareResp.setId(shareFile.getId());
         return shareResp;
     }

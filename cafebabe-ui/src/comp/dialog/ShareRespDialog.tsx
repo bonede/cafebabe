@@ -14,8 +14,8 @@ export function ShareRespDialog(props: ShareRespDialogProps){
             <div className="bp4-text-large">
                 <p>Share Link</p>
                 <p className="bp4-monospace-text"><a href={props.shareResp?.url} target="_blank">{props.shareResp?.url}</a>  <CopyButton content={props.shareResp?.url} /></p>
-                <p>Deleting Token</p>
-                <p className="bp4-monospace-text">{props.shareResp?.deletingToken} <CopyButton content={props.shareResp?.deletingToken} /></p>
+                <p>Deleting Link</p>
+                <p className="bp4-monospace-text">{props.shareResp?.deletingUrl} <CopyButton content={props.shareResp?.deletingUrl} /></p>
             </div>
         </DialogBody>
         <DialogFooter actions={<Button intent="primary" text="Okay" onClick={props.onClose} />} />
