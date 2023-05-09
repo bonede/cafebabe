@@ -6,7 +6,7 @@ import {
     ClassFile,
     CompileResult,
     CompilerOps,
-    OutputState,
+    OutputWindowState,
     ShareResp,
     SrcFile
 } from "../../api/ApiClient";
@@ -16,6 +16,11 @@ import {EditorWindow} from "../editorWindow/EditorWindow";
 import {Panel, PanelGroup, PanelResizeHandle} from "react-resizable-panels";
 import {ShareRespDialog} from "../dialog/ShareRespDialog";
 import {DeleteShareDialog} from "../dialog/DeleteShareDialog";
+import {getDeletingToken, getShareId} from "../Utils";
+import {ConfirmDeleteDialog} from "../dialog/ConfirmDeleteDialog";
+import {AboutDialog} from "../dialog/AboutDialog";
+import {PrivacyPolicyDialog} from "../dialog/PrivacyPolicyDialog";
+import {CookiePolicyDialog} from "../dialog/CookiePolicyDialog";
 
 export const AppInfoContext = createContext(undefined as AppInfo | undefined)
 
@@ -32,14 +37,20 @@ export const JavaExplorerApp = () => {
     const [classFileLine, setClassFileLine] = useState(undefined as number | undefined)
     const [outputState, setOutputState] = useState({
         pinMsg: true
-    } as OutputState)
-
+    } as OutputWindowState)
+    const [shareId, setShareId] = useState(null as string | null)
+    const [deletingToken, setDeletingToken] = useState(null as string | null)
+    const [aboutOpen, setAboutOpen] = useState(false)
+    const [cookieOpen, setCookieOpen] = useState(false)
+    const [privacyOpen, setPrivacyOpen] = useState(false)
     useEffect(() => {
         apiClient.getAppInfo().then(a => setAppInfo(a))
-        const outputState = apiClient.getOutputState()
+        const outputState = apiClient.getOutputWindowState()
         if(outputState){
             setOutputState(outputState)
         }
+        setShareId(getShareId(window.location.href))
+        setDeletingToken(getDeletingToken(window.location.href))
     }, [])
 
 
@@ -111,15 +122,57 @@ export const JavaExplorerApp = () => {
         setDeleting(true)
     }
 
+    const handleDeleteShare = async () => {
+        try {
+            await apiClient.deleteShare(location.href, deletingToken!)
+            const u = new URL(location.href)
+            u.searchParams.delete("d")
+            u.searchParams.delete("s")
+            history.replaceState(null, '', u.href);
+            pushMsg('stdout', 'Files deleted')
+            setShareId(null)
+            setDeletingToken(null)
+        } catch (e) {
+            pushMsg("stderr", e + "")
+            setShareId(null)
+            setDeletingToken(null)
+        }
+    }
+
+    const handleCancelDelete = () => {
+        setShareId(null)
+        setDeletingToken(null)
+    }
+
+    const handleClearCache = () => {
+        apiClient.clearCache()
+        pushMsg("stdout", "Local cache cleared")
+    }
+
     return <AppInfoContext.Provider value={appInfo}>
      <div id="app" className="bp4-dark">
+         <AboutDialog onClose={() => setAboutOpen(!aboutOpen)} isOpen={aboutOpen} />
+         <PrivacyPolicyDialog onClose={() => setPrivacyOpen(!privacyOpen)} isOpen={privacyOpen} />
+         <CookiePolicyDialog onClose={() => setCookieOpen(!cookieOpen)} isOpen={cookieOpen} />
+         <ConfirmDeleteDialog onClose={handleCancelDelete} onConfirm={handleDeleteShare} isOpen={shareId != null && deletingToken != null} />
          <ShareRespDialog onClose={() => setShareResp(undefined)} shareResp={shareResp} />
          <DeleteShareDialog isOpen={deleting} onClose={() => setDeleting(false)} onDeleted={() => setDeleting(false)} />
          <PanelGroup autoSaveId="cafebabe" direction="horizontal">
              <Panel defaultSize={45}>
                  <PanelGroup direction="vertical">
                      <Panel>
-                         <EditorWindow onDeleteReq={handleDeleteReq} onShareReq={handleShareReq} selectLine={classFileLine} onSelectLines={lines => setSelectedLines(lines)} onCompile={handleCompile} compilers={appInfo?.compilers || []} />
+                         <EditorWindow
+                             onAboutClick={() => setAboutOpen(true)}
+                             onCookiePolicyClick={() => setCookieOpen(true)}
+                             onPrivacyPolicyClick={() => setPrivacyOpen(true)}
+                             onClearCacheClick={handleClearCache}
+                             onDeleteReq={handleDeleteReq}
+                             onShareReq={handleShareReq}
+                             selectLine={classFileLine}
+                             onSelectLines={lines => setSelectedLines(lines)}
+                             onCompile={handleCompile}
+                             compilers={appInfo?.compilers || []}
+                         />
                      </Panel>
                      <PanelResizeHandle><div style={{background: "#00000000", height: 5}}></div></PanelResizeHandle>
                      <Panel  defaultSize={30}>

@@ -12,7 +12,11 @@ export interface EditorWindowProps{
     onCompile?: (result: CompileResult) => void
     onSelectLines?: (lines: number[]) => void
     onShareReq?: (ops: CompilerOps, srcFiles: SrcFile[], hoursToLive?: number) => Promise<void>
-    onDeleteReq?: () => void
+    onDeleteReq?: () => void,
+    onAboutClick?: () => void
+    onClearCacheClick?: () => void
+    onPrivacyPolicyClick?: () => void
+    onCookiePolicyClick?: () => void
 }
 
 export const EditorWindow = (props: EditorWindowProps) => {
@@ -225,11 +229,10 @@ export const EditorWindow = (props: EditorWindowProps) => {
                                     </MenuItem>
                                 </MenuItem>
                                 <MenuItem text="Help">
-                                    <MenuItem text="About..." />
-                                    <MenuItem text="Clear Local Cache..." />
-                                    <MenuItem text="Privacy Policy..." />
-                                    <MenuItem text="Cookie Policy..." />
-                                    <MenuItem onClick={props.onDeleteReq} text="Delete Share Link..." />
+                                    <MenuItem onClick={props.onAboutClick} text="About" />
+                                    <MenuItem onClick={props.onClearCacheClick} text="Clear Local Cache" />
+                                    <MenuItem onClick={props.onPrivacyPolicyClick} text="Privacy Policy" />
+                                    <MenuItem onClick={props.onCookiePolicyClick} text="Cookie Policy" />
                                 </MenuItem>
                             </Menu>
                         }

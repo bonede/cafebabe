@@ -45,3 +45,8 @@ export function getShareId(url: string){
     const u = new URL(window.location.href)
     return u.searchParams.get('s')
 }
+
+export function getDeletingToken(url: string){
+    const u = new URL(window.location.href)
+    return u.searchParams.get('d')
+}

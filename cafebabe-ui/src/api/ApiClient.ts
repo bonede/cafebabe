@@ -361,7 +361,7 @@ export interface EditorState {
     compiler: Compiler
 }
 
-export interface OutputState {
+export interface OutputWindowState {
     pinMsg?: boolean
 }
 
@@ -449,16 +449,20 @@ export class ApiClient{
         return null
     }
 
-    public saveOutputState(outputState: OutputState){
+    public saveOutputState(outputState: OutputWindowState){
         localStorage.setItem(ApiClient.OUTPUT_STATE_KEY, JSON.stringify(outputState))
     }
 
-    public getOutputState(): OutputState | null{
+    public getOutputWindowState(): OutputWindowState | null{
         const json = localStorage.getItem(ApiClient.OUTPUT_STATE_KEY)
         if(json){
             return JSON.parse(json)
         }
         return null
+    }
+
+    public clearCache(){
+        localStorage.clear()
     }
 
 
