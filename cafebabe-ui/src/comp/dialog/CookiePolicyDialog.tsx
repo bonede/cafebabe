@@ -10,8 +10,11 @@ export function CookiePolicyDialog(props: CookieDialogProps){
     return <Dialog onClose={props.onClose} isOpen={props.isOpen} title="About Cafebabe" className="bp4-dark">
         <DialogBody>
             <div className="bp4-text-large">
-                <h3>Cafebabe use Cookies to</h3>
-                <p></p>
+                <h3>We use cookies and local storage to</h3>
+                <ul>
+                    <li>Store user preference</li>
+                    <li>Source code</li>
+                </ul>
 
             </div>
         </DialogBody>

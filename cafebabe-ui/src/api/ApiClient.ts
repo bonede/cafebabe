@@ -1,3 +1,6 @@
+declare global {
+    interface Window { gtag: (type: string, value: string, param?: any) => void; }
+}
 export interface Compiler {
     name: string
     example: string

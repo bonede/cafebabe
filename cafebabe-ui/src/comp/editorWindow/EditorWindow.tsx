@@ -73,6 +73,7 @@ export const EditorWindow = (props: EditorWindowProps) => {
     }
 
     const compile = async (c?: Compiler) => {
+        window.gtag && window.gtag("event", "compile")
         if(!getEditorContent()){
             showToast("Editor content is empty", "danger")
             return
@@ -232,7 +233,6 @@ export const EditorWindow = (props: EditorWindowProps) => {
                                     <MenuItem onClick={props.onAboutClick} text="About" />
                                     <MenuItem onClick={props.onClearCacheClick} text="Clear Local Cache" />
                                     <MenuItem onClick={props.onPrivacyPolicyClick} text="Privacy Policy" />
-                                    <MenuItem onClick={props.onCookiePolicyClick} text="Cookie Policy" />
                                 </MenuItem>
                             </Menu>
                         }
