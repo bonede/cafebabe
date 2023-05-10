@@ -11,13 +11,13 @@ Please visit https://www.cafebabe.app
 * Redis
 
 # Run it in you local box
-```shell
-cd cafebabe-web && ./gradlew bootJar
+```console
+$ cd cafebabe-web && ./gradlew bootJar
 # Open http://localhost:8080/ in browser
 ```
 # Run it using Docker
-```shell
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+```console
+$ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
   -p 8080:8080 \
   -e SPRING_REDIS_HOST=redis.host.name \
   -e SPRING_REDIS_PORT=6379 \
@@ -28,19 +28,19 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 
 
 # Build a release
-```shell
+```console
 # Build frontend
-cd cafebabe-ui && npm run build
+$ cd cafebabe-ui && npm run build
 # Build Java webapp
-cd cafebabe-web && ./gradlew bootJar
+$ cd cafebabe-web && ./gradlew bootJar
 ```
 
 # Start development
-```shell
+```console
 # Start webapp
-cd cafebabe-ui && ./gradlew bootJar
+$ cd cafebabe-ui && ./gradlew bootRun
 # Start frontend
-cd cafebabe-ui && npm run dev
+$ cd cafebabe-ui && npm run dev
 # Open http://localhost:5173/ in browser
 ```
 
