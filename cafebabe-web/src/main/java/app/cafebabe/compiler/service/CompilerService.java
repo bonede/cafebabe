@@ -127,6 +127,7 @@ public class CompilerService {
 
         Path workingDir = saveSrcFiles(compileReq.getSrcFiles());
         Path buildDir = workingDir.resolve(appConfig.getBuildDir());
+        Files.createDirectories(buildDir);
         String cmdArgs = compiler.getDebugAndOptimizeArgs(compileReq.getOps().getDebug(), compileReq.getOps().getOptimize());
         String cmd = formatCmd(compiler, workingDir.toString(), cmdArgs, compileReq.getSrcFiles());
         log.info("CMD {}", cmd);
