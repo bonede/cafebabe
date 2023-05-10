@@ -16,7 +16,7 @@ public class CorsConfig {
                         .allowedOrigins(
                                 "http://localhost:5173",
                                 "http://127.0.0.1:5173",
-                                "https://cafebabe.app"
+                                "https://www.cafebabe.app"
                         )
                         .allowedMethods("*");
             }
