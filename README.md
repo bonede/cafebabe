@@ -1,7 +1,7 @@
 # Cafebabe 
 Visual disassembler for JVM based languages
 
-![image info](https://raw.githubusercontent.com/bonede/cafebabe/main/assets/screenshot.webp)
+![image info](https://raw.githubusercontent.com/bonede/cafebabe/main/assets/screenshot.png)
 
 # Use it online
 
