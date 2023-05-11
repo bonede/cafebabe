@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Cafebabe is a visual disassembler for JVM languages like Java, Kotlin.">
     <title>Cafebabe</title>
@@ -15,10 +16,75 @@
 
       gtag('config', 'G-EP2MB3F37H');
     </script>
+    <style>
+      html,
+      body{
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        background: #252a31;
+      }
+      #root{
+        height: 100%;
+      }
+      .examples.kotlin.main-loading{
+        display: flex;
+        height: 100%;
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+        -ms-flex-negative: 1;
+        flex-grow: 1;
+        flex-shrink: 1;
+        align-items: center;
+        justify-content: center;
+      }
+      .lds-ring {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+      .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border: 5px solid #8f99a8;
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: #8f99a8 transparent transparent transparent;
+      }
+      .lds-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .lds-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .lds-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+      @keyframes lds-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+    </style>
     <script type="module" crossorigin src="/assets/index-2cc5c61c.js"></script>
     <link rel="stylesheet" href="/assets/index-4a2cf7e5.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="examples.kotlin.main-loading">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      </div>
+    </div>
+
+
   </body>
 </html>
