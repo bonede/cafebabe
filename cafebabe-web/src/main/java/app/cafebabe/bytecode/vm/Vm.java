@@ -111,7 +111,7 @@ public class Vm {
         initImage(classImage);
         method_info mainMethod = classImage.getMainMethod();
         if (mainMethod == null) {
-            throw new RuntimeException("No main method in " + classImage.getClassName());
+            throw new RuntimeException("No examples.kotlin.main method in " + classImage.getClassName());
         }
         pushFrame(mainMethod.getIndex(), classImage.hashCode(), 1);
         run();

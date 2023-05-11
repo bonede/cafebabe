@@ -160,7 +160,7 @@ public class ClassImage {
     @JsonIgnore
     public method_info getMainMethod(){
         for(method_info m : methods){
-            if( "main".equals(getUtf8At(m.name_index())) &&
+            if( "examples.kotlin.main".equals(getUtf8At(m.name_index())) &&
                 "([Ljava/lang/String;)V".equals(getUtf8At(m.getDescriptorIndex())) &&
                 m.access_flags.contains(method_access_flag.ACC_PUBLIC)
             ){
