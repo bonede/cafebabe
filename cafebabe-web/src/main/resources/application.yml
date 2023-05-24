@@ -9,6 +9,9 @@ management:
   web:
     exposure:
       include: 'all'
+server:
+  compression:
+    enabled: true
 app:
   url: http://locahost:8080
   spec-url: https://docs.oracle.com/javase/specs/jvms/se{version}/html/
